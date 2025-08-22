@@ -1,0 +1,147 @@
+\section*{Introducción}
+\addcontentsline{toc}{section}{Introducción}
+
+Este capítulo analiza el estado del arte en sistemas de nutrición y gestión de recetas, identificando las principales tendencias, aplicaciones y enfoques del sector. Se describe cómo las soluciones tecnológicas actuales abordan problemas relacionados con el control nutricional, la planificación de menús y la gestión de recetas, y se evalúan sus fortalezas y limitaciones. Finalmente, se justifica la necesidad de una nueva solución, Muncher, presentando las funcionalidades que aporta y el hueco que cubre dentro del ecosistema de herramientas disponibles.
+
+\subsection*{Estado del arte}
+\addcontentsline{toc}{subsection}{Estado del arte}
+
+En los últimos años, el ecosistema de aplicaciones dedicadas a la nutrición y a la gestión de recetas ha experimentado un fuerte crecimiento, tanto en volumen como en sofisticación. Estas aplicaciones han pasado de ser simples contadores de calorías o libros de recetas digitales a ofrecer herramientas avanzadas de seguimiento dietético, planificación de menús inteligentes, integración con dispositivos móviles y bases de datos alimentarias, y recomendaciones personalizadas. Sin embargo, la mayoría de las soluciones sigue especializándose en aspectos concretos (control nutricional, recetas, planificación, etc.), lo que conduce a una fragmentación de funcionalidades y a la falta de plataformas realmente integradas.
+
+\subsubsection*{Principales actores}
+\addcontentsline{toc}{subsubsection}{Principales actores}
+
+A continuación, se resumen las aplicaciones más relevantes en el panorama actual, indicando sus principales características y enlaces a sus sitios oficiales:
+
+\begin{itemize}
+  \item \textbf{MyFitnessPal} (\url{https://www.myfitnesspal.com/})\\
+  Un referente en conteo de calorías y análisis nutricional. Permite registrar alimentos, crear recetas, fijar objetivos y visualizar progresos a través de gráficos y estadísticas. Incluye una gran base de datos de productos y recetas.
+
+  \item \textbf{Yazio} (\url{https://www.yazio.com/})\\
+  Está orientada al seguimiento nutricional y de objetivos de peso, con funcionalidades para el registro de comidas, cálculo de calorías y planificador de comidas.
+
+  \item \textbf{FatSecret} (\url{https://www.fatsecret.es/})\\
+  Descripción breve de la aplicación, principales características y público objetivo.
+
+  \item \textbf{Cronometer} (\url{https://cronometer.com/})\\
+  Destaca por el seguimiento detallado de micronutrientes, perfecto para dietas médicas o deportivas. Permite personalizar al detalle los objetivos nutricionales.
+
+  \item \textbf{Lifesum} (\url{https://lifesum.com/})\\
+  Ofrece seguimiento de hábitos de vida saludables y recomendaciones nutricionales personalizadas. Integra recetas y rutinas.
+
+  \item \textbf{Paprika Recipe Manager} (\url{https://www.paprikaapp.com/})\\
+  Aplicación eminentemente gastronómica, con gestión de recetas, planificación de menús y listas de la compra, pero sin funcionalidades nutricionales avanzadas.
+
+  \item \textbf{Mealime} (\url{https://www.mealime.com/})\\
+  Planificador de menús semanal y generador de listas de la compra con recetas seleccionadas según preferencias de usuario.
+
+  \item \textbf{Eat This Much} (\url{https://www.eatthismuch.com/})\\
+  Planificador automático de menús y recetas alineados con objetivos nutricionales detallados.
+
+  \item \textbf{Tasty} (\url{https://tasty.co/})\\
+  Popular por su enfoque visual y social, centrándose en la experiencia culinaria y la inspiración mediante vídeos, pero con poco desarrollo en aspectos nutricionales.
+\end{itemize}
+
+
+\subsubsection*{Enfoques actuales}
+\addcontentsline{toc}{subsubsection}{Enfoques actuales}
+
+El conjunto de soluciones disponibles se puede clasificar según tres grandes enfoques, que en ocasiones se combinan parcialmente en una misma aplicación:
+
+
+\paragraph*{Aplicaciones orientadas a control nutricional}
+Estas aplicaciones permiten al usuario registrar lo que come y monitorizar su ingesta de calorías, macronutrientes y micronutrientes. Utilizan grandes bases de datos alimentarias y suelen incluir sugerencias dietéticas, historial de consumo y gráficos de progreso. Ejemplos:
+
+\begin{itemize}
+  \item MyFitnessPal
+  \item Yazio
+  \item FatSecret
+  \item Cronometer
+  \item Lifesum
+\end{itemize}
+
+\paragraph*{Aplicaciones de gestión de recetas y menús}
+Estas plataformas se centran en facilitar la organización, edición, planificación y búsqueda de recetas personales o de una comunidad. Permiten al usuario importar, almacenar y modificar recetas, y suelen ofrecer calendarios de menús y listas de la compra automatizadas. Ejemplos:
+
+\begin{itemize}
+  \item Paprika
+  \item Mealime
+  \item Tasty
+\end{itemize}
+
+\paragraph*{Aplicaciones de gestión de recetas y menús}
+Algunas aplicaciones combinan análisis nutricional y planificación automática, generando menús adaptados a los objetivos del usuario, preferencias alimentarias y restricciones, incluso sugiriendo listas de la compra. Ejemplo destacado: Eat This Much.
+
+\subsubsection*{Proceso para introducir nuevas recetas}
+\addcontentsline{toc}{subsubsection}{Proceso para introducir nuevas recetas}
+
+\paragraph*{Entrada manual}
+La mayoría de aplicaciones permiten al usuario crear sus propias recetas, pero normalmente exige introducir los ingredientes uno a uno, seleccionando de una base de datos interna y definiendo cantidades y pasos manualmente. Este proceso puede resultar laborioso, especialmente para recetas complejas o largas.
+
+\paragraph*{Importación automática desde la web}
+Algunas soluciones (como Paprika y Yummly) permiten importar recetas directamente desde páginas web reconocidas, analizando automáticamente los ingredientes y las instrucciones siempre que sean compatibles con su sistema de reconocimiento.
+
+\paragraph*{Uso de tecnología de IA / procesado de texto}
+Si bien hay intentos iniciales de emplear inteligencia artificial para interpretar recetas escritas en texto libre y extraer la información de manera automática, estas capacidades todavía son limitadas. No suele haber integración completa de este tipo de tecnología en la mayoría de soluciones comerciales hasta la fecha.
+
+\paragraph*{Lectores de código de barras}
+Apps orientadas a la nutrición (MyFitnessPal, Yazio, FatSecret) permiten registrar productos escaneando el código de barras, facilitando la introducción de ingredientes de productos envasados, aunque dicho escaneo rara vez ayuda a la hora de crear recetas completas.
+
+\subsubsection*{Objetivos de las aplicaciones}
+\addcontentsline{toc}{subsubsection}{Objetivos de las aplicaciones}
+
+Además de sus funcionalidades principales, las aplicaciones actuales del ámbito de la nutrición y gestión de recetas suelen estar orientadas a uno o varios objetivos específicos:
+
+\paragraph*{Pérdida de peso}
+Muchas de estas herramientas, especialmente las de seguimiento nutricional, están fundamentalmente orientadas a ayudar en el control y la reducción de peso. Proporcionan contadores de calorías, seguimiento del déficit calórico, metas semanales y registros visuales del progreso. Ejemplos:
+
+\begin{itemize}
+  \item MyFitnessPal
+  \item Yazio
+  \item FatSecret
+  \item Lifesum
+\end{itemize}
+
+\paragraph*{Deporte y objetivos de rendimiento}
+Algunas aplicaciones incluyen planes y sugerencias personalizadas para quienes persiguen objetivos deportivos o de rendimiento físico, integrando el seguimiento de macronutrientes (proteínas, carbohidratos, grasas) e incluso el registro de actividad física, a veces conectándose con otros dispositivos o aplicaciones de deporte. Ejemplos:
+
+\begin{itemize}
+  \item Cronometer
+  \item Lifesum
+\end{itemize}
+
+\paragraph*{Salud general y hábitos sostenibles}
+Muchas plataformas apuntan también a la mejora de la salud global, afrontando metas como comer más equilibradamente, controlar la ingesta de ciertos nutrientes (por ejemplo, fibra, sodio, azúcares), o cumplir requisitos dietéticos médicos o alergias. Disponen de recordatorios, ajustes de objetivos personalizados e informes de tendencias de salud. Ejemplos:
+
+\begin{itemize}
+  \item MyFitnessPal
+  \item Yazio
+  \item FatSecret
+  \item Lifesum
+\end{itemize}
+
+\paragraph*{Consejos de estilo de vida y motivación}
+Algunas aplicaciones incluyen dentro de su interfaz recomendaciones adicionales que van más allá del plato: consejos de hidratación, actividad física, sueño, mindfulness, y notificaciones motivacionales. En este sentido, buscan fomentar hábitos saludables a través de sugerencias contextualizadas y rutinas complementarias a la alimentación. Ejemplos:
+
+\begin{itemize}
+  \item MyFitnessPal
+  \item Yazio
+  \item FatSecret
+  \item Lifesum
+\end{itemize}
+
+\paragraph*{Planificación de menús y cocina cotidiana}
+Las plataformas orientadas a la gestión de recetas y planificación de menús están más centradas en la organización y variedad de las comidas diarias. Ponen el foco en facilitar la tarea de decidir qué cocinar y cómo adaptar recetas a las preferencias personales, aunque su capacidad de personalización nutricional o integración con consejos de salud suele ser menor que en las apps dirigidas a control nutricional o fitness. Ejemplos:
+
+\begin{itemize}
+  \item Paprika
+  \item Mealime
+  \item Eat This Much
+\end{itemize}
+
+\subsection*{Motivación}
+\addcontentsline{toc}{subsection}{Motivación}
+
+Pese al avance de las soluciones tecnológicas actuales, persisten limitaciones importantes derivadas de la especialización de cada plataforma. Los usuarios que desean combinar en una sola herramienta la gestión de recetas, el control nutricional detallado, la planificación de menús balanceados y la generación de listas de la compra inteligentes encuentran barreras en forma de procesos laboriosos, duplicidad de registros y falta de integración entre nutrición, cocina y estilo de vida.
+
+\textbf{Muncher} surge como respuesta a este hueco, proponiendo la integración de funcionalidades avanzadas en una interfaz sencilla y unificada. La aplicación pretende facilitar tanto la entrada automática de recetas (mediante importadores inteligentes y tecnologías de IA), como el análisis nutricional preciso y la planificación eficiente del menú semanal, incluyendo sugerencias basadas en preferencias, requisitos nutricionales, estacionalidad y proximidad de ingredientes. El objetivo es que tanto usuarios individuales como nutricionistas puedan disponer de una herramienta realmente útil, flexible y adaptada a la vida cotidiana actual.
