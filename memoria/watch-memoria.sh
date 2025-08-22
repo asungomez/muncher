@@ -8,6 +8,9 @@ build() {
   ./make-memoria.sh
 }
 
+echo "[watch] Performing initial build..."
+./make-memoria.sh
+
 echo "[watch] Watching 'src' for changes. Press Ctrl-C to stop."
 
 if command -v entr >/dev/null 2>&1; then
