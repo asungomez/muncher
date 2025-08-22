@@ -22,3 +22,12 @@ La memoria del proyecto se encuentra en la carpeta `memoria`. Para generar el PD
 cd memoria
 ./make_memoria.sh
 ```
+
+El documento se genera en la carpeta `memoria/generated`.
+
+Para actualizar el documento en vivo cuando se ejecuta el código, se puede usar el script `watch-memoria.sh`.
+
+```
+cd memoria
+./watch-memoria.sh
+```
