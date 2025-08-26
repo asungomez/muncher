@@ -1,7 +1,10 @@
 \documentclass{article}
 \usepackage{graphicx}
 \usepackage{hyperref}
-\graphicspath{{src/img/}}
+\graphicspath{{src/img/}{img/}}
+\makeatletter
+\def\input@path{{}{src/}}
+\makeatother
 \begin{document}
 
 \begin{titlepage}
@@ -55,6 +58,9 @@ This project was created out of the need to unify all these tools in a single pl
 \tableofcontents
 
 \newpage
-\input{src/sections/introduction.tex}
+\input{sections/introduction.tex}
+
+\newpage
+\input{sections/objectives.tex}
 
 \end{document}
