@@ -36,3 +36,55 @@ explicando las decisiones tomadas respecto a la infraestructura, servicios utili
 evaluando el grado de cumplimiento de los objetivos planteados, analizando las lecciones aprendidas durante el desarrollo y identificando posibles mejoras o líneas de trabajo futuro que puedan enriquecer la aplicación.
 
 Este enfoque metodológico asegura que el documento sirva como guía técnica completa para el desarrollo, implementación y mantenimiento futuro de \textbf{Muncher}.
+
+\subsection*{Objetivos de la aplicación}
+\addcontentsline{toc}{subsection}{Objetivos de la aplicación}
+
+Los objetivos de la aplicación \textbf{Muncher} se dividen en objetivos funcionales, que describen las capacidades específicas que debe ofrecer el sistema a sus usuarios, y objetivos no funcionales, que establecen los criterios de calidad y rendimiento que debe cumplir.
+
+\subsubsection*{Objetivos funcionales}
+\addcontentsline{toc}{subsubsection}{Objetivos funcionales}
+
+\paragraph*{Gestión de usuarios:}
+El sistema debe permitir a los usuarios registrarse y autenticarse para poder almacenar de forma persistente sus recetas y menús entre sesiones. La aplicación debe implementar diferentes roles de usuario que proporcionen niveles de acceso diferenciados: usuarios no autenticados (acceso limitado a funcionalidades básicas), usuarios autenticados (acceso completo a funcionalidades personales) y administradores (capacidades de gestión y mantenimiento del sistema).
+
+\paragraph*{Introducción de recetas:}
+Los usuarios deben poder crear, editar y gestionar sus propias recetas de forma intuitiva. Esta funcionalidad incluye el almacenamiento estructurado de recetas, su clasificación mediante categorías y etiquetas, y la implementación de técnicas eficientes para introducir ingredientes individuales con sus respectivas cantidades y unidades de medida.
+
+\paragraph*{Planificación de menús:}
+El sistema debe facilitar la asignación de recetas a diferentes comidas (desayuno, almuerzo, cena, etc.) a lo largo de la semana, permitiendo al usuario generar menús completos y balanceados. Esta funcionalidad debe incluir herramientas de visualización y edición que simplifiquen la organización temporal de las comidas.
+
+\paragraph*{Consulta de valores nutricionales:}
+La aplicación debe proporcionar información nutricional detallada tanto de ingredientes individuales como de recetas completas, así como los valores agregados de un menú semanal completo. Esta funcionalidad es fundamental para que los usuarios puedan tomar decisiones informadas sobre su alimentación.
+
+\paragraph*{Generación de listas de la compra:}
+A partir de un menú semanal planificado, el sistema debe generar automáticamente una lista de la compra completa y optimizada, agrupando ingredientes similares y calculando las cantidades totales necesarias para facilitar la organización de las compras.
+
+\subsubsection*{Objetivos no funcionales}
+\addcontentsline{toc}{subsubsection}{Objetivos no funcionales}
+
+Los objetivos no funcionales establecen los criterios de calidad, rendimiento y operación que debe cumplir Muncher para garantizar una experiencia de usuario satisfactoria y un funcionamiento robusto del sistema:
+
+\paragraph{Utilización en diferentes dispositivos:}
+La aplicación debe ser completamente accesible y funcional desde una amplia variedad de dispositivos, incluyendo ordenadores de escritorio, tablets, teléfonos móviles y otros dispositivos con capacidades web. El diseño debe ser responsive y adaptarse automáticamente a diferentes tamaños de pantalla y métodos de interacción, garantizando una experiencia de usuario consistente independientemente del dispositivo utilizado.
+
+\paragraph{Utilización de herramientas de inteligencia artificial:}
+El sistema debe integrar tecnologías de IA para facilitar y automatizar la introducción de datos por parte de los usuarios. Esto incluye capacidades de análisis de imágenes para reconocer ingredientes y recetas, procesamiento de texto natural para extraer información de recetas escritas, y otras técnicas de automatización que reduzcan la fricción en el proceso de entrada de datos.
+
+\paragraph{Automatización de los controles de calidad:}
+El desarrollo debe implementar procesos automatizados que verifiquen la calidad del código, su rendimiento y su correcto funcionamiento con cada modificación realizada. Esto incluye el uso de correctores automáticos de ortografía, analizadores de vulnerabilidades de seguridad, herramientas de análisis de calidad del código y baterías de tests automatizados que validen la funcionalidad del sistema.
+
+\paragraph{Automatización del despliegue:}
+Cada cambio que supere satisfactoriamente los controles de calidad establecidos debe desplegarse automáticamente al entorno de nube. Este proceso de integración y despliegue continuo debe ser transparente y garantizar que las nuevas funcionalidades lleguen a los usuarios de forma rápida y fiable.
+
+\paragraph{Monitorización:}
+El sistema debe proporcionar visibilidad completa sobre el estado de la aplicación en tiempo real, incluyendo métricas de disponibilidad, tiempos de respuesta, número de usuarios activos y otras métricas operacionales relevantes. Esta información debe estar disponible para detectar y resolver problemas de forma proactiva.
+
+\paragraph{Seguridad:}
+La aplicación debe implementar mecanismos robustos de verificación de identidad y control de acceso, garantizando que solo los usuarios autorizados puedan acceder a sus datos privados. La infraestructura en la nube debe cumplir con estándares de seguridad apropiados, y el código debe estar libre de vulnerabilidades críticas conocidas.
+
+\paragraph{Rendimiento:}
+Las interacciones de los usuarios deben recibir respuestas inmediatas y fluidas, minimizando los tiempos de espera y optimizando la latencia en el transporte de datos. El sistema debe estar diseñado para mantener un rendimiento óptimo incluso bajo cargas de trabajo elevadas.
+
+\paragraph{Usabilidad:}
+La interfaz de usuario debe ser intuitiva, clara y fácil de utilizar, siguiendo principios de diseño UX/UI que permitan a usuarios con diferentes niveles de experiencia tecnológica navegar y utilizar la aplicación de forma eficiente. El diseño debe minimizar la curva de aprendizaje y proporcionar feedback claro sobre las acciones realizadas, garantizando una experiencia de usuario satisfactoria desde el primer uso.
