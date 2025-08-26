@@ -1,32 +1,53 @@
 #!/bin/bash
-set -euo pipefail
+set -uo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$SCRIPT_DIR"
 
+# Colors
+if [[ -t 1 ]]; then
+  RED='\033[0;31m'
+  GREEN='\033[0;32m'
+  YELLOW='\033[0;33m'
+  BLUE='\033[0;34m'
+  CYAN='\033[0;36m'
+  RESET='\033[0m'
+else
+  RED=''
+  GREEN=''
+  YELLOW=''
+  BLUE=''
+  CYAN=''
+  RESET=''
+fi
+
 build() {
-  ./make-memoria.sh
+  if ./make-memoria.sh; then
+    echo -e "${GREEN}[watch] Build succeeded${RESET}"
+  else
+    echo -e "${RED}[watch] Build failed (non-interactive). Waiting for next change...${RESET}"
+  fi
 }
 
-echo "[watch] Performing initial build..."
-./make-memoria.sh
+echo -e "${BLUE}[watch] Performing initial build...${RESET}"
+build
 
-echo "[watch] Watching 'src' for changes. Press Ctrl-C to stop."
+echo -e "${CYAN}[watch] Watching 'src' for changes. Press Ctrl-C to stop.${RESET}"
 
 if command -v entr >/dev/null 2>&1; then
   # Use entr (fast and simple)
   while true; do
-    find src -type f | entr -d -r bash -c 'echo "[watch] Change detected at '"$(date +"%H:%M:%S")"'"; ./make-memoria.sh'
+    find src -type f | entr -d -r bash -c 'echo -e "\033[0;33m[watch] Change detected at '"$(date +"%H:%M:%S")"'\033[0m"; ./make-memoria.sh || true'
   done
 elif command -v fswatch >/dev/null 2>&1; then
   # Use fswatch (macOS-friendly)
   fswatch -o -r src | while read -r; do
-    echo "[watch] Change detected at $(date +"%H:%M:%S")"
-    ./make-memoria.sh
+    echo -e "${YELLOW}[watch] Change detected at $(date +"%H:%M:%S")${RESET}"
+    ./make-memoria.sh || true
   done
 else
   # Fallback: lightweight polling using file mtimes
-  echo "[watch] Neither 'entr' nor 'fswatch' found; falling back to polling."
+  echo -e "${YELLOW}[watch] Neither 'entr' nor 'fswatch' found; falling back to polling.${RESET}"
 
   compute_signature() {
     local listing
@@ -48,8 +69,8 @@ else
   while true; do
     curr_sig="$(compute_signature)"
     if [[ "$curr_sig" != "$prev_sig" ]]; then
-      echo "[watch] Change detected at $(date +"%H:%M:%S")"
-      ./make-memoria.sh
+      echo -e "${YELLOW}[watch] Change detected at $(date +"%H:%M:%S")${RESET}"
+      ./make-memoria.sh || true
       prev_sig="$curr_sig"
     fi
     sleep 1
