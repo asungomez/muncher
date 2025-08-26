@@ -1,4 +1,8 @@
 \documentclass{article}
+% Encoding and hyphenation
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish,english]{babel}
 \usepackage{graphicx}
 \usepackage{hyperref}
 \graphicspath{{src/img/}{img/}}
@@ -6,6 +10,8 @@
 \def\input@path{{}{src/}}
 \makeatother
 \begin{document}
+% Avoid duplicate page anchors on title/first pages
+\hypersetup{pageanchor=false}
 
 \begin{titlepage}
 \centering
@@ -33,6 +39,10 @@
 
 {\large Curso 2025-2026\par}
 \end{titlepage}
+\clearpage
+\pagenumbering{arabic}
+\setcounter{page}{1}
+\hypersetup{pageanchor=true}
 
 \section*{Resumen}
 \addcontentsline{toc}{section}{Resumen}
@@ -46,11 +56,18 @@ Este proyecto surge de la necesidad de unificar todas esas herramientas en una �
 
 \section*{Abstract}
 \addcontentsline{toc}{section}{Abstract}
+\begingroup
+\selectlanguage{english}
+% Disable hyphenation only for the English abstract
+\hyphenpenalty=10000\exhyphenpenalty=10000\emergencystretch=2em
 Accessing nutritional information and adopting balanced diets is an everyday challenge for many people. Maintaining a varied and healthy diet, while also considering local and seasonal ingredients, involves managing various factors: the nutritional value of each food, menu planning, and generating appropriate shopping lists. The complexity of coordinating all these aspects often results in poorly organized eating habits that are less healthy than intended.
 
 On the other hand, we now have a multitude of technological resources that can help in this process. There are food databases with detailed information, tools for digitizing products using barcode readers, and a wide range of recipes available online. Recent advances in artificial intelligence also enable efficient and personalized processing and analysis of information.
 
 This project was created out of the need to unify all these tools in a single platform that simplifies nutritional management and daily kitchen organization. The approach consists of integrating recipe import capabilities, nutritional analysis, menu planning, and shopping list automation—leveraging existing data sources and technologies like artificial intelligence—into an application that is easily accessible for both individual users and nutrition professionals.
+\par
+\endgroup
+\selectlanguage{spanish}
 
 \newpage
 \renewcommand{\contentsname}{Índice}
