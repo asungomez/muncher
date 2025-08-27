@@ -2,13 +2,14 @@
 % Encoding and hyphenation
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
-\usepackage[spanish,english]{babel}
+\usepackage[spanish,english,shorthands=off]{babel}
 \usepackage{graphicx}
 \usepackage{hyperref}
 \graphicspath{{src/img/}{img/}}
 \makeatletter
 \def\input@path{{}{src/}}
 \makeatother
+\input{macros.tex}
 \begin{document}
 % Avoid duplicate page anchors on title/first pages
 \hypersetup{pageanchor=false}

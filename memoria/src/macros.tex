@@ -1,0 +1,19 @@
+% Requirement: ID, description, priority (MoSCoW)
+\newcommand{\req}[3]{%
+{\small
+\noindent\begin{tabular}{@{}p{5.0cm}p{\dimexpr\linewidth-5.0cm-2\tabcolsep\relax}@{}}
+\textbf{Identificador:} & \texttt{#1} \\
+\textbf{Descripción:} & #2 \\
+\textbf{Prioridad (MoSCoW):} & #3 \\
+\end{tabular}\par
+}% end small
+\vspace{0.6\baselineskip}%
+}
+
+% Requirement title with clickable anchor identified by its ID
+\newcommand{\reqtitle}[2]{%
+\par\noindent\phantomsection\hypertarget{req:#1}{}\label{req:#1}%
+\textbf{\underline{#2}}\par\vspace{0.3\baselineskip}}
+
+% Reference a requirement by its ID with a clickable link
+\newcommand{\reqref}[1]{\hyperref[req:#1]{\texttt{#1}}}

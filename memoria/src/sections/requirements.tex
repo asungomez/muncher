@@ -9,3 +9,54 @@ Los requerimientos se clasifican tradicionalmente en dos categorías principales
 
 En esta sección se presentan los requerimientos específicos para \textbf{Muncher}, clasificados según su naturaleza y priorizados de acuerdo con su importancia para el éxito del proyecto. Esta especificación detallada servirá como guía para el diseño, implementación y validación del sistema.
 
+\subsection*{Priorización de requerimientos}
+\addcontentsline{toc}{subsection}{Priorización de requerimientos}
+
+La priorización de requerimientos es un proceso fundamental en el desarrollo de software que consiste en ordenar los requerimientos según su importancia relativa para el éxito del proyecto. Como señalan Karlsson y Ryan \cite{Karlsson1997}, "un conocimiento claro e inequívoco sobre las prioridades de los requerimientos ayuda a enfocar el proceso de desarrollo y gestionar los proyectos de manera más efectiva y eficiente".
+
+La importancia de una priorización efectiva radica en que no todos los requerimientos tienen el mismo impacto en el valor del producto final. Una priorización adecuada permite tomar decisiones informadas sobre qué características implementar primero, facilita la gestión de cambios durante el desarrollo y ayuda a establecer una hoja de ruta clara para las entregas del proyecto.
+
+\subsubsection*{Método MoSCoW}
+\addcontentsline{toc}{subsubsection}{Método MoSCoW}
+
+Para la priorización de los requerimientos de Muncher se utilizará el método MoSCoW, una técnica de priorización desarrollada como parte del framework DSDM (Dynamic Systems Development Method) \cite{DSDM2014} que ayuda a comprender y gestionar prioridades de manera efectiva.
+
+Según el DSDM Consortium, en proyectos donde el tiempo es un factor limitante, es vital comprender la importancia relativa del trabajo a realizar para mantener el progreso y cumplir con los plazos establecidos. El método MoSCoW clasifica los requerimientos en cuatro categorías claramente definidas:
+
+\begin{itemize}
+    \item \textbf{Must Have (M):} Los requerimientos Must Have constituyen el Subconjunto Mínimo Utilizable (MUST) que el proyecto garantiza entregar, siendo absolutamente esenciales para que la solución sea viable, legal o segura. La prueba decisiva para identificarlos es preguntarse: "¿Qué sucede si este requerimiento no se cumple?"; si la respuesta implica cancelar el proyecto porque no tendría sentido implementar la solución sin él, entonces es un Must Have, mientras que si existe alguna alternativa (aunque sea manual y laboriosa), pertenece a categorías de menor prioridad.
+    \item \textbf{Should Have (S):} Los requerimientos Should Have se definen como importantes pero no vitales: puede ser doloroso omitirlos, pero la solución sigue siendo viable. Pueden requerir algún tipo de solución alternativa como gestión de expectativas, cierta ineficiencia, una solución existente o trabajo manual, que puede ser temporal. La diferencia clave entre un Should Have y un Could Have radica en el grado de dolor causado por no cumplir el requerimiento, medido en términos de valor de negocio o número de personas afectadas.
+    \item \textbf{Could Have (C):} Los requerimientos Could Have se definen como deseables pero menos importantes, con menor impacto si se omiten comparado con los Should Have. Estos requerimientos proporcionan la principal reserva de contingencia del proyecto, ya que solo se entregarían en su totalidad en el mejor escenario posible. Cuando surge un problema y la fecha límite está en riesgo, los Could Have constituyen la primera opción de elementos a eliminar del marco temporal actual.
+    \item \textbf{Won't Have This Time (W):} Los requerimientos Won't Have This Time son aquellos que el equipo del proyecto ha acordado que no serán entregados como parte de este marco temporal. Se registran en la Lista de Requerimientos Priorizados donde ayudan a clarificar el alcance del proyecto, evitando que sean reintroducidos informalmente en una fecha posterior. Esto ayuda a gestionar las expectativas de que algunos requerimientos simplemente no llegarán a la Solución Desplegada, al menos no en esta ocasión.
+\end{itemize}
+
+
+
+\subsection*{Requerimientos funcionales}
+\addcontentsline{toc}{subsection}{Requerimientos funcionales}
+
+Los requerimientos funcionales especifican las funcionalidades concretas que debe proporcionar el sistema para satisfacer las necesidades identificadas de los usuarios. Estos requerimientos describen las capacidades específicas, comportamientos y servicios que \textbf{Muncher} debe ofrecer, estableciendo qué debe hacer el sistema sin entrar en detalles sobre cómo debe hacerlo.
+
+La especificación detallada de los requerimientos funcionales es fundamental para garantizar que el sistema desarrollado cumpla con las expectativas de los usuarios y proporcione valor real en la resolución de los problemas identificados. Para facilitar su gestión y trazabilidad a lo largo del proyecto, los requerimientos se han organizado en categorías temáticas coherentes con los objetivos funcionales previamente establecidos.
+
+Cada requerimiento funcional ha sido identificado con un código único siguiendo el formato \textbf{RF-XX-YY}, donde \textbf{RF} indica "Requerimiento Funcional", \textbf{XX} indica el tipo de requerimiento funcional y \textbf{YY} corresponde a un número secuencial. Esta codificación permite la trazabilidad completa desde la especificación inicial hasta la implementación, pruebas y validación final, facilitando la gestión de cambios y el seguimiento del progreso del desarrollo.
+
+
+
+\subsubsection*{Gestión de usuarios}
+\addcontentsline{toc}{subsubsection}{Gestión de usuarios}
+
+\reqtitle{RF-GU-01}{Registro de usuarios}
+\req{RF-GU-01}{El sistema permitirá a los usuarios registrarse en la aplicación.}{Must Have}
+
+\reqtitle{RF-GU-02}{Inicio de sesión}
+\req{RF-GU-02}{El sistema permitirá a los usuarios iniciar sesión en la aplicación.}{Must Have}
+
+\reqtitle{RF-GU-03}{Cierre de sesión}
+\req{RF-GU-03}{El sistema permitirá a los usuarios cerrar sesión en la aplicación.}{Must Have}
+
+\reqtitle{RF-GU-04}{Administración de usuarios}
+\req{RF-GU-04}{El sistema permitirá a los usuarios administradores gestionar los usuarios de la aplicación.}{Should Have}
+
+\reqtitle{RF-GU-05}{Eliminación de cuentas de usuario}
+\req{RF-GU-05}{El sistema permitirá a los usuarios administradores eliminar cuentas de usuario.}{Won't Have This Time}
