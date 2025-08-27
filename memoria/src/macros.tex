@@ -12,8 +12,8 @@
 
 % Requirement title with clickable anchor identified by its ID
 \newcommand{\reqtitle}[2]{%
-\par\noindent\phantomsection\hypertarget{req:#1}{}\label{req:#1}%
-\textbf{\underline{#2}}\par\vspace{0.3\baselineskip}}
+\par\vspace{0.8\baselineskip}\noindent\phantomsection\hypertarget{req:#1}{}\label{req:#1}%
+\textbf{#2}\par\vspace{0.3\baselineskip}}
 
 % Reference a requirement by its ID with a clickable link
 \newcommand{\reqref}[1]{\hyperref[req:#1]{\texttt{#1}}}
