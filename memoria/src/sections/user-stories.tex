@@ -9,3 +9,29 @@ Para facilitar la planificación y estimación del esfuerzo de desarrollo, cada 
 
 Cada historia de usuario desarrollada estará explícitamente relacionada con uno o varios requerimientos funcionales o no funcionales identificados previamente, estableciendo una trazabilidad clara entre las necesidades documentadas y su implementación práctica. Esta relación garantiza que cada incremento de funcionalidad contribuya de manera medible al cumplimiento de los objetivos del proyecto.
 
+\subsection*{Configuración inicial}
+\addcontentsline{toc}{subsection}{Configuración inicial}
+
+\us[
+  identificador=US-CI-01,
+  titulo={Creación del repositorio de código},
+  como={Desarrollador},
+  quiero={Controlar las versiones de mi código, compartirlo con otros compañeros y mantener copias de seguridad para mejorar el acceso al mismo},
+  requerimientos={\reqref{RNF-CA-01}, \reqref{RNF-DE-02}},
+  puntos={1},
+  criterios={
+    \begin{itemize}
+      \item El repositorio de código en la nube existe.
+      \item Es accesible por todos los desarrolladores.
+      \item Incluye instrucciones de uso.
+    \end{itemize}
+  },
+  tareas={
+    \begin{itemize}
+      \item Inicialización de Git en un directorio local.
+      \item Creación de un repositorio en Github.
+      \item Configuración de acceso remoto al repositorio de Github desde la máquina local.
+      \item Redacción de las instrucciones de uso en un README.
+    \end{itemize}
+  }
+]
