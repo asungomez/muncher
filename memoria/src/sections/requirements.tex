@@ -37,7 +37,15 @@ Según el DSDM Consortium, en proyectos donde el tiempo es un factor limitante, 
 
 Los requerimientos funcionales especifican las funcionalidades concretas que debe proporcionar el sistema para satisfacer las necesidades identificadas de los usuarios. Estos requerimientos describen las capacidades específicas, comportamientos y servicios que \textbf{Muncher} debe ofrecer, estableciendo qué debe hacer el sistema sin entrar en detalles sobre cómo debe hacerlo.
 
-La especificación detallada de los requerimientos funcionales es fundamental para garantizar que el sistema desarrollado cumpla con las expectativas de los usuarios y proporcione valor real en la resolución de los problemas identificados. Para facilitar su gestión y trazabilidad a lo largo del proyecto, los requerimientos se han organizado en categorías temáticas coherentes con los objetivos funcionales previamente establecidos.
+La especificación detallada de los requerimientos funcionales es fundamental para garantizar que el sistema desarrollado cumpla con las expectativas de los usuarios y proporcione valor real en la resolución de los problemas identificados. Para facilitar su gestión y trazabilidad a lo largo del proyecto, los requerimientos se han organizado en categorías temáticas coherentes con los objetivos funcionales previamente establecidos:
+
+\begin{itemize}
+    \item \textbf{Gestión de usuarios (GU):} Requerimientos relacionados con la gestión de usuarios y su acceso al sistema.
+    \item \textbf{Introducción de recetas (IR):} Requerimientos relacionados con la introducción de recetas en el sistema.
+    \item \textbf{Planificación de menús (PM):} Requerimientos relacionados con la planificación de menús.
+    \item \textbf{Consulta de valores nutricionales (VN):} Requerimientos relacionados con la consulta de valores nutricionales.
+    \item \textbf{Gestión de listas de la compra (LC):} Requerimientos relacionados con la gestión de listas de la compra.
+\end{itemize}
 
 Cada requerimiento funcional ha sido identificado con un código único siguiendo el formato \textbf{RF-XX-YY}, donde \textbf{RF} indica "Requerimiento Funcional", \textbf{XX} indica el tipo de requerimiento funcional y \textbf{YY} corresponde a un número secuencial. Esta codificación permite la trazabilidad completa desde la especificación inicial hasta la implementación, pruebas y validación final, facilitando la gestión de cambios y el seguimiento del progreso del desarrollo.
 
@@ -147,3 +155,131 @@ Cada requerimiento funcional ha sido identificado con un código único siguiend
 
 \reqtitle{RF-LC-06}{Progreso de listas de la compra}
 \req{RF-LC-06}{El sistema permitirá a los usuarios marcar los ingredientes ya disponibles o comprados en la lista de la compra a medida que se van comprando.}{Should Have}
+
+\subsection*{Requerimientos no funcionales}
+\addcontentsline{toc}{subsection}{Requerimientos no funcionales}
+
+Los requerimientos no funcionales especifican las cualidades y restricciones que debe cumplir el sistema en términos de rendimiento, usabilidad, seguridad y otros atributos de calidad. A diferencia de los requerimientos funcionales, que describen qué debe hacer el sistema, los requerimientos no funcionales establecen cómo debe comportarse y bajo qué condiciones debe operar para proporcionar una experiencia satisfactoria a los usuarios.
+
+Estos requerimientos son fundamentales para el éxito del proyecto, ya que determinan aspectos críticos como la facilidad de uso, la confiabilidad, la seguridad y el rendimiento del sistema. Su correcta especificación y cumplimiento puede marcar la diferencia entre una aplicación técnicamente funcional y una verdaderamente exitosa en el mercado.
+
+Para facilitar su organización y trazabilidad, los requerimientos no funcionales se han estructurado en las siguientes categorías, alineadas con los objetivos no funcionales previamente establecidos:
+
+\begin{itemize}
+    \item \textbf{Compatibilidad (CO):} Requerimientos relacionados con la utilización en diferentes dispositivos.
+    \item \textbf{Inteligencia Artificial (IA):} Requerimientos sobre la integración de herramientas de IA.
+    \item \textbf{Calidad (CA):} Requerimientos de automatización de controles de calidad.
+    \item \textbf{Despliegue (DE):} Requerimientos de automatización del despliegue.
+    \item \textbf{Monitorización (MO):} Requerimientos de seguimiento del estado del sistema.
+    \item \textbf{Seguridad (SE):} Requerimientos de protección y control de acceso.
+    \item \textbf{Rendimiento (RE):} Requerimientos de velocidad y eficiencia.
+    \item \textbf{Usabilidad (US):} Requerimientos de facilidad de uso y experiencia de usuario.
+\end{itemize}
+
+Cada requerimiento no funcional ha sido identificado con un código único siguiendo el formato \textbf{RNF-XX-YY}, donde RNF indica "Requerimiento No Funcional", XX corresponde al código de categoría y YY a un número secuencial dentro de esa categoría.
+
+\subsubsection*{Compatibilidad}
+\addcontentsline{toc}{subsubsection}{Compatibilidad}
+
+\reqtitle{RNF-CO-01}{Tecnologías web}
+\req{RNF-CO-01}{El sistema utilizará tecnologías web estándar, que facilitarán su acceso desde cualquier dispositivo con navegación web.}{Must Have}
+
+\reqtitle{RNF-CO-02}{Responsividad}
+\req{RNF-CO-02}{El sistema será responsivo, adaptándose a diferentes tamaños de pantalla y resoluciones.}{Must Have}
+
+\subsubsection*{Inteligencia Artificial}
+\addcontentsline{toc}{subsubsection}{Inteligencia Artificial}
+
+\reqtitle{RNF-IA-01}{Introducción automática de datos}
+\req{RNF-IA-01}{El sistema utilizará tecnologías de IA para introducir datos de forma automática a partir de imágenes o texto en lenguaje natural.}{Must Have}
+
+\reqtitle{RNF-IA-02}{Generación automática de sugerencias}
+\req{RNF-IA-02}{El sistema utilizará tecnologías de IA para generar sugerencias de recetas, menús, ingredientes, etc.}{Could Have}
+
+\subsubsection*{Calidad}
+\addcontentsline{toc}{subsubsection}{Calidad}
+
+\reqtitle{RNF-CA-01}{Integración continua}
+\req{RNF-CA-01}{El sistema tendrá integración continua, para validar la correcta funcionalidad del mismo.}{Must Have}
+
+\reqtitle{RNF-CA-02}{Control de calidad de código}
+\req{RNF-CA-02}{El sistema tendrá un control de calidad de formato y buenas prácticas de código fuente, que se usará para validar los cambios antes de que se integren en el repositorio.}{Must Have}
+
+\reqtitle{RNF-CA-03}{Control de calidad de funcionalidad}
+\req{RNF-CA-03}{El sistema tendrá un control de calidad de funcionalidad, que se usará para validar que el sistema cumple con los requerimientos funcionales.}{Must Have}
+
+\reqtitle{RNF-CA-04}{Análisis de gramática y ortografía}
+\req{RNF-CA-04}{El sistema tendrá un análisis de gramática y ortografía, que se usará para validar que el texto introducido es correcto.}{Should Have}
+
+\subsubsection*{Despliegue}
+\addcontentsline{toc}{subsubsection}{Despliegue}
+
+\reqtitle{RNF-DE-01}{Despliegue en la nube}
+\req{RNF-DE-01}{El sistema se desplegará en la nube, para poder acceder a él desde cualquier dispositivo con acceso a internet.}{Must Have}
+
+\reqtitle{RNF-DE-02}{Despliegue continuo}
+\req{RNF-DE-02}{Cada nuevo cambio en el código fuente se desplegará a la nube de forma automática.}{Must Have}
+
+\reqtitle{RNF-DE-03}{Separación de entornos}
+\req{RNF-DE-03}{Existirán dos entornos de nube diferentes: uno para desarrollo y otro para producción.}{Could Have}
+
+\reqtitle{RNF-DE-04}{Entorno local}
+\req{RNF-DE-04}{El proyecto incluirá mecanismos e instrucciones para levantar localmente un entorno idéntico a la nube que el desarrollador pueda usar para probar el sistema antes de enviar sus cambios en el código.}{Must Have}
+
+\subsubsection*{Monitorización}
+\addcontentsline{toc}{subsubsection}{Monitorización}
+
+\reqtitle{RNF-MO-01}{Monitorización de errores}
+\req{RNF-MO-01}{El sistema tendrá un sistema de monitorización de errores, para poder detectar y solucionar los errores que se produzcan.}{Must Have}
+
+\reqtitle{RNF-MO-02}{Alertas ante errores}
+\req{RNF-MO-02}{El sistema tendrá un sistema de alertas ante errores, para poder notificar a los desarrolladores cuando se produzcan errores.}{Should Have}
+
+\reqtitle{RNF-MO-03}{Monitorización de rendimiento}
+\req{RNF-MO-03}{El sistema tendrá un sistema de monitorización de rendimiento, para poder detectar y solucionar los problemas de rendimiento que se produzcan. Incluirá trazas que informen, para cada operación, del tiempo invertido en ella.}{Could Have}
+
+\reqtitle{RNF-MO-04}{Monitorización de tráfico}
+\req{RNF-MO-04}{El sistema tendrá un sistema de monitorización de tráfico, para conocer en todo momento el número de usuarios que están usando el sistema.}{Could Have}
+
+\subsubsection*{Seguridad}
+\addcontentsline{toc}{subsubsection}{Seguridad}
+
+\reqtitle{RNF-SE-01}{JSON Web Tokens}
+\req{RNF-SE-01}{El sistema utilizará JSON web tokens para verficar la identidad de los usuarios.}{Must Have}
+
+\reqtitle{RNF-SE-02}{Encriptación}
+\req{RNF-SE-02}{El sistema encriptará las credenciales del usuario antes de almacenarlas entre sesiones.}{Must Have}
+
+\reqtitle{RNF-SE-03}{Almacenamiento seguro de secretos}
+\req{RNF-SE-03}{Los datos sensibles del sistema, como las claves de acceso a la nube o la contraseña de la base de datos, se almacenarán de forma segura.}{Must Have}
+
+\reqtitle{RNF-SE-04}{Monitorización de vulnerabilidades}
+\req{RNF-SE-04}{El sistema tendrá un sistema de monitorización de vulnerabilidades, para poder detectar y solucionar las vulnerabilidades que se produzcan.}{Should Have}
+
+\subsubsection*{Rendimiento}
+\addcontentsline{toc}{subsubsection}{Rendimiento}
+
+\reqtitle{RNF-RE-01}{Uso de SPA}
+\req{RNF-RE-01}{La interfaz de usuario se implementará como una SPA (Single Page Application), para asegurar que el feedback a las interacciones es inmediato.}{Must Have}
+
+\reqtitle{RNF-RE-02}{Caché de datos en el front-end}
+\req{RNF-RE-02}{El front-end del sistema tendrá una caché interna de los datos recibidos del back-end, para ahorrar tiempo en llamadas sucesivas.}{Must Have}
+
+\reqtitle{RNF-RE-03}{Servicio de índice de datos}
+\req{RNF-RE-03}{El sistema tendrá un servicio de índice de datos sobre la base de datos, para optimizar el tiempo de consultas.}{Should Have}
+
+\reqtitle{RNF-RE-04}{Red de distribución de contenido}
+\req{RNF-RE-04}{Los ficheros estáticos de la aplicación, como imágenes o vídeos, se distribuirán mediante una CDN (Content Delivery Network), para reducir la latencia de las peticiones.}{Could Have}
+
+\subsubsection*{Usabilidad}
+\addcontentsline{toc}{subsubsection}{Usabilidad}
+
+\reqtitle{RNF-US-01}{Diseño minimalista}
+\req{RNF-US-01}{El sistema tendrá un diseño minimalista, para que se pueda usar sin necesidad de instrucciones.}{Must Have}
+
+\reqtitle{RNF-US-02}{Validación de formularios}
+\req{RNF-US-02}{Los formularios incluirán validación en tiempo real con mensajes de error claros y específico.}{Should Have}
+
+\reqtitle{RNF-US-03}{Legibilidad}
+\req{RNF-US-03}{Los textos tendrán suficiente contraste de color para garantizar la legibilidad
+.}{Must Have}
