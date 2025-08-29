@@ -60,3 +60,31 @@ Cada historia de usuario desarrollada estará explícitamente relacionada con un
     \end{itemize}
   }
 ]
+
+\us[
+  identificador=US-CI-03,
+  titulo={Controles de calidad con ESLint y Prettier},
+  como={Desarrollador},
+  quiero={Asegurar la calidad del código y mantener un estilo de codificación consistente},
+  requerimientos={\reqref{RNF-CA-01}, \reqref{RNF-CA-02}},
+  puntos={3},
+  criterios={
+    \begin{itemize}
+      \item Existe una Github Action que ejecuta ESLint y Prettier sobre el código fuente.
+      \item El repositorio sólo permite cambios en la rama main mediante Pull Request.
+      \item La Github Action se ejecuta automáticamente cuando se crea un Pull Request.
+      \item La Pull Request no se puede fusionar hasta que la Github Action haya finalizado correctamente.
+      \item Existen comandos documentados para ejecutar ESLint y Prettier sobre el código fuente en local.
+    \end{itemize}
+  },
+  tareas={
+    \begin{itemize}
+      \item Instalación de ESLint y Prettier en el proyecto.
+      \item Configuración de ESLint y Prettier.
+      \item Configuración de Github Actions para ejecutar ESLint y Prettier.
+      \item Documentación de los comandos para ejecutar ESLint y Prettier en local.
+      \item Configuración del repositorio de Github para que sólo se permitan cambios en la rama main mediante Pull Request.
+      \item Configuración del repositorio para hacer la Github Action obligatoria para fusionar un Pull Request.
+    \end{itemize}
+  }
+]
