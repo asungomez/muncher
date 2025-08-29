@@ -1,0 +1,49 @@
+\section*{Evolución del proyecto}
+\addcontentsline{toc}{section}{Evolución del proyecto}
+
+Esta sección tiene como propósito documentar de manera detallada el progreso seguido por el proyecto \textbf{Muncher} desde su concepción inicial hasta su finalización. Constituye una guía cronológica que permite comprender cómo han evolucionado las funcionalidades del sistema, qué decisiones técnicas se han tomado en cada momento y cómo se han ido cumpliendo progresivamente los objetivos establecidos. Esta documentación proporciona una visión completa del proceso de desarrollo iterativo e incremental seguido, mostrando tanto los logros alcanzados como los aprendizajes obtenidos en cada fase.
+
+El desarrollo de \textbf{Muncher} ha seguido una metodología ágil basada en sprints, que según Schwaber y Sutherland \cite{Schwaber2020} constituyen "el latido del corazón de Scrum, donde las ideas se convierten en valor". Los sprints son eventos de duración fija de un mes o menos que crean consistencia, donde un nuevo sprint comienza inmediatamente después de la conclusión del anterior.
+
+Los sprints permiten predictibilidad al asegurar inspección y adaptación del progreso hacia un objetivo de producto al menos cada mes calendario. Como explican los autores, cuando el horizonte de un sprint es demasiado largo, el objetivo del sprint puede volverse inválido, la complejidad puede aumentar y el riesgo puede incrementarse. Los sprints más cortos pueden emplearse para generar más ciclos de aprendizaje y limitar el riesgo de coste y esfuerzo a un marco temporal más pequeño, pudiendo cada sprint considerarse como un proyecto corto. En el desarrollo de \textbf{Muncher}, un sprint tendrá una duración de dos semanas.
+
+Durante cada sprint se mantienen principios fundamentales: no se realizan cambios que pongan en peligro el objetivo del sprint, la calidad no disminuye, las prioridades posteriores se ajustan según sea necesario, y el alcance puede clarificarse y renegociarse conforme se aprende más. Esta metodología, alineada con los principios del Manifiesto Ágil de Beck et al. \cite{Beck2001}, ha permitido un desarrollo iterativo e incremental que facilita la adaptación a nuevos requerimientos y cambios en las prioridades.
+
+Para cada sprint se ha establecido una capacidad de \textbf{10 puntos de historia}, basada en la disponibilidad de tiempo y recursos del proyecto. Esta capacidad fija permite una planificación predecible y facilita el seguimiento del progreso a lo largo de las diferentes iteraciones.
+
+Cada sprint documentado en esta sección seguirá una estructura consistente que incluye:
+
+\begin{itemize}
+    \item \textbf{Objetivos iniciales:} Definición clara de las metas específicas establecidas para el sprint, alineadas con las prioridades del proyecto y los requerimientos identificados.
+    \item \textbf{Historias de usuario completadas:} Detalle de las historias de usuario implementadas durante el sprint, referenciadas por su identificador (ver \hyperref[sec:anexo-historias-usuario]{Anexo I: Historias de usuario}).
+    \item \textbf{Retrospectiva:} Análisis de los resultados obtenidos, lecciones aprendidas, dificultades encontradas y su impacto en las planificaciones futuras del proyecto.
+\end{itemize}
+
+\subsection*{Sprint 1: Configuración del repositorio}
+\addcontentsline{toc}{subsection}{Sprint 1: Configuración del repositorio}
+
+El primer sprint se enfoca en establecer los cimientos técnicos del proyecto \textbf{Muncher} mediante la creación de un repositorio en GitHub, la configuración de un proyecto base utilizando Vite y React, y la implementación de controles de calidad automatizados a través de GitHub Actions con Prettier y ESLint.
+
+La incorporación de estas herramientas de calidad desde las etapas más tempranas del desarrollo es fundamental para el éxito del proyecto. Como establece el principio de que "la prevención es más efectiva que la corrección", implementar controles de formato de código y análisis estático cuando la base de código es mínima permite establecer estándares consistentes desde el inicio. Esto reduce significativamente la deuda técnica futura, ya que cuanto menos código fuente existe, menor es la superficie de potenciales errores que podrían requerir corrección posteriormente, y más sencillo resulta mantener la consistencia y calidad del código a medida que el proyecto crece.
+
+\subsubsection*{Objetivos iniciales}
+
+\begin{itemize}
+    \item Configuración del repositorio en GitHub.
+    \item Creación de un proyecto base utilizando Vite y React.
+    \item Implementación de controles de calidad automatizados a través de GitHub Actions con Prettier y ESLint.
+\end{itemize}
+
+\subsubsection*{Historias de usuario completadas}
+
+
+\begin{center}
+\begin{tabular}{|l|l|c|}
+\hline
+\textbf{Identificador} & \textbf{Nombre} & \textbf{Puntos de historia} \\
+\hline
+\usref{US-CI-01} & Creación del repositorio de código & 1 \\
+\hline
+\end{tabular}
+\end{center}
+
