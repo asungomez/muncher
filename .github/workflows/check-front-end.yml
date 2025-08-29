@@ -9,6 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       frontend: ${{ steps.filter.outputs.frontend }}
+      workflow: ${{ steps.filter.outputs.workflow }}
     steps:
       - uses: actions/checkout@v4
       - id: filter
@@ -17,10 +18,12 @@ jobs:
           filters: |
             frontend:
               - 'front-end/**'
+            workflow:
+              - '.github/workflows/check-front-end.yml'
 
   verify:
     needs: changes
-    if: needs.changes.outputs.frontend == 'true'
+    if: needs.changes.outputs.frontend == 'true' || needs.changes.outputs.workflow == 'true'
     runs-on: ubuntu-latest
     defaults:
       run:
