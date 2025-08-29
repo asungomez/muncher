@@ -1,5 +1,15 @@
 # Muncher
 
+## Tabla de contenidos
+
+- [Propósito](#propósito)
+- [Infraestructura](#infraestructura)
+- [Memoria](#memoria)
+  - [Prerrequisitos](#prerrequisitos)
+  - [Generar la memoria](#generar-la-memoria)
+- [Front-end](#front-end)
+  - [Ejecutar la aplicación como un proceso Node.js](#ejecutar-la-aplicación-como-un-proceso-nodejs)
+
 ## Propósito
 
 Muncher es una aplicación web pensada para facilitar la gestión integral de recetas de cocina. Permite crear nuevas recetas, importarlas desde diferentes formatos, conocer sus valores nutricionales, planificar menús y generar listas de la compra de forma automática. El objetivo principal es ofrecer una herramienta divertida y sencilla para organizar la cocina diaria y mejorar la experiencia alimentaria de los usuarios.

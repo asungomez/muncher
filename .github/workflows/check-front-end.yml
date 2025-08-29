@@ -1,0 +1,35 @@
+name: Verify front-end
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'front-end/**'
+      - '.github/workflows/check-front-end.yml'
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: front-end
+    steps:
+      - uses: actions/checkout@v4
+      - name: Enable Corepack and Yarn 4
+        run: |
+          corepack enable
+          corepack prepare yarn@4.5.0 --activate
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'yarn'
+          cache-dependency-path: 'front-end/yarn.lock'
+      - name: Install dependencies
+        run: yarn install --immutable
+      - name: Build the application
+        run: yarn build
+      - name: Check with ESLint
+        run: yarn lint:ci
+      - name: Check with Prettier
+        run: yarn format:ci
