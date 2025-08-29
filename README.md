@@ -9,6 +9,7 @@
   - [Generar la memoria](#generar-la-memoria)
 - [Front-end](#front-end)
   - [Ejecutar la aplicación como un proceso Node.js](#ejecutar-la-aplicación-como-un-proceso-nodejs)
+  - [Verificar la aplicación](#verificar-la-aplicación)
 
 ## Propósito
 
