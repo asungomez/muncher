@@ -70,3 +70,19 @@ yarn dev
 ```
 
 La aplicación estará disponible en `http://localhost:5173`.
+
+### Verificar la aplicación
+
+Los controles automáticos de calidad se ejecutan en cada Pull Request. Para ejecutarlos localmente, se puede usar el siguiente comando:
+
+```
+yarn lint:ci
+yarn format:ci
+```
+
+Si alguno de los controles falla, existen comandos para corregir los errores automáticamente:
+
+```
+yarn lint
+yarn format
+```
