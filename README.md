@@ -16,7 +16,7 @@ La aplicación está desarrollada con la siguiente arquitectura tecnológica:
 
 ## Memoria
 
-### Prerequisitos
+### Prerrequisitos
 
 - LaTex
 
@@ -37,3 +37,26 @@ Para actualizar el documento en vivo cuando se ejecuta el código, se puede usar
 cd memoria
 ./watch-memoria.sh
 ```
+
+## Front-end
+
+### Ejecutar la aplicación como un proceso Node.js
+
+Prerrequisitos:
+
+- Node.js 24
+- Yarn
+
+Instalación de dependencias:
+
+```
+yarn install
+```
+
+Ejecución:
+
+```
+yarn dev
+```
+
+La aplicación estará disponible en `http://localhost:5173`.
