@@ -1,0 +1,91 @@
+% Descripción de un requerimiento
+% Ejemplo de uso:
+% \req[
+%   identificador=RNF-RE-04,
+%   titulo={Red de distribución de contenido},
+%   descripcion={Los ficheros estáticos...},
+%   prioridad=Could Have
+% ]
+\ExplSyntaxOn
+\keys_define:nn { req }
+  {
+    identificador .tl_set:N = \l__req_id_tl,
+    titulo .tl_set:N = \l__req_title_tl,
+    descripcion .tl_set:N = \l__req_description_tl,
+    prioridad .tl_set:N = \l__req_priority_tl
+  }
+\NewDocumentCommand{\req}{ O{} }
+  {
+    \keys_set:nn { req } { #1 }
+    {\small
+    \par\vspace{0.8\baselineskip}\noindent\phantomsection\hypertarget{req:\l__req_id_tl}{}\label{req:\l__req_id_tl}%
+    \textbf{\l__req_title_tl}\par\vspace{0.3\baselineskip}%
+    \noindent\begin{tabular}{@{}>{\bfseries\RaggedRight\arraybackslash}p{4.0cm}p{\dimexpr\linewidth-4.0cm-2\tabcolsep\relax}@{}}
+    \arrayrulecolor{lightgray}
+    Identificador: & \texttt{\l__req_id_tl} \\
+    \hline
+    Descripción: & {\l__req_description_tl} \\
+    \hline
+    Prioridad~(MoSCoW): & {\l__req_priority_tl} \\
+    \end{tabular}\par
+    }% end small
+    \vspace{0.6\baselineskip}%
+  }
+\ExplSyntaxOff
+
+% Referencia a un requerimiento por su identificador con un enlace clicable
+% Ejemplo de uso: \reqref{RNF-SE-01}
+\newcommand{\reqref}[1]{\hyperref[req:#1]{\texttt{#1}}}
+
+% Historia de usuario: identificador, título, rol (como), objetivo (quiero), puntos, criterios, tareas
+% Ejemplo de uso:
+% \us[
+%   identificador=US-XX-YY,
+%   titulo={Mi historia},
+%   como={Rol},
+%   quiero={Objetivo},
+%   puntos={3},
+%   criterios={...},
+%   tareas={...}
+% ]
+\ExplSyntaxOn
+\keys_define:nn { us }
+  {
+    identificador .tl_set:N = \l__us_id_tl,
+    titulo .tl_set:N = \l__us_title_tl,
+    como .tl_set:N = \l__us_role_tl,
+    quiero .tl_set:N = \l__us_goal_tl,
+    requerimientos .tl_set:N = \l__us_requirements_tl,
+    puntos .tl_set:N = \l__us_points_tl,
+    criterios .tl_set:N = \l__us_acceptance_tl,
+    tareas .tl_set:N = \l__us_tasks_tl
+  }
+\NewDocumentCommand{\us}{ O{} }
+  {
+    \keys_set:nn { us } { #1 }
+    \par\vspace{0.8\baselineskip}\noindent\phantomsection\hypertarget{us:\l__us_id_tl}{}\label{us:\l__us_id_tl}%
+    \textbf{\l__us_title_tl}\par\vspace{0.3\baselineskip}%
+    \noindent\begin{tabular}{@{}>{\bfseries\RaggedRight\arraybackslash}p{4.0cm}p{\dimexpr\linewidth-4.0cm-2\tabcolsep\relax}@{}}
+    \arrayrulecolor{lightgray}
+    Identificador: & \texttt{\l__us_id_tl} \\
+    \hline
+    Como: & {\l__us_role_tl} \\
+    \hline
+    Quiero: & {\l__us_goal_tl} \\
+    \hline
+    Requerimientos: & {\l__us_requirements_tl} \\
+    \hline
+    Puntos~de~historia: & {\l__us_points_tl} \\
+    \hline
+    Criterios~de~aceptación: & {\l__us_acceptance_tl} \\
+    \hline
+    Tareas: & {\l__us_tasks_tl} \\
+    \end{tabular}\par
+  }
+\ExplSyntaxOff
+
+
+% Referencia a una historia de usuario por su identificador con un enlace clicable
+% Ejemplo de uso: \usref{US-XX-YY}
+\newcommand{\usref}[1]{\hyperref[us:#1]{\texttt{#1}}}
+

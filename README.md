@@ -16,6 +16,12 @@ La aplicación está desarrollada con la siguiente arquitectura tecnológica:
 
 ## Memoria
 
+### Prerequisitos
+
+- LaTex
+
+### Generar la memoria
+
 La memoria del proyecto se encuentra en la carpeta `memoria`. Para generar el PDF, ejecuta el script `make_memoria.sh`.
 
 ```

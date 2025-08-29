@@ -1,0 +1,39 @@
+\section*{Anexo I: Historias de usuario}
+\phantomsection
+\addcontentsline{toc}{section}{Anexo I: Historias de usuario}
+\label{sec:anexo-historias-usuario}
+
+Las historias de usuario constituyen una técnica fundamental en el desarrollo ágil de software para capturar requerimientos desde la perspectiva del usuario final. Según Cohn \cite{Cohn2004}, "una historia de usuario describe funcionalidad que será valiosa para un usuario o cliente de un sistema o software", y están compuestas por tres aspectos: una descripción escrita utilizada para planificación y como recordatorio, conversaciones sobre la historia que ayudan a elaborar los detalles, y pruebas que pueden usarse para determinar cuándo una historia está completa1. Estas historias sirven como herramienta para alcanzar tanto requerimientos funcionales como no funcionales, funcionando como pasos individuales e incrementales que van acercando el desarrollo hacia el objetivo final del proyecto.
+
+Cada historia de usuario representa una funcionalidad específica que aporta valor al usuario y puede ser implementada de forma independiente en una iteración del proyecto. La asignación de estas historias a las diferentes iteraciones se realizará en función de las prioridades establecidas a los requerimientos con los que se asocian, asegurando que las funcionalidades más críticas se desarrollen en primer lugar.
+
+Para facilitar la planificación y estimación del esfuerzo de desarrollo, cada historia de usuario será valorada utilizando puntos de historia basados en la sucesión de Fibonacci (1, 2, 3, 5, 8). Como explica Cohn \cite{Cohn2005}, los estudios demuestran que somos mejores estimando cosas que caen dentro de un orden de magnitud, y estas secuencias no lineales funcionan bien porque reflejan la mayor incertidumbre asociada con estimaciones para unidades de trabajo más grandes. Los espacios en la secuencia de Fibonacci se vuelven apropiadamente más grandes a medida que los números aumentan, donde cada número debe pensarse como un "cajón" en el que se vierten elementos del tamaño apropiado. Los puntos no representan tiempo directamente, sino una medida relativa de complejidad, esfuerzo y riesgo asociado a cada historia.
+
+Cada historia de usuario desarrollada estará explícitamente relacionada con uno o varios requerimientos funcionales o no funcionales identificados previamente, estableciendo una trazabilidad clara entre las necesidades documentadas y su implementación práctica. Esta relación garantiza que cada incremento de funcionalidad contribuya de manera medible al cumplimiento de los objetivos del proyecto.
+
+\subsection*{Configuración inicial}
+\addcontentsline{toc}{subsection}{Configuración inicial}
+
+\us[
+  identificador=US-CI-01,
+  titulo={Creación del repositorio de código},
+  como={Desarrollador},
+  quiero={Controlar las versiones de mi código, compartirlo con otros compañeros y mantener copias de seguridad para mejorar el acceso al mismo},
+  requerimientos={\reqref{RNF-CA-01}, \reqref{RNF-DE-02}},
+  puntos={1},
+  criterios={
+    \begin{itemize}
+      \item El repositorio de código en la nube existe.
+      \item Es accesible por todos los desarrolladores.
+      \item Incluye instrucciones de uso.
+    \end{itemize}
+  },
+  tareas={
+    \begin{itemize}
+      \item Inicialización de Git en un directorio local.
+      \item Creación de un repositorio en Github.
+      \item Configuración de acceso remoto al repositorio de Github desde la máquina local.
+      \item Redacción de las instrucciones de uso en un README.
+    \end{itemize}
+  }
+]
