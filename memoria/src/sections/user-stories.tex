@@ -44,7 +44,7 @@ Cada historia de usuario desarrollada estará explícitamente relacionada con un
   como={Desarrollador},
   quiero={Ver mi proyecto en funcionamiento para poder verificar que los cambios que realizo tienen el efecto deseado},
   requerimientos={\reqref{RNF-CO-01}, \reqref{RNF-DE-04}, \reqref{RNF-RE-01}},
-  puntos={2},
+  puntos={1},
   criterios={
     \begin{itemize}
       \item Existe una aplicación Vite + React.
@@ -85,6 +85,36 @@ Cada historia de usuario desarrollada estará explícitamente relacionada con un
       \item Documentación de los comandos para ejecutar ESLint y Prettier en local.
       \item Configuración del repositorio de Github para que sólo se permitan cambios en la rama main mediante Pull Request.
       \item Configuración del repositorio para hacer la Github Action obligatoria para fusionar un Pull Request.
+    \end{itemize}
+  }
+]
+
+\us[
+  identificador=US-CI-04,
+  titulo={Corrección automática del código},
+  como={Desarrollador},
+  quiero={Tener correctores automáticos que modifican mi código para adaptarse a los estándares establecidos},
+  requerimientos={\reqref{RNF-CA-02}},
+  puntos={5},
+  criterios={
+    \begin{itemize}
+      \item Existe un pre-commit hook que ejecuta ESLint y Prettier sobre el código fuente, modificando el código fuente para que cumpla con los estándares establecidos.
+      \item El pre-commit hook sólo se ejecuta sobre los archivos que han sido modificados en el commit.
+      \item El pre-commit hook falla si ha tenido que hacer alteraciones en algún archivo.
+      \item El pre-commit hook muestra un informe del resultado de su ejecución.
+      \item Existe documentación clara sobre el uso del pre-commit hook.
+    \end{itemize}
+  },
+  tareas={
+    \begin{itemize}
+      \item Encontrar un gestor de pre-commit hooks para el proyecto, teniendo en cuenta que se trata de un monorepo que tendrá sistemas en diferentes lenguajes de programación.
+      \item Instalar el gestor de pre-commit hooks elegido.
+      \item Añadir los correctores de ESLint y Prettier.
+      \item Asegurarse de que los correctores sólo se ejecutan sobre ficheros del front-end.
+      \item Asegurarse de que los correctores sólo se ejecutan sobre los ficheros que han sido modificados en el commit.
+      \item Asegurarse de que el pre-commit hook falla si ha tenido que hacer alteraciones en algún archivo.
+      \item Asegurarse de que el pre-commit hook muestra un informe del resultado de su ejecución.
+      \item Documentación de los comandos para ejecutar ESLint y Prettier en local.
     \end{itemize}
   }
 ]
