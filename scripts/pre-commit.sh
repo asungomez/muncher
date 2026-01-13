@@ -87,15 +87,20 @@ if [ -n "$MEMORIA_FILES" ]; then
 
             for FILE in $LATEX_FILES; do
                 FULL_PATH="$REPO_ROOT/$FILE"
+                echo "   Formatting: $FILE"
                 # Run latexindent in-place with silent mode
-                latexindent -s -w "$FULL_PATH" 2>/dev/null
-                # Remove backup file created by latexindent
-                rm -f "${FULL_PATH}.bak"
-                # Re-add formatted file to staging
-                git add "$FULL_PATH"
+                # Use || true to prevent set -e from exiting on latexindent failure
+                if latexindent -s -w "$FULL_PATH"; then
+                    # Remove backup file created by latexindent
+                    rm -f "${FULL_PATH}.bak"
+                    # Re-add formatted file to staging
+                    git add "$FULL_PATH"
+                else
+                    echo "   ⚠️  latexindent failed on $FILE (continuing anyway)"
+                fi
             done
 
-            echo "✅ latexindent passed"
+            echo "✅ latexindent completed"
         else
             echo "⚠️  latexindent not found, skipping LaTeX formatting"
             echo "   Install with: brew install latexindent (or via TeX Live)"
