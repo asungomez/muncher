@@ -5,6 +5,8 @@
 
 set -e
 
+
+
 # Get the root directory of the git repository
 REPO_ROOT="$(git rev-parse --show-toplevel)"
 
@@ -76,6 +78,11 @@ MEMORIA_FILES=$(echo "$STAGED_FILES" | grep "^memoria/" || true)
 
 if [ -n "$MEMORIA_FILES" ]; then
     echo "🔍 Found staged files in memoria/, running checks..."
+
+    # Set up Perl local::lib if it exists (for latexindent dependencies)
+    if [ -d "$HOME/perl5/lib/perl5" ]; then
+        eval "$(perl -I"$HOME/perl5/lib/perl5" -Mlocal::lib="$HOME/perl5" 2>/dev/null)" || true
+    fi
 
     # Filter for LaTeX files
     LATEX_FILES=$(echo "$MEMORIA_FILES" | grep -E '\.tex$' || true)
