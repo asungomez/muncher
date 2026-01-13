@@ -15,106 +15,134 @@ Cada historia de usuario desarrollada estará explícitamente relacionada con un
 \addcontentsline{toc}{subsection}{Configuración inicial}
 
 \us[
-  identificador=US-CI-01,
-  titulo={Creación del repositorio de código},
-  como={Desarrollador},
-  quiero={Controlar las versiones de mi código, compartirlo con otros compañeros y mantener copias de seguridad para mejorar el acceso al mismo},
-  requerimientos={\reqref{RNF-CA-01}, \reqref{RNF-DE-02}},
-  puntos={1},
-  criterios={
-    \begin{itemize}
-      \item El repositorio de código en la nube existe.
-      \item Es accesible por todos los desarrolladores.
-      \item Incluye instrucciones de uso.
-    \end{itemize}
-  },
-  tareas={
-    \begin{itemize}
-      \item Inicialización de Git en un directorio local.
-      \item Creación de un repositorio en Github.
-      \item Configuración de acceso remoto al repositorio de Github desde la máquina local.
-      \item Redacción de las instrucciones de uso en un README.
-    \end{itemize}
-  }
+	identificador=US-CI-01,
+	titulo={Creación del repositorio de código},
+	como={Desarrollador},
+	quiero={Controlar las versiones de mi código, compartirlo con otros compañeros y mantener copias de seguridad para mejorar el acceso al mismo},
+	requerimientos={\reqref{RNF-CA-01}, \reqref{RNF-DE-02}},
+	puntos={1},
+	criterios={
+			\begin{itemize}
+				\item El repositorio de código en la nube existe.
+				\item Es accesible por todos los desarrolladores.
+				\item Incluye instrucciones de uso.
+			\end{itemize}
+		},
+	tareas={
+			\begin{itemize}
+				\item Inicialización de Git en un directorio local.
+				\item Creación de un repositorio en Github.
+				\item Configuración de acceso remoto al repositorio de Github desde la máquina local.
+				\item Redacción de las instrucciones de uso en un README.
+			\end{itemize}
+		}
 ]
 
 \us[
-  identificador=US-CI-02,
-  titulo={Creación de una SPA usando Vite y React},
-  como={Desarrollador},
-  quiero={Ver mi proyecto en funcionamiento para poder verificar que los cambios que realizo tienen el efecto deseado},
-  requerimientos={\reqref{RNF-CO-01}, \reqref{RNF-DE-04}, \reqref{RNF-RE-01}},
-  puntos={1},
-  criterios={
-    \begin{itemize}
-      \item Existe una aplicación Vite + React.
-      \item La aplicación puede ejecutarse localmente.
-      \item La aplicación puede visitarse en el navegador.
-      \item La aplicación responde de forma automática a los cambios llevados a cabo en el código fuente.
-    \end{itemize}
-  },
-  tareas={
-    \begin{itemize}
-      \item Creación de un proyecto Vite + React.
-      \item Personalización de la configuración.
-    \end{itemize}
-  }
+	identificador=US-CI-02,
+	titulo={Creación de una SPA usando Vite y React},
+	como={Desarrollador},
+	quiero={Ver mi proyecto en funcionamiento para poder verificar que los cambios que realizo tienen el efecto deseado},
+	requerimientos={\reqref{RNF-CO-01}, \reqref{RNF-DE-04}, \reqref{RNF-RE-01}},
+	puntos={1},
+	criterios={
+			\begin{itemize}
+				\item Existe una aplicación Vite + React.
+				\item La aplicación puede ejecutarse localmente.
+				\item La aplicación puede visitarse en el navegador.
+				\item La aplicación responde de forma automática a los cambios llevados a cabo en el código fuente.
+			\end{itemize}
+		},
+	tareas={
+			\begin{itemize}
+				\item Creación de un proyecto Vite + React.
+				\item Personalización de la configuración.
+			\end{itemize}
+		}
 ]
 
 \us[
-  identificador=US-CI-03,
-  titulo={Controles de calidad con ESLint y Prettier},
-  como={Desarrollador},
-  quiero={Asegurar la calidad del código y mantener un estilo de codificación consistente},
-  requerimientos={\reqref{RNF-CA-01}, \reqref{RNF-CA-02}},
-  puntos={3},
-  criterios={
-    \begin{itemize}
-      \item Existe una Github Action que ejecuta ESLint y Prettier sobre el código fuente.
-      \item El repositorio sólo permite cambios en la rama main mediante Pull Request.
-      \item La Github Action se ejecuta automáticamente cuando se crea un Pull Request.
-      \item La Pull Request no se puede fusionar hasta que la Github Action haya finalizado correctamente.
-      \item Existen comandos documentados para ejecutar ESLint y Prettier sobre el código fuente en local.
-    \end{itemize}
-  },
-  tareas={
-    \begin{itemize}
-      \item Instalación de ESLint y Prettier en el proyecto.
-      \item Configuración de ESLint y Prettier.
-      \item Configuración de Github Actions para ejecutar ESLint y Prettier.
-      \item Documentación de los comandos para ejecutar ESLint y Prettier en local.
-      \item Configuración del repositorio de Github para que sólo se permitan cambios en la rama main mediante Pull Request.
-      \item Configuración del repositorio para hacer la Github Action obligatoria para fusionar un Pull Request.
-    \end{itemize}
-  }
+	identificador=US-CI-03,
+	titulo={Controles de calidad con ESLint y Prettier},
+	como={Desarrollador},
+	quiero={Asegurar la calidad del código y mantener un estilo de codificación consistente},
+	requerimientos={\reqref{RNF-CA-01}, \reqref{RNF-CA-02}},
+	puntos={3},
+	criterios={
+			\begin{itemize}
+				\item Existe una Github Action que ejecuta ESLint y Prettier sobre el código fuente.
+				\item El repositorio sólo permite cambios en la rama main mediante Pull Request.
+				\item La Github Action se ejecuta automáticamente cuando se crea un Pull Request.
+				\item La Pull Request no se puede fusionar hasta que la Github Action haya finalizado correctamente.
+				\item Existen comandos documentados para ejecutar ESLint y Prettier sobre el código fuente en local.
+			\end{itemize}
+		},
+	tareas={
+			\begin{itemize}
+				\item Instalación de ESLint y Prettier en el proyecto.
+				\item Configuración de ESLint y Prettier.
+				\item Configuración de Github Actions para ejecutar ESLint y Prettier.
+				\item Documentación de los comandos para ejecutar ESLint y Prettier en local.
+				\item Configuración del repositorio de Github para que sólo se permitan cambios en la rama main mediante Pull Request.
+				\item Configuración del repositorio para hacer la Github Action obligatoria para fusionar un Pull Request.
+			\end{itemize}
+		}
 ]
 
 \us[
-  identificador=US-CI-04,
-  titulo={Corrección automática del código},
-  como={Desarrollador},
-  quiero={Tener correctores automáticos que modifican mi código para adaptarse a los estándares establecidos},
-  requerimientos={\reqref{RNF-CA-02}},
-  puntos={5},
-  criterios={
-    \begin{itemize}
-      \item Existe un pre-commit hook que ejecuta ESLint y Prettier sobre el código fuente, modificando el código fuente para que cumpla con los estándares establecidos.
-      \item El pre-commit hook sólo se ejecuta sobre los archivos que han sido modificados en el commit.
-      \item El pre-commit hook falla si ha tenido que hacer alteraciones en algún archivo.
-      \item El pre-commit hook muestra un informe del resultado de su ejecución.
-      \item Existe documentación clara sobre el uso del pre-commit hook.
-    \end{itemize}
-  },
-  tareas={
-    \begin{itemize}
-      \item Encontrar un gestor de pre-commit hooks para el proyecto, teniendo en cuenta que se trata de un monorepo que tendrá sistemas en diferentes lenguajes de programación.
-      \item Instalar el gestor de pre-commit hooks elegido.
-      \item Añadir los correctores de ESLint y Prettier.
-      \item Asegurarse de que los correctores sólo se ejecutan sobre ficheros del front-end.
-      \item Asegurarse de que los correctores sólo se ejecutan sobre los ficheros que han sido modificados en el commit.
-      \item Asegurarse de que el pre-commit hook falla si ha tenido que hacer alteraciones en algún archivo.
-      \item Asegurarse de que el pre-commit hook muestra un informe del resultado de su ejecución.
-      \item Documentación de los comandos para ejecutar ESLint y Prettier en local.
-    \end{itemize}
-  }
+	identificador=US-CI-04,
+	titulo={Corrección automática del código},
+	como={Desarrollador},
+	quiero={Tener correctores automáticos que modifican mi código para adaptarse a los estándares establecidos},
+	requerimientos={\reqref{RNF-CA-02}},
+	puntos={5},
+	criterios={
+			\begin{itemize}
+				\item Existe un pre-commit hook que ejecuta ESLint y Prettier sobre el código fuente, modificando el código fuente para que cumpla con los estándares establecidos.
+				\item El pre-commit hook sólo se ejecuta sobre los archivos que han sido modificados en el commit.
+				\item El pre-commit hook corrige automáticamente los errores de formato y buenas prácticas de código.
+				\item El pre-commit hook muestra un informe del resultado de su ejecución.
+				\item Existe documentación clara sobre el uso del pre-commit hook.
+			\end{itemize}
+		},
+	tareas={
+			\begin{itemize}
+				\item Encontrar un gestor de pre-commit hooks para el proyecto, teniendo en cuenta que se trata de un monorepo que tendrá sistemas en diferentes lenguajes de programación.
+				\item Instalar el gestor de pre-commit hooks elegido.
+				\item Añadir los correctores de ESLint y Prettier.
+				\item Asegurarse de que los correctores sólo se ejecutan sobre ficheros del front-end.
+				\item Asegurarse de que los correctores sólo se ejecutan sobre los ficheros que han sido modificados en el commit.
+				\item Asegurarse de que el pre-commit hook corrige automáticamente los errores de formato y buenas prácticas de código.
+				\item Asegurarse de que el pre-commit hook muestra un informe del resultado de su ejecución.
+				\item Documentación de los comandos para ejecutar ESLint y Prettier en local.
+			\end{itemize}
+		}
+]
+
+\subsection*{Despliegue en la nube}
+\addcontentsline{toc}{subsection}{Despliegue en la nube}
+
+\us[
+	identificador=US-DE-01,
+	titulo={Despliegue en la nube del entorno de desarollo},
+	como={Desarrollador},
+	quiero={Poder acceder a la aplicación desde cualquier dispositivo con acceso a internet},
+	requerimientos={\reqref{RNF-DE-01}, \reqref{RNF-DE-02}},
+	puntos={8},
+	criterios={
+			\begin{itemize}
+				\item Existe un entorno de desarrollo en la nube.
+				\item Cada nuevo commit a la rama main se despliega automáticamente a la nube.
+				\item La aplicación es accesible a través de una URL de Internet.
+			\end{itemize}
+		},
+	tareas={
+			\begin{itemize}
+				\item Selección de un proveedor de nube para el entorno de desarrollo.
+				\item Diseño de la infraestructura en la nube necesaria para el entorno.
+				\item Configuración de la infraestructura como código.
+				\item Creación de la infraestructura en el ciclo de CD (Continuous Deployment).
+				\item Despliegue del código fuente del front-end a la nube.
+			\end{itemize}
+		}
 ]
