@@ -44,20 +44,35 @@ Este script configura un pre-commit hook que automáticamente:
 
 El pre-commit hook puede formatear automáticamente los archivos `.tex` usando `latexindent`. Esta herramienta viene incluida con TeX Live, pero requiere dependencias de Perl adicionales.
 
-Para habilitarlo, instala las dependencias:
+**Con permisos de administrador:**
 
 ```bash
-# Con permisos de administrador
 sudo cpan File::HomeDir Log::Log4perl Log::Dispatch Unicode::GCString
-
-# Sin permisos de administrador
-cpan -l ~/perl5 File::HomeDir Log::Log4perl Log::Dispatch Unicode::GCString
 ```
 
-Si instalas sin permisos de administrador, añade esta línea a tu `~/.zshrc`:
+**Sin permisos de administrador (usando cpanminus):**
+
+```bash
+# Instalar cpanminus con local::lib
+curl -L https://cpanmin.us | perl - --local-lib=~/perl5 App::cpanminus
+
+# Activar local::lib
+eval "$(perl -I$HOME/perl5/lib/perl5 -Mlocal::lib=$HOME/perl5)"
+
+# Instalar las dependencias
+cpanm File::HomeDir Log::Log4perl Log::Dispatch Unicode::GCString
+```
+
+Después de instalar sin permisos de administrador, añade esta línea a tu `~/.zshrc` para que persista:
 
 ```bash
 eval "$(perl -I$HOME/perl5/lib/perl5 -Mlocal::lib=$HOME/perl5)"
+```
+
+Puedes verificar que funciona con:
+
+```bash
+echo "\\section{test}" | latexindent -s
 ```
 
 Si `latexindent` no está disponible o no funciona, el hook simplemente omitirá el formateo de LaTeX y continuará sin errores.

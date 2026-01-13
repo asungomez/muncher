@@ -118,10 +118,9 @@ if [ -n "$MEMORIA_FILES" ]; then
             echo "✅ latexindent completed"
         else
             echo "⚠️  latexindent not available or not working, skipping LaTeX formatting"
-            echo "   To enable: install latexindent's Perl dependencies:"
-            echo "   - With admin:  sudo cpan File::HomeDir Log::Log4perl Log::Dispatch Unicode::GCString"
-            echo "   - Without admin: cpan -l ~/perl5 File::HomeDir Log::Log4perl Log::Dispatch Unicode::GCString"
-            echo "     Then add to ~/.zshrc: eval \"\$(perl -I\$HOME/perl5/lib/perl5 -Mlocal::lib=\$HOME/perl5)\""
+            echo "   To enable: install latexindent's Perl dependencies (see README for details)"
+            echo "   - With admin: sudo cpan File::HomeDir Log::Log4perl Log::Dispatch Unicode::GCString"
+            echo "   - Without admin: use cpanm with local::lib (see README)"
         fi
     fi
 
