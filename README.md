@@ -4,6 +4,7 @@
 
 - [Propósito](#propósito)
 - [Infraestructura](#infraestructura)
+- [Configuración inicial](#configuración-inicial)
 - [Memoria](#memoria)
   - [Prerrequisitos](#prerrequisitos)
   - [Generar la memoria](#generar-la-memoria)
@@ -24,6 +25,16 @@ La aplicación está desarrollada con la siguiente arquitectura tecnológica:
 - **GraphQL API**: Implementada con FastAPI y Strawberry, ofreciendo una API flexible y eficiente para manejar peticiones y mutaciones desde el front-end. Esta API gestiona la lógica principal de recetas, menús, nutrición y listas de la compra.
 
 - **Base de Datos**: Utiliza PostgreSQL como base de datos relacional para almacenar recetas, ingredientes, información nutricional, menús y usuarios.
+
+## Configuración inicial
+
+Después de clonar el repositorio, ejecuta el siguiente script para configurar los git hooks:
+
+```
+./scripts/setup-hooks.sh
+```
+
+Este script configura un pre-commit hook que automáticamente ejecuta ESLint y Prettier sobre los archivos staged del front-end antes de cada commit.
 
 ## Memoria
 
