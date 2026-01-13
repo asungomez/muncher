@@ -5,6 +5,7 @@
 - [Propósito](#propósito)
 - [Infraestructura](#infraestructura)
 - [Configuración inicial](#configuración-inicial)
+  - [Formateo de LaTeX (opcional)](#formateo-de-latex-opcional)
 - [Memoria](#memoria)
   - [Prerrequisitos](#prerrequisitos)
   - [Generar la memoria](#generar-la-memoria)
@@ -34,7 +35,32 @@ Después de clonar el repositorio, ejecuta el siguiente script para configurar l
 ./scripts/setup-hooks.sh
 ```
 
-Este script configura un pre-commit hook que automáticamente ejecuta ESLint y Prettier sobre los archivos staged del front-end antes de cada commit.
+Este script configura un pre-commit hook que automáticamente:
+
+- **Front-end**: Ejecuta ESLint y Prettier sobre los archivos staged.
+- **Memoria**: Formatea archivos LaTeX con `latexindent` (opcional).
+
+### Formateo de LaTeX (opcional)
+
+El pre-commit hook puede formatear automáticamente los archivos `.tex` usando `latexindent`. Esta herramienta viene incluida con TeX Live, pero requiere dependencias de Perl adicionales.
+
+Para habilitarlo, instala las dependencias:
+
+```bash
+# Con permisos de administrador
+sudo cpan File::HomeDir Log::Log4perl Log::Dispatch Unicode::GCString
+
+# Sin permisos de administrador
+cpan -l ~/perl5 File::HomeDir Log::Log4perl Log::Dispatch Unicode::GCString
+```
+
+Si instalas sin permisos de administrador, añade esta línea a tu `~/.zshrc`:
+
+```bash
+eval "$(perl -I$HOME/perl5/lib/perl5 -Mlocal::lib=$HOME/perl5)"
+```
+
+Si `latexindent` no está disponible o no funciona, el hook simplemente omitirá el formateo de LaTeX y continuará sin errores.
 
 ## Memoria
 

@@ -81,16 +81,24 @@ if [ -n "$MEMORIA_FILES" ]; then
     LATEX_FILES=$(echo "$MEMORIA_FILES" | grep -E '\.tex$' || true)
 
     if [ -n "$LATEX_FILES" ]; then
-        # Check if latexindent is available
+        # Check if latexindent is available AND working
+        # (it may be installed but missing Perl dependencies)
+        LATEXINDENT_OK=false
         if command -v latexindent &> /dev/null; then
+            # Health check: try to run latexindent on a simple string
+            if echo "\\section{test}" | latexindent -s &> /dev/null; then
+                LATEXINDENT_OK=true
+            fi
+        fi
+
+        if [ "$LATEXINDENT_OK" = true ]; then
             echo "📝 Running latexindent on staged .tex files..."
 
             for FILE in $LATEX_FILES; do
                 FULL_PATH="$REPO_ROOT/$FILE"
                 echo "   Formatting: $FILE"
                 # Run latexindent in-place with silent mode
-                # Use || true to prevent set -e from exiting on latexindent failure
-                if latexindent -s -w "$FULL_PATH"; then
+                if latexindent -s -w "$FULL_PATH" 2>/dev/null; then
                     # Remove backup file created by latexindent
                     rm -f "${FULL_PATH}.bak"
                     # Re-add formatted file to staging
@@ -102,8 +110,11 @@ if [ -n "$MEMORIA_FILES" ]; then
 
             echo "✅ latexindent completed"
         else
-            echo "⚠️  latexindent not found, skipping LaTeX formatting"
-            echo "   Install with: brew install latexindent (or via TeX Live)"
+            echo "⚠️  latexindent not available or not working, skipping LaTeX formatting"
+            echo "   To enable: install latexindent's Perl dependencies:"
+            echo "   - With admin:  sudo cpan File::HomeDir Log::Log4perl Log::Dispatch Unicode::GCString"
+            echo "   - Without admin: cpan -l ~/perl5 File::HomeDir Log::Log4perl Log::Dispatch Unicode::GCString"
+            echo "     Then add to ~/.zshrc: eval \"\$(perl -I\$HOME/perl5/lib/perl5 -Mlocal::lib=\$HOME/perl5)\""
         fi
     fi
 
