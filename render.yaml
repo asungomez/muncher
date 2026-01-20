@@ -3,7 +3,7 @@ services:
     name: muncher-frontend
     runtime: static
     rootDir: front-end
-    buildCommand: yarn build
+    buildCommand: npm install -g corepack && corepack enable && yarn set version 4.9.2 && yarn install && yarn build
     staticPublishPath: ./dist
     pullRequestPreviewsEnabled: true
     envVars:
@@ -11,3 +11,5 @@ services:
         value: "24"
       - key: ENABLE_COREPACK
         value: "1"
+      - key: SKIP_INSTALL_DEPS
+        value: "true"
