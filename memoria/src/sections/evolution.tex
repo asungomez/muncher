@@ -68,11 +68,7 @@ Gracias a esta solución, el proceso de desarrollo se beneficia de una mayor cal
 
 El segundo sprint se centra en automatizar el proceso de despliegue del sistema \textbf{Muncher} en la nube, estableciendo un entorno de desarrollo accesible y reproducible. El objetivo principal es lograr que, con cada cambio en la rama \texttt{main}, el sistema se despliegue automáticamente en un entorno remoto, garantizando una integración continua entre el desarrollo local y la infraestructura en la nube.
 
-Para asegurar la consistencia y trazabilidad del proyecto, la infraestructura se define íntegramente como código (\textit{Infrastructure as Code}, IaC). El concepto de \textit{Infrastructure as Code} (IaC) se basa en aplicar prácticas propias del desarrollo de software a la gestión de sistemas e infraestructura. Esta metodología propone definir el entorno tecnológico mediante código, permitiendo que los procesos de provisión, configuración y actualización de los sistemas sean automáticos, repetibles y verificables.
-
-Según Morris (2016) \cite{Morris2016}, la clave de IaC es tratar la infraestructura como si fuera código fuente, lo que hace posible aprovechar herramientas de control de versiones, pruebas automatizadas y orquestación de despliegues en su mantenimiento. De esta forma, se integran prácticas consolidadas del desarrollo ágil —como la Integración Continua (CI) y la Entrega Continua (CD)— en la administración de entornos en la nube.
-
-Este enfoque ha demostrado ser esencial para garantizar consistencia, fiabilidad y disponibilidad continua en sistemas de gran escala. Definir la infraestructura como código no solo facilita la automatización del despliegue, sino que también mejora la trazabilidad de los cambios y reduce el riesgo de errores humanos, sentando las bases para una gestión moderna y escalable en la nube.
+Para asegurar la consistencia y trazabilidad del proyecto, la infraestructura se define íntegramente como código (\textit{Infrastructure as Code}, IaC).
 
 El despliegue automático debe ejecutarse de manera inmediata como respuesta a los \textit{commits} realizados en la rama principal, eliminando pasos manuales y reduciendo el riesgo de errores humanos durante la actualización del entorno de desarrollo.
 

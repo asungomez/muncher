@@ -1,0 +1,237 @@
+\section*{Infraestructura en la nube}
+\addcontentsline{toc}{section}{Infraestructura en la nube}
+
+La infraestructura en la nube constituye uno de los pilares fundamentales sobre los que se despliega y mantiene el sistema \textbf{Muncher}. Con el crecimiento de los servicios digitales y la creciente necesidad de entornos flexibles y escalables, la adopción del cómputo en la nube se ha convertido en un componente esencial del desarrollo moderno de software. Comprender cómo funciona la nube y qué ventajas ofrece frente a la infraestructura tradicional permite diseñar sistemas más robustos, seguros y fáciles de mantener.
+
+En esta sección se abordarán los conceptos clave de la infraestructura de nube, diferenciando entre los enfoques tradicionales de aprovisionamiento dinámico y las prácticas modernas basadas en \textit{Infrastructure as Code} (IaC). Esta comparación permitirá entender cómo la automatización y la definición declarativa de recursos facilitan el control, la reproducibilidad y la trazabilidad de los entornos, aspectos críticos en la gestión del ciclo de vida de aplicaciones distribuidas.
+
+Finalmente, se presentará un análisis de los principales proveedores de nube, evaluando sus características, fortalezas y limitaciones en relación con las necesidades específicas del proyecto. A partir de este estudio, se seleccionará la plataforma más adecuada para el despliegue de \textbf{Muncher}, detallando la estructura de infraestructura propuesta y justificando las decisiones técnicas adoptadas conforme a los requisitos de escalabilidad, integración continua y facilidad de mantenimiento.
+
+\subsection*{Conceptos básicos de la nube e infraestructura}
+\addcontentsline{toc}{subsection}{Conceptos básicos de la nube e infraestructura}
+
+De acuerdo con la definición propuesta por el Instituto Nacional de Estándares y Tecnología (NIST, Mell y Grance, 2011) \cite{Grance2011}, la computación en la nube es un modelo que permite el acceso ubicuo, cómodo y bajo demanda a un conjunto compartido de recursos de computación configurables —como redes, servidores, almacenamiento, aplicaciones y servicios— que pueden aprovisionarse y liberarse rápidamente con un mínimo esfuerzo de gestión o interacción con el proveedor.
+
+Este modelo se fundamenta en cinco características esenciales:
+
+\begin{itemize}
+	\item \textbf{Autoservicio bajo demanda}: los usuarios pueden obtener capacidades de cómputo, como tiempo de servidor o espacio de almacenamiento, automáticamente y sin intervención humana directa por parte del proveedor.
+
+	\item \textbf{Acceso amplio a la red}: los recursos están disponibles mediante mecanismos estandarizados y pueden ser accedidos desde diversas plataformas cliente, como ordenadores, portátiles, tabletas o teléfonos móviles.
+
+	\item \textbf{Agrupamiento de recursos} (\textit{resource pooling}): los proveedores aplican un modelo multiusuario en el que los recursos físicos y virtuales se asignan dinámicamente según la demanda, ofreciendo independencia respecto de la ubicación física del hardware.
+
+	\item \textbf{Elasticidad rápida}: las capacidades pueden ampliarse o reducirse de manera inmediata —e incluso automática— conforme varía la carga de trabajo, proporcionando al usuario la sensación de contar con un conjunto de recursos prácticamente ilimitado.
+
+	\item \textbf{Servicio medido}: el sistema controla, optimiza y registra el uso de los recursos mediante mecanismos de medición que garantizan transparencia tanto para el proveedor como para el consumidor.
+\end{itemize}
+
+En el contexto de este proyecto, la \textbf{infraestructura en la nube} se define como el conjunto de servicios y recursos proporcionados por el proveedor elegido que, en conjunto, conforman y sostienen el sistema \textbf{Muncher}. Estos elementos incluyen las capacidades de cómputo, almacenamiento, bases de datos, servicios de integración y herramientas de administración necesarias para que el sistema funcione de manera fiable y escalable en un entorno remoto.
+
+A diferencia de una definición genérica, aquí la infraestructura se expresa en términos concretos del proveedor seleccionado. Esto significa que cada componente de la arquitectura se corresponde directamente con un servicio específico disponible en su catálogo. Por ejemplo, en el caso de Microsoft Azure, podrían emplearse \textit{App Services} para alojar aplicaciones web, \textit{Azure Functions} para ejecutar código sin servidor, \textit{Azure Storage} para gestionar datos y ficheros, o \textit{Azure Virtual Networks} para interconectar los servicios de forma segura. Si el proveedor elegido fuera Amazon Web Services (AWS), equivalentes funcionales serían recursos como \textit{AWS Lambda}, \textit{Amazon S3}, \textit{Amazon RDS}, o \textit{VPC}.
+
+Definir la infraestructura con este enfoque permite que la arquitectura del sistema esté claramente alineada con las capacidades del proveedor, facilita la replicación del entorno en diferentes fases del proyecto (desarrollo, pruebas, producción) y asegura que todas las decisiones técnicas estén sustentadas por las herramientas y servicios concretos que la plataforma ofrece.
+
+\subsection*{Infraestructura como código frente a infraestructura dinámica}
+\addcontentsline{toc}{subsection}{Infraestructura como código frente a infraestructura dinámica}
+
+El concepto de \textit{Infrastructure as Code} (IaC) se basa en aplicar prácticas propias del desarrollo de software a la gestión de sistemas e infraestructura. Esta metodología propone definir el entorno tecnológico mediante código, permitiendo que los procesos de provisión, configuración y actualización de los sistemas sean automáticos, repetibles y verificables.
+
+Según Morris (2016) \cite{Morris2016}, la clave de IaC es tratar la infraestructura como si fuera código fuente, lo que hace posible aprovechar herramientas de control de versiones, pruebas automatizadas y orquestación de despliegues en su mantenimiento. De esta forma, se integran prácticas consolidadas del desarrollo ágil —como la Integración Continua (CI) y la Entrega Continua (CD)— en la administración de entornos en la nube.
+
+Antes de adoptar el modelo de \textit{Infrastructure as Code} (IaC), es importante comprender las limitaciones que presenta la llamada infraestructura dinámica, un enfoque común en las primeras etapas de adopción del cómputo en la nube. Este modelo se basa en la provisión y configuración manual o semiautomatizada de servidores y entornos, normalmente mediante interfaces gráficas o scripts ad hoc. Aunque inicialmente resulta flexible y rápido para desplegar nuevos recursos, a medida que el sistema crece aparecen problemas de mantenimiento, consistencia y escalabilidad que afectan de forma directa la fiabilidad del entorno.
+
+Uno de los principales riesgos es la proliferación de servidores y configuraciones difíciles de gestionar, fenómeno que Morris (2016) \cite{Morris2016} denomina “\textit{server sprawl}”. Cuando el equipo técnico puede crear recursos con facilidad pero sin control centralizado, el número de servidores aumenta más rápido que la capacidad de administrarlos correctamente. Esto genera entornos heterogéneos, con versiones de software y configuraciones distintas, donde los errores se multiplican y las tareas de actualización o parcheo se vuelven complejas y arriesgadas.
+
+A esta diversidad no controlada se le suma la llamada "deriva de configuración" (\textit{configuration drift}), que ocurre cuando servidores idénticos en su origen se modifican con el tiempo de forma independiente. Pequeños ajustes, correcciones manuales o actualizaciones parciales provocan diferencias sutiles que terminan impidiendo reproducir el entorno completo, generando lo que Morris describe como “servidores copo de nieve” (\textit{snowflake servers}): máquinas únicas e irrepetibles que nadie se atreve a modificar por miedo a romper su funcionamiento. Cuando esta fragilidad se extiende a todo el ecosistema, se obtiene una “infraestructura Jenga”, donde cualquier cambio puede desestabilizar el conjunto.
+
+En paralelo, la falta de estandarización genera lo que el autor denomina “miedo a la automatización” (\textit{automation fear}). Los equipos evitan ejecutar herramientas de automatización de manera continua, debido a la falta de confianza en los resultados o al temor de introducir inconsistencias en sistemas ya frágiles. Como consecuencia, las configuraciones se aplican de forma irregular y la automatización se limita a tareas puntuales, perpetuando un ciclo de desconfianza y errores.
+
+Frente a estos problemas, el modelo de \textit{Infrastructure as Code} ofrece una alternativa estructurada y sostenible. Mediante la definición declarativa y versionada de la infraestructura, es posible reconstruir cualquier entorno desde cero de forma repetible, auditable y libre de dependencias ocultas. Cada cambio queda registrado en el control de versiones, integrándose con los flujos de integración y despliegue continuo. Este enfoque elimina la dependencia de configuraciones manuales, reduce la deriva entre entornos y evita la formación de servidores especiales no replicables.
+
+Por estas razones, en el proyecto \textbf{Muncher} se opta por un modelo basado en IaC. Ello permite mantener coherencia entre entornos, asegurar la reproducibilidad del sistema y facilitar la automatización completa del proceso de despliegue. Además, proporciona una base sólida para escalar la infraestructura, incorporar nuevas funcionalidades y responder con agilidad ante cambios o incidencias en la nube.
+
+\subsection*{Selección de un proveedor de nube}
+\addcontentsline{toc}{subsection}{Selección de un proveedor de nube}
+
+La elección de un proveedor de nube adecuado es un factor determinante en la arquitectura del sistema \textbf{Muncher}. La plataforma seleccionada debe ofrecer un equilibrio entre flexibilidad, coste y facilidad de gestión, permitiendo adaptar la infraestructura a las necesidades específicas del proyecto sin imponer restricciones excesivas derivadas de servicios demasiado abstractos o cerrados.
+
+El sistema requiere una infraestructura orientada a desarrolladores y equipos técnicos que deseen mantener control total sobre los recursos desplegados. Se descartan soluciones que, aunque cómodas para proyectos pequeños, limitan la personalización o dificultan el acceso a configuraciones internas, como ocurre en plataformas tipo \textit{Netlify} o \textit{AWS Amplify}. El objetivo es disponer de un entorno que permita definir, conectar y ajustar los componentes del sistema de acuerdo con los requisitos del producto.
+
+Los requisitos principales que se han establecido para la selección del proveedor son los siguientes:
+
+\begin{itemize}
+	\item \textbf{Alta capacidad de configuración}, evitando proveedores que limiten la personalización en favor de entornos “todo hecho”.
+	\item \textbf{Compatibilidad con contenedores Docker}, para desplegar el back‑end de forma reproducible y aislada.
+	\item \textbf{Soporte para aplicaciones web estáticas}, destinado al front‑end, con distribución eficiente de contenidos.
+	\item \textbf{Herramientas de monitorización y observabilidad} sencillas, que permitan lectura de logs, obtención de métricas y seguimiento de errores.
+	\item \textbf{Coste reducido}, con gasto mensual de unos pocos dólares, aprovechando capas gratuitas o planes económicos.
+	\item \textbf{Bases de datos SQL gestionadas}, incluyendo replicación automática, copias de seguridad y mantenimiento simplificado.
+\end{itemize}
+
+Con los requisitos previamente establecidos, se ha realizado una evaluación detallada de los principales proveedores de servicios en la nube y de varias alternativas ligeras orientadas al despliegue simplificado. El objetivo es determinar qué plataformas se ajustan mejor a las necesidades de \textbf{Muncher} en términos de flexibilidad, capacidad de configuración, coste y facilidad de mantenimiento.
+
+La comparación abarca tanto los tres grandes proveedores del mercado —\textbf{Amazon Web Services (AWS)}, \textbf{Microsoft Azure} y \textbf{Google Cloud Platform (GCP)}— como opciones más económicas y accesibles —\textbf{Heroku}, \textbf{Render} y \textbf{Vercel}— que pueden resultar especialmente adecuadas para entornos de desarrollo o fases tempranas del proyecto.
+
+En las siguientes páginas se presentan las tablas individuales para cada proveedor, en las que se detallan sus características principales con respecto a los criterios definidos: capacidad de configuración, compatibilidad con contenedores, soporte de aplicaciones web estáticas, herramientas de observabilidad, coste estimado y disponibilidad de bases de datos SQL gestionadas.
+
+% AWS
+\begin{center}
+	\renewcommand{\arraystretch}{1.2}
+	\setlength{\tabcolsep}{6pt}
+	\textbf{Amazon Web Services (AWS)}\\[4pt]
+	\begin{tabularx}{\textwidth}{|l|X|}
+		\hline
+		\textbf{Criterio}               & \textbf{Descripción}                                                                                                                       \\
+		\hline
+		Alta capacidad de configuración & \checkmark\ Permite una configuración detallada y control total sobre recursos e infraestructura, sin restricciones en la personalización. \\
+		\hline
+		Soporte Docker / contenedores   & \checkmark\ Compatible mediante servicios como Amazon ECS y EKS para gestionar y orquestar contenedores Docker.                            \\
+		\hline
+		Web estáticas                   & S3 combinado con CloudFront para distribución global de contenido estático.                                                                \\
+		\hline
+		Monitorización y logs           & CloudWatch ofrece supervisión avanzada, alertas, métricas y visualización de registros en tiempo real.                                     \\
+		\hline
+		Coste mensual estimado mínimo   & \$5--10 (tier gratuito y escalado según consumo).                                                                                          \\
+		\hline
+		Bases de datos SQL gestionadas  & Amazon RDS y Aurora, con soporte para replicación, backup automático y mantenimiento gestionado.                                           \\
+		\hline
+	\end{tabularx}
+\end{center}
+
+\vspace{8pt}
+
+% Azure
+\begin{center}
+	\renewcommand{\arraystretch}{1.2}
+	\setlength{\tabcolsep}{6pt}
+	\textbf{Microsoft Azure}\\[4pt]
+	\begin{tabularx}{\textwidth}{|l|X|}
+		\hline
+		\textbf{Criterio}               & \textbf{Descripción}                                                                                                          \\
+		\hline
+		Alta capacidad de configuración & \checkmark\ Ofrece gran flexibilidad para definir recursos, conectarlos y gestionar infraestructura con scripts declarativos. \\
+		\hline
+		Soporte Docker / contenedores   & \checkmark\ Compatible con Azure Container Instances (ACI) y Azure Kubernetes Service (AKS).                                  \\
+		\hline
+		Web estáticas                   & Servicio de Static Web Apps, integrado con GitHub Actions para despliegue automático.                                         \\
+		\hline
+		Monitorización y logs           & Azure Monitor centraliza métricas, trazas y logs con herramientas complementarias como Application Insights.                  \\
+		\hline
+		Coste mensual estimado mínimo   & \$5--10 (nivel gratuito amplio, facturación por consumo).                                                                     \\
+		\hline
+		Bases de datos SQL gestionadas  & Azure SQL Database con alta disponibilidad, backup automático y escalado elástico.                                            \\
+		\hline
+	\end{tabularx}
+\end{center}
+
+\vspace{8pt}
+
+% GCP
+\begin{center}
+	\renewcommand{\arraystretch}{1.2}
+	\setlength{\tabcolsep}{6pt}
+	\textbf{Google Cloud Platform (GCP)}\\[4pt]
+	\begin{tabularx}{\textwidth}{|l|X|}
+		\hline
+		\textbf{Criterio}               & \textbf{Descripción}                                                                                                      \\
+		\hline
+		Alta capacidad de configuración & \checkmark\ Configuración completa de recursos, redes y permisos a nivel granular mediante la consola o herramientas CLI. \\
+		\hline
+		Soporte Docker / contenedores   & \checkmark\ Soporte nativo mediante Google Kubernetes Engine (GKE) y Cloud Run.                                           \\
+		\hline
+		Web estáticas                   & Alojamiento en Cloud Storage y distribución mediante Cloud CDN.                                                           \\
+		\hline
+		Monitorización y logs           & Cloud Logging y Cloud Monitoring permiten trazabilidad detallada del sistema y alerta automática.                         \\
+		\hline
+		Coste mensual estimado mínimo   & \$5--10 (plan gratuito con recursos limitados y facturación por uso real).                                                \\
+		\hline
+		Bases de datos SQL gestionadas  & Cloud SQL con soporte para PostgreSQL, MySQL y SQL Server gestionados automáticamente.                                    \\
+		\hline
+	\end{tabularx}
+\end{center}
+
+\vspace{8pt}
+
+% Heroku
+\begin{center}
+	\renewcommand{\arraystretch}{1.2}
+	\setlength{\tabcolsep}{6pt}
+	\textbf{Heroku}\\[4pt]
+	\begin{tabularx}{\textwidth}{|l|X|}
+		\hline
+		\textbf{Criterio}               & \textbf{Descripción}                                                                                                          \\
+		\hline
+		Alta capacidad de configuración & \xmark\ Plataforma altamente simplificada, con escasa personalización y control limitado sobre la infraestructura subyacente. \\
+		\hline
+		Soporte Docker / contenedores   & Parcial. Puede usar contenedores personalizados con Heroku Container Registry, aunque con limitaciones.                       \\
+		\hline
+		Web estáticas                   & Sí. Admite despliegues de aplicaciones estáticas a través de buildpacks o servidores ligeros.                                 \\
+		\hline
+		Monitorización y logs           & Monitorización y visualización de logs integradas en el panel, adecuadas para proyectos pequeños.                             \\
+		\hline
+		Coste mensual estimado mínimo   & \$0--7 (planes gratuito y Hobby adecuados para desarrollo o pruebas).                                                         \\
+		\hline
+		Bases de datos SQL gestionadas  & PostgreSQL nativo con copias de seguridad automáticas y mantenimiento gestionado.                                             \\
+		\hline
+	\end{tabularx}
+\end{center}
+
+\vspace{8pt}
+
+% Render
+\begin{center}
+	\renewcommand{\arraystretch}{1.2}
+	\setlength{\tabcolsep}{6pt}
+	\textbf{Render}\\[4pt]
+	\begin{tabularx}{\textwidth}{|l|X|}
+		\hline
+		\textbf{Criterio}               & \textbf{Descripción}                                                                                                    \\
+		\hline
+		Alta capacidad de configuración & \checkmark\ Configuración flexible mediante archivos YAML, permitiendo definir servicios personalizados y dependencias. \\
+		\hline
+		Soporte Docker / contenedores   & \checkmark\ Soporte nativo a imágenes Docker sin necesidad de configuración avanzada.                                   \\
+		\hline
+		Web estáticas                   & \checkmark\ Hosting de sitios estáticos gratuito, con integración continua desde GitHub o GitLab.                       \\
+		\hline
+		Monitorización y logs           & Acceso sencillo a logs desde el panel y API; métricas básicas de rendimiento.                                           \\
+		\hline
+		Coste mensual estimado mínimo   & \$0--7 (planes gratuitos y Starter, apropiados para prototipos o entornos pequeños).                                    \\
+		\hline
+		Bases de datos SQL gestionadas  & Bases de datos PostgreSQL y MySQL administradas con copias automáticas y restauración rápida.                           \\
+		\hline
+	\end{tabularx}
+\end{center}
+
+\vspace{8pt}
+
+% Vercel
+\begin{center}
+	\renewcommand{\arraystretch}{1.2}
+	\setlength{\tabcolsep}{6pt}
+	\textbf{Vercel}\\[4pt]
+	\begin{tabularx}{\textwidth}{|l|X|}
+		\hline
+		\textbf{Criterio}               & \textbf{Descripción}                                                                                                                 \\
+		\hline
+		Alta capacidad de configuración & \xmark\ Plataforma centrada en el despliegue automatizado de aplicaciones front-end, con opciones limitadas de configuración manual. \\
+		\hline
+		Soporte Docker / contenedores   & \xmark\ No admite ejecución directa de contenedores Docker.                                                                          \\
+		\hline
+		Web estáticas                   & \checkmark\ Altamente optimizado para sitios y aplicaciones front-end en React, Next.js y frameworks similares.                      \\
+		\hline
+		Monitorización y logs           & Sistema integrado de métricas y logs, con disponibilidad en el panel de control.                                                     \\
+		\hline
+		Coste mensual estimado mínimo   & \$0--7 (plan gratuito generoso con despliegues ilimitados para uso personal).                                                        \\
+		\hline
+		Bases de datos SQL gestionadas  & No directamente. Requiere uso de servicios externos como Supabase, Neon o PlanetScale para almacenamiento persistente.               \\
+		\hline
+	\end{tabularx}
+\end{center}
+
+
+Tras el análisis individual de los distintos proveedores, puede concluirse que los tres grandes —\textbf{AWS}, \textbf{Azure} y \textbf{GCP}— cumplen de forma plena los requisitos técnicos definidos para el sistema. Ofrecen una infraestructura madura y altamente configurable, con soporte completo para contenedores Docker, servicios de bases de datos SQL gestionadas y avanzadas herramientas de observabilidad. Sin embargo, su estructura de precios suele resultar menos adecuada para despliegues pequeños o entornos de desarrollo continuo, donde los recursos utilizados no compensan el gasto mensual base.
+
+Las plataformas ligeras —\textbf{Heroku}, \textbf{Render} y \textbf{Vercel}— representan alternativas más sencillas y económicas. Su facilidad de uso y disponibilidad de planes gratuitos las hacen atractivas para proyectos en fases tempranas. No obstante, tanto Heroku como Vercel presentan ciertas limitaciones de flexibilidad y control sobre los recursos. En cambio, \textbf{Render} destaca como una solución intermedia: mantiene un modelo operativo simple, pero ofrece soporte nativo para contenedores Docker, alojamiento de aplicaciones estáticas, monitorización integrada y bases de datos SQL gestionadas. Además, su capa gratuita permite cubrir todos los requisitos funcionales del proyecto sin coste adicional, lo que la convierte en una opción especialmente atractiva para entornos de desarrollo o prototipado.
+
+En el caso del proyecto \textbf{Muncher}, donde se busca conservar el control técnico total, disponer de soporte para contenedores, contar con bases de datos SQL gestionadas y mantener un coste mensual mínimo, la comparación sugiere orientar la infraestructura hacia dos posibles soluciones. Por un lado, \textbf{Google Cloud Platform} ofrece un entorno sólido y flexible con servicios económicos como Cloud Run y Cloud SQL Lite, adecuado para una futura transición a producción. Por otro, \textbf{Render} permite una implementación inmediata en la nube cumpliendo todos los requisitos del sistema dentro de su plan gratuito, siendo la alternativa más favorable para la etapa actual de desarrollo.
