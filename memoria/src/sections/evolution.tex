@@ -53,3 +53,43 @@ La incorporación de estas herramientas de calidad desde las etapas más tempran
 	\end{tabular}
 \end{center}
 
+\subsubsection*{Retrospectiva}
+
+El sprint finalizó con éxito, cumpliendo todos los objetivos planteados. El repositorio en GitHub quedó configurado con una base sólida mediante Vite y React, junto con la integración de controles de calidad automatizados que aseguran un código consistente desde el inicio del proyecto.
+
+La principal dificultad técnica consistió en implementar la corrección automática del código en un entorno \textit{monorepo} que contiene diferentes lenguajes de programación. Soluciones estándar como \texttt{husky} o \texttt{python pre-commit}, aunque útiles, dependen de que todo el repositorio esté desarrollado en un único lenguaje, lo cual no se adaptaba a las necesidades del proyecto.
+
+Para superar esta limitación, se desarrolló un script personalizado en \texttt{bash} que detecta en qué partes del \textit{monorepo} se han realizado cambios (por ejemplo, el front-end en React o la memoria en \LaTeX) y aplica las herramientas de corrección más adecuadas para cada lenguaje. Este enfoque permite estandarizar la indentación, el espaciado y otros aspectos de estilo de forma automática, garantizando la coherencia de todo el código sin importar la diversidad tecnológica presente en el repositorio.
+
+Gracias a esta solución, el proceso de desarrollo se beneficia de una mayor calidad y consistencia, reduciendo la necesidad de correcciones manuales y evitando el riesgo de introducir errores por cambios de formato.
+
+\subsection*{Sprint 2: Despliegue automático}
+\addcontentsline{toc}{subsection}{Sprint 2: Despliegue automático}
+
+El segundo sprint se centra en automatizar el proceso de despliegue del sistema \textbf{Muncher} en la nube, estableciendo un entorno de desarrollo accesible y reproducible. El objetivo principal es lograr que, con cada cambio en la rama \texttt{main}, el sistema se despliegue automáticamente en un entorno remoto, garantizando una integración continua entre el desarrollo local y la infraestructura en la nube.
+
+Para asegurar la consistencia y trazabilidad del proyecto, la infraestructura se define íntegramente como código (\textit{Infrastructure as Code}, IaC).
+
+El despliegue automático debe ejecutarse de manera inmediata como respuesta a los \textit{commits} realizados en la rama principal, eliminando pasos manuales y reduciendo el riesgo de errores humanos durante la actualización del entorno de desarrollo.
+
+\subsubsection*{Objetivos iniciales}
+
+\begin{itemize}
+	\item Configurar un entorno de desarrollo en la nube accesible para el equipo.
+	\item Definir la infraestructura como código utilizando herramientas de IaC.
+	\item Implementar un flujo de integración y despliegue continuo (CI/CD) que se active automáticamente ante cambios en la rama \texttt{main}.
+	\item Garantizar la reproducibilidad del entorno para futuras fases del proyecto, como el despliegue en producción.
+\end{itemize}
+
+\subsubsection*{Historias de usuario completadas}
+
+
+\begin{center}
+	\begin{tabular}{|l|l|c|}
+		\hline
+		\textbf{Identificador} & \textbf{Nombre}                                & \textbf{Puntos de historia} \\
+		\hline
+		\usref{US-DE-01}       & Despliegue en la nube del entorno de desarollo & 8                           \\
+		\hline
+	\end{tabular}
+\end{center}

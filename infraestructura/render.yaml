@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: muncher-frontend
+    runtime: static
+    rootDir: front-end
+    buildCommand: yarn install && yarn build
+    staticPublishPath: ./dist
+    pullRequestPreviewsEnabled: true
+    envVars:
+      - key: NODE_VERSION
+        value: "24"

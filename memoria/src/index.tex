@@ -11,6 +11,11 @@
 \usepackage{hyperref}
 \usepackage{xparse}
 \usepackage{longtable}
+\usepackage{amssymb}
+\usepackage{tabularx}
+\usepackage{pifont}
+
+\newcommand{\xmark}{\ding{55}} % ✗
 \graphicspath{{src/img/}{img/}}
 \makeatletter
 \def\input@path{{}{src/}}
@@ -21,30 +26,30 @@
 \hypersetup{pageanchor=false}
 
 \begin{titlepage}
-\centering
-\includegraphics[width=0.35\textwidth]{logo-uned.jpeg}
+	\centering
+	\includegraphics[width=0.35\textwidth]{logo-uned.jpeg}
 
-\vspace{1.5cm}
+	\vspace{1.5cm}
 
-{\Large Universidad Nacional de Educación a Distancia\par}
-\vspace{0.4cm}
-{\large Escuela técnica superior de ingeniería informática\par}
+	{\Large Universidad Nacional de Educación a Distancia\par}
+	\vspace{0.4cm}
+	{\large Escuela técnica superior de ingeniería informática\par}
 
-\vspace{1.6cm}
+	\vspace{1.6cm}
 
-{\large Proyecto de Fin de Grado en Ingeniería Informática\par}
+	{\large Proyecto de Fin de Grado en Ingeniería Informática\par}
 
-\vspace{1.6cm}
+	\vspace{1.6cm}
 
-{\LARGE \textbf{Aplicación web de nutrición}\par}
+	{\LARGE \textbf{Aplicación web de nutrición}\par}
 
-\vspace{2.2cm}
+	\vspace{2.2cm}
 
-{\large María de la Asunción Gómez Castro\par}
+	{\large María de la Asunción Gómez Castro\par}
 
-\vfill
+	\vfill
 
-{\large Curso 2025-2026\par}
+	{\large Curso 2025-2026\par}
 \end{titlepage}
 \clearpage
 \pagenumbering{arabic}
@@ -89,6 +94,9 @@ This project was created out of the need to unify all these tools in a single pl
 
 \newpage
 \input{sections/requirements.tex}
+
+\newpage
+\input{sections/infrastructure.tex}
 
 \newpage
 \input{sections/evolution.tex}
