@@ -146,3 +146,26 @@ Cada historia de usuario desarrollada estará explícitamente relacionada con un
 			\end{itemize}
 		}
 ]
+
+\us[
+	identificador=US-DE-02,
+	titulo={Despliegue en la nube del entorno de producción},
+	como={Usuario},
+	quiero={Poder acceder a la aplicación desde cualquier dispositivo con acceso a internet},
+	requerimientos={\reqref{RNF-CO-01}, \reqref{RNF-DE-01}, \reqref{RNF-DE-02}, \reqref{RNF-DE-03}, \reqref{RNF-RE-04}},
+	puntos={8},
+	criterios={
+			\begin{itemize}
+				\item Existe un entorno de producción en la nube.
+				\item El despliegue en producción se realiza manualmente, sin automatización.
+				\item La aplicación es accesible a través de una URL de Internet.
+				\item La infraestructura de la aplicación en producción es idéntica a la del entorno de desarrollo.
+			\end{itemize}
+		},
+	tareas={
+			\begin{itemize}
+				\item Creación de la infraestructura de producción a partir de la infraestructura de desarrollo.
+				\item Configuración de despliegue manual para producción.
+			\end{itemize}
+		}
+]
