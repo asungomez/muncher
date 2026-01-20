@@ -3,7 +3,7 @@ services:
     name: muncher-frontend
     runtime: static
     rootDir: front-end
-    buildCommand: yarn install && yarn build
+    buildCommand: corepack enable && yarn install && yarn build
     staticPublishPath: ./dist
     pullRequestPreviewsEnabled: true
     envVars:
