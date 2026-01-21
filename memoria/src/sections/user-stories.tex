@@ -119,6 +119,27 @@ Cada historia de usuario desarrollada estará explícitamente relacionada con un
 		}
 ]
 
+\us[
+	identificador=US-CI-05,
+	titulo={Control de ortografía y gramática},
+	como={Desarrollador},
+	quiero={Tener control de ortografía y gramática en los textos de la aplicación},
+	requerimientos={\reqref{RNF-CA-04}},
+	puntos={5},
+	criterios={
+			\begin{itemize}
+				\item El pre-commit hook ejecuta un análisis de ortografía y gramática sobre los textos visibles de la aplicación.
+			\end{itemize}
+		},
+	tareas={
+			\begin{itemize}
+				\item Seleccionar un servicio de análisis de ortografía y gramática.
+				\item Configurar el servicio de análisis de ortografía y gramática para que se ejecute en el pre-commit hook.
+				\item Documentar el uso del servicio de análisis de ortografía y gramática en el pre-commit hook.
+			\end{itemize}
+		}
+]
+
 \subsection*{Despliegue en la nube}
 \addcontentsline{toc}{subsection}{Despliegue en la nube}
 
@@ -166,6 +187,60 @@ Cada historia de usuario desarrollada estará explícitamente relacionada con un
 			\begin{itemize}
 				\item Creación de la infraestructura de producción a partir de la infraestructura de desarrollo.
 				\item Configuración de despliegue manual para producción.
+			\end{itemize}
+		}
+]
+
+\subsection*{Maquetación del front-end}
+\addcontentsline{toc}{subsection}{Maquetación del front-end}
+
+\us[
+	identificador=US-MF-01,
+	titulo={Maquetación de la pantalla de inicio},
+	como={Usuario},
+	quiero={Entender la funcionalidad de la aplicación desde el momento del acceso},
+	requerimientos={\reqref{RF-GU-01}, \reqref{RF-GU-02}, \reqref{RF-IR-07}, \reqref{RNF-CO-01}, \reqref{RNF-CO-02}},
+	puntos={8},
+	criterios={
+			\begin{itemize}
+				\item La pantalla de inicio tiene una barra de navegación.
+				\item La barra de navegación presenta el logo y un acceso directo a la pantalla de inicio.
+				\item La barra de inicio presenta opciones para registrarse o iniciar sesión.
+				\item La pantalla de inicio tiene una hero section.
+				\item La hero section describe claramente el propósito de la aplicación.
+				\item La hero section presenta un \textit{call to action} que guía el viaje de usuario hacia el registro o el inicio de sesión.
+				\item La pantalla de inicio presenta una lista de recetas destacadas.
+				\item La pantalla de inicio presenta un pie de página con información de contacto y enlaces a los documentos legales.
+			\end{itemize}
+		},
+	tareas={
+			\begin{itemize}
+				\item Selección de la paleta de colores, tipografías y elementos gráficos que representarán la marca \textbf{Muncher} en todas las pantallas.
+				\item Selección de tecnologías front-end a utilizar: librería de componentes (preexistente o propia), sistema de gestión de estilos (CSS puro, CSS Modules, CSS in JS o Tailwind CSS).
+				\item Maquetación de la pantalla de inicio de forma responsiva y accesible.
+				\item Implementación de la pantalla de inicio en el front-end.
+			\end{itemize}
+		}
+]
+
+\us[
+	identificador=US-MF-02,
+	titulo={Internacionalización},
+	como={Usuario},
+	quiero={Acceder al contenido en mi idioma preferido},
+	requerimientos={\reqref{RF-GU-01}, \reqref{RF-GU-02}, \reqref{RF-IR-07}, \reqref{RNF-CO-01}, \reqref{RNF-CO-02}},
+	puntos={8},
+	criterios={
+			\begin{itemize}
+				\item Los textos de la aplicación se almacenan de forma separada al código.
+				\item Los textos de la aplicación se encuentran en varios idiomas.
+				\item El usuario puede seleccionar el idioma de la aplicación.
+				\item La aplicación detecta el idioma del navegador del usuario y lo utiliza como idioma por defecto.
+			\end{itemize}
+		},
+	tareas={
+			\begin{itemize}
+				\item Implementación de la internacionalización en el front-end.
 			\end{itemize}
 		}
 ]
