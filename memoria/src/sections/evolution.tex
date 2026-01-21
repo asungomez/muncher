@@ -95,3 +95,32 @@ El despliegue automático debe ejecutarse de manera inmediata como respuesta a l
 		\hline
 	\end{tabular}
 \end{center}
+
+\subsubsection*{Retrospectiva}
+
+El sprint concluyó con la implementación exitosa de la infraestructura de nube del proyecto \textbf{Muncher}. El desafío principal se centró en el análisis comparativo de los distintos proveedores de nube y en la selección de una plataforma que cumpliera los requisitos técnicos del sistema sin comprometer su flexibilidad ni aumentar los costes de operación. Este proceso exigió una evaluación profunda de configurabilidad, compatibilidad con contenedores, servicios gestionados y políticas de precios, donde \textbf{Render} destacó por ofrecer una solución completa dentro de su capa gratuita.
+
+Una vez seleccionada la plataforma, el despliegue resultó especialmente fluido. El sistema se configuró mediante una \textit{blueprint} común para ambos entornos —desarrollo y producción—, garantizando consistencia en la infraestructura y simplificando la replicación de recursos. La aplicación web estática se desplegó automáticamente en el entorno de desarrollo con cada commit a la rama \texttt{main}, integrándose con el flujo de integración continua del proyecto. Por su parte, los despliegues a producción se establecieron como procesos manuales para preservar la estabilidad del servicio y evitar cambios inesperados en el entorno final.
+
+El sprint permitió consolidar las bases técnicas de la infraestructura en la nube, culminando con un entorno operativo estable, reproducible y de bajo coste. Además, la experiencia con Render reafirmó la eficacia de definir la infraestructura como código y demostró que una configuración bien estructurada puede ofrecer una transición transparente entre entornos de desarrollo y producción sin complejidad adicional.
+
+\subsection*{Sprint 3: Pantalla de inicio}
+\addcontentsline{toc}{subsection}{Sprint 3: Pantalla de inicio}
+
+El tercer sprint se centra en el diseño y desarrollo de la \textbf{pantalla de inicio} de la aplicación \textbf{Muncher}. Aunque pueda parecer una tarea limitada en alcance, este hito marca el inicio de la construcción del front‑end y sienta las bases de la identidad visual y de la experiencia de usuario del sistema. Su implementación implica definir la estructura fundamental de la interfaz y establecer criterios visuales y técnicos que guiarán el desarrollo de las siguientes vistas.
+
+Durante este sprint se tomarán decisiones clave sobre la arquitectura del front‑end, como la elección entre utilizar una librería de componentes preexistente de React —por ejemplo, MUI o Chakra UI— o desarrollar un conjunto propio de componentes adaptados a las necesidades del proyecto. Además, se trabajará en la definición de la identidad visual, seleccionando la paleta de colores, tipografías y elementos gráficos que representarán la marca \textbf{Muncher} en todas las pantallas.
+
+Otro aspecto esencial será garantizar un diseño \textbf{responsivo}, capaz de adaptarse correctamente a diferentes tamaños de pantalla y dispositivos. Esto implicará definir un sistema de maquetación flexible y patrones de diseño reutilizables que aseguren coherencia visual y una experiencia fluida tanto en escritorio como en dispositivos móviles. En resumen, este sprint establecerá los cimientos visuales y técnicos sobre los que se construirá toda la interfaz de usuario de la aplicación.
+
+La pantalla de inicio deberá incluir una serie de elementos clave orientados a la comunicación y a la usabilidad. Se incorporará una \textbf{barra de navegación} que permita acceder a las principales secciones de la aplicación, y un \textbf{llamado a la acción} (\textit{call to action}) destacando las opciones para registrarse o iniciar sesión. Asimismo, se diseñará una \textbf{hero section} que muestre de manera clara y atractiva la utilidad y el valor principal de \textbf{Muncher} desde el primer vistazo. Finalmente, se añadirá una \textbf{lista de recetas destacadas} visible incluso sin iniciar sesión, de modo que los nuevos usuarios puedan explorar parte del contenido y comprender el propósito de la aplicación antes de registrarse.
+
+\subsubsection*{Objetivos iniciales}
+
+\begin{itemize}
+	\item Seleccionar el enfoque a la hora de crear los componentes del front-end: librería de componentes preexistente o desarrollo propio.
+	\item Seleccionar un sistema de gestión de estilos: CSS puro, CSS Modules, CSS in JS o Tailwind CSS.
+	\item Definir la paleta de colores, tipografías y elementos gráficos que representarán la marca \textbf{Muncher} en todas las pantallas.
+	\item Maquetar la pantalla de inicio de forma responsiva y accesible.
+	\item Implementar la pantalla de inicio en el front-end.
+\end{itemize}
