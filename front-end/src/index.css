@@ -5,9 +5,15 @@
   --color-primary: #8bc34a;
   --color-primary-hover: #7cb342;
   --color-secondary: #f7d94c;
+  --color-secondary-hover: #f5d226;
+  --color-secondary-dark: #d4a017;
   --color-dark: #3d2b1f;
 
   /* Shadows */
   --shadow-secondary: 4px 4px 0px 0px var(--color-secondary);
   --shadow-secondary-hover: 2px 2px 0px 0px var(--color-secondary);
+  --shadow-primary: 4px 4px 0px 0px var(--color-primary);
+  --shadow-primary-hover: 2px 2px 0px 0px var(--color-primary);
+  --shadow-secondary-dark: 4px 4px 0px 0px var(--color-secondary-dark);
+  --shadow-secondary-dark-hover: 2px 2px 0px 0px var(--color-secondary-dark);
 }

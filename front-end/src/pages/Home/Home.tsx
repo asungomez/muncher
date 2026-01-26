@@ -1,27 +1,55 @@
+import Button from "../../components/Button/Button";
+
 function Home() {
   return (
-    <>
-      <h1 className="text-3xl font-bold text-gray-900 mb-4">
-        Welcome to Muncher
-      </h1>
-      <p className="text-gray-700 mb-4">
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod
-        tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
-        veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-        commodo consequat.
-      </p>
-      <p className="text-gray-700 mb-4">
-        Duis aute irure dolor in reprehenderit in voluptate velit esse cillum
-        dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
-        proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-      </p>
-      <p className="text-gray-700">
-        Sed ut perspiciatis unde omnis iste natus error sit voluptatem
-        accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab
-        illo inventore veritatis et quasi architecto beatae vitae dicta sunt
-        explicabo.
-      </p>
-    </>
+    <section className="h-[33vh] relative w-screen left-1/2 -translate-x-1/2 -mt-8">
+      {/* Mobile layout */}
+      <div
+        className="md:hidden h-full bg-cover bg-center bg-no-repeat flex flex-col items-center justify-center px-6 relative"
+        style={{ backgroundImage: "url('/hero_section_image.webp')" }}
+      >
+        <div className="absolute inset-0 bg-black/40" />
+        <div className="relative z-10 flex flex-col items-center text-center">
+          <h1 className="text-3xl font-bold text-white mb-2 drop-shadow-lg">
+            Muncher
+          </h1>
+          <p className="text-white/90 text-lg mb-4 drop-shadow">
+            Comer sano no tiene que ser aburrido
+          </p>
+          <Button>Empezar</Button>
+        </div>
+      </div>
+
+      {/* Desktop layout */}
+      <div className="hidden md:block h-full relative">
+        {/* Image side - full width as base layer */}
+        <div
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{ backgroundImage: "url('/hero_section_image.webp')" }}
+        />
+
+        {/* Green side with diagonal - overlaps image */}
+        <div
+          className="absolute right-0 w-[55%] h-full bg-primary"
+          style={{
+            clipPath: "polygon(15% 0, 100% 0, 100% 100%, 0 100%)",
+          }}
+        />
+
+        {/* Content container - respects main boundaries */}
+        <div className="absolute inset-0 flex items-center">
+          <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-end">
+            <div className="w-1/2 flex flex-col items-center text-center">
+              <h1 className="text-4xl font-bold text-white mb-2">Muncher</h1>
+              <p className="text-white/90 text-xl mb-6">
+                Comer sano no tiene que ser aburrido
+              </p>
+              <Button variant="secondary">Empezar</Button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
   );
 }
 
