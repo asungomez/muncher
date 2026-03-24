@@ -48,6 +48,7 @@ El pre-commit hook puede formatear automáticamente los archivos `.tex` usando `
 
 ```bash
 sudo cpan File::HomeDir Log::Log4perl Log::Dispatch Unicode::GCString
+brew install latexindent
 ```
 
 **Sin permisos de administrador (usando cpanminus):**
@@ -81,7 +82,15 @@ Si `latexindent` no está disponible o no funciona, el hook simplemente omitirá
 
 ### Prerrequisitos
 
-- LaTex
+- LaTex (`brew install basictex`)
+
+### Instalar las dependencias
+
+La memoria LaTeX necesita algunas dependencias para poder generar el PDF correctamente. Para instalarlas, ejecuta:
+
+```
+sudo tlmgr install enumitem
+```
 
 ### Generar la memoria
 
