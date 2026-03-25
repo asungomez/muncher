@@ -22,7 +22,7 @@ const mockRecipes: Recipe[] = [
     description:
       "Una pasta cremosa y picante con pollo que satisfará tus antojos.",
     imageUrl:
-      "https://images.unsplash.com/photo-1621996346565-e326b20f545c?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1064&q=80",
+      "https://www.zizzi.co.uk/propeller/uploads/2022/07/casareccia-pollo-piccante-e1667309010824.jpg",
     pills: [
       { name: "Pasta", color: "green" },
       { name: "Picante", color: "red" },
@@ -35,7 +35,7 @@ const mockRecipes: Recipe[] = [
     description:
       "Un postre decadente y saludable hecho con aguacate cremoso y chocolate rico, perfecto para satisfacer tu antojo de dulce sin culpa.",
     imageUrl:
-      "https://images.unsplash.com/photo-1564352969994-fac42394a22c?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=735&q=80",
+      "https://www.trops.es/wp-content/uploads/2020/03/mousse-aguacate-chocolate-1024x683.jpg",
     pills: [
       { name: "Postre", color: "pink" },
       { name: "Sano", color: "blue" },
@@ -47,8 +47,7 @@ const mockRecipes: Recipe[] = [
     name: "Smoothie Verde Energizante",
     description:
       "Un smoothie refrescante y rico en antioxidantes para comenzar tu día.",
-    imageUrl:
-      "https://images.unsplash.com/photo-1543339308-43e59d6b70a6?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80",
+    imageUrl: "https://www.hazteveg.com/img/recipes/full/201612/R03-65246.jpg",
     pills: [
       { name: "Desayuno", color: "green" },
       { name: "Rápido", color: "yellow" },
