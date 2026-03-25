@@ -1,17 +1,47 @@
 \section*{Evolución del proyecto}
 \addcontentsline{toc}{section}{Evolución del proyecto}
 
-Esta sección tiene como propósito documentar de manera detallada el progreso seguido por el proyecto \textbf{Muncher} desde su concepción inicial hasta su finalización. Constituye una guía cronológica que permite comprender cómo han evolucionado las funcionalidades del sistema, qué decisiones técnicas se han tomado en cada momento y cómo se han ido cumpliendo progresivamente los objetivos establecidos. Esta documentación proporciona una visión completa del proceso de desarrollo iterativo e incremental seguido, mostrando tanto los logros alcanzados como los aprendizajes obtenidos en cada fase.
+Esta sección tiene como propósito documentar de manera detallada el progreso
+seguido por el proyecto \textbf{Muncher} desde su concepción inicial hasta su
+finalización. Constituye una guía cronológica que permite comprender cómo han
+evolucionado las funcionalidades del sistema, qué decisiones técnicas se han
+tomado en cada momento y cómo se han ido cumpliendo progresivamente los
+objetivos establecidos. Esta documentación proporciona una visión completa del
+proceso de desarrollo iterativo e incremental seguido, mostrando tanto los
+logros alcanzados como los aprendizajes obtenidos en cada fase.
 
-El desarrollo de \textbf{Muncher} ha seguido una metodología ágil basada en sprints, que según Schwaber y Sutherland \cite{Schwaber2020} constituyen "el latido del corazón de Scrum, donde las ideas se convierten en valor". Los sprints son eventos de duración fija de un mes o menos que crean consistencia, donde un nuevo sprint comienza inmediatamente después de la conclusión del anterior.
+El desarrollo de \textbf{Muncher} ha seguido una metodología ágil basada en
+sprints, que según Schwaber y Sutherland \cite{Schwaber2020} constituyen "el
+latido del corazón de Scrum, donde las ideas se convierten en valor". Los
+sprints son eventos de duración fija de un mes o menos que crean consistencia,
+donde un nuevo sprint comienza inmediatamente después de la conclusión del
+anterior.
 
-Los sprints permiten predictibilidad al asegurar inspección y adaptación del progreso hacia un objetivo de producto al menos cada mes calendario. Como explican los autores, cuando el horizonte de un sprint es demasiado largo, el objetivo del sprint puede volverse inválido, la complejidad puede aumentar y el riesgo puede incrementarse. Los sprints más cortos pueden emplearse para generar más ciclos de aprendizaje y limitar el riesgo de coste y esfuerzo a un marco temporal más pequeño, pudiendo cada sprint considerarse como un proyecto corto. En el desarrollo de \textbf{Muncher}, un sprint tendrá una duración de dos semanas.
+Los sprints permiten predictibilidad al asegurar inspección y adaptación del
+progreso hacia un objetivo de producto al menos cada mes calendario. Como
+explican los autores, cuando el horizonte de un sprint es demasiado largo, el
+objetivo del sprint puede volverse inválido, la complejidad puede aumentar y el
+riesgo puede incrementarse. Los sprints más cortos pueden emplearse para
+generar más ciclos de aprendizaje y limitar el riesgo de coste y esfuerzo a un
+marco temporal más pequeño, pudiendo cada sprint considerarse como un proyecto
+corto. En el desarrollo de \textbf{Muncher}, un sprint tendrá una duración de
+dos semanas.
 
-Durante cada sprint se mantienen principios fundamentales: no se realizan cambios que pongan en peligro el objetivo del sprint, la calidad no disminuye, las prioridades posteriores se ajustan según sea necesario, y el alcance puede clarificarse y renegociarse conforme se aprende más. Esta metodología, alineada con los principios del Manifiesto Ágil de Beck et al. \cite{Beck2001}, ha permitido un desarrollo iterativo e incremental que facilita la adaptación a nuevos requerimientos y cambios en las prioridades.
+Durante cada sprint se mantienen principios fundamentales: no se realizan
+cambios que pongan en peligro el objetivo del sprint, la calidad no disminuye,
+las prioridades posteriores se ajustan según sea necesario, y el alcance puede
+clarificarse y renegociarse conforme se aprende más. Esta metodología, alineada
+con los principios del Manifiesto Ágil de Beck et al. \cite{Beck2001}, ha
+permitido un desarrollo iterativo e incremental que facilita la adaptación a
+nuevos requerimientos y cambios en las prioridades.
 
-Para cada sprint se ha establecido una capacidad de \textbf{10 puntos de historia}, basada en la disponibilidad de tiempo y recursos del proyecto. Esta capacidad fija permite una planificación predecible y facilita el seguimiento del progreso a lo largo de las diferentes iteraciones.
+Para cada sprint se ha establecido una capacidad de \textbf{10 puntos de
+	historia}, basada en la disponibilidad de tiempo y recursos del proyecto. Esta
+capacidad fija permite una planificación predecible y facilita el seguimiento
+del progreso a lo largo de las diferentes iteraciones.
 
-Cada sprint documentado en esta sección seguirá una estructura consistente que incluye:
+Cada sprint documentado en esta sección seguirá una estructura consistente que
+incluye:
 
 \begin{itemize}
 	\item \textbf{Objetivos iniciales:} Definición clara de las metas específicas establecidas para el sprint, alineadas con las prioridades del proyecto y los requerimientos identificados.
@@ -22,23 +52,35 @@ Cada sprint documentado en esta sección seguirá una estructura consistente que
 \subsection*{Sprint 1: Configuración del repositorio}
 \addcontentsline{toc}{subsection}{Sprint 1: Configuración del repositorio}
 
-El primer sprint se enfoca en establecer los cimientos técnicos del proyecto \textbf{Muncher} mediante la creación de un repositorio en GitHub, la configuración de un proyecto base utilizando Vite y React, y la implementación de controles de calidad automatizados a través de GitHub Actions con Prettier y ESLint.
+El primer sprint se enfoca en establecer los cimientos técnicos del proyecto
+\textbf{Muncher} mediante la creación de un repositorio en GitHub, la
+configuración de un proyecto base utilizando Vite y React, y la implementación
+de controles de calidad automatizados a través de GitHub Actions con Prettier y
+ESLint.
 
-La incorporación de estas herramientas de calidad desde las etapas más tempranas del desarrollo es fundamental para el éxito del proyecto. Como establece el principio de que "la prevención es más efectiva que la corrección", implementar controles de formato de código y análisis estático cuando la base de código es mínima permite establecer estándares consistentes desde el inicio. Esto reduce significativamente la deuda técnica futura, ya que cuanto menos código fuente existe, menor es la superficie de potenciales errores que podrían requerir corrección posteriormente, y más sencillo resulta mantener la consistencia y calidad del código a medida que el proyecto crece.
+La incorporación de estas herramientas de calidad desde las etapas más
+tempranas del desarrollo es fundamental para el éxito del proyecto. Como
+establece el principio de que "la prevención es más efectiva que la
+corrección", implementar controles de formato de código y análisis estático
+cuando la base de código es mínima permite establecer estándares consistentes
+desde el inicio. Esto reduce significativamente la deuda técnica futura, ya que
+cuanto menos código fuente existe, menor es la superficie de potenciales
+errores que podrían requerir corrección posteriormente, y más sencillo resulta
+mantener la consistencia y calidad del código a medida que el proyecto crece.
 
 \subsubsection*{Objetivos iniciales}
 
 \begin{itemize}
 	\item Configuración del repositorio en GitHub.
 	\item Creación de un proyecto base utilizando Vite y React.
-	\item Implementación de controles de calidad automatizados a través de GitHub Actions con Prettier y ESLint.
+	\item Implementación de controles de calidad automatizados a través de GitHub Actions
+	      con Prettier y ESLint.
 \end{itemize}
 
 \subsubsection*{Historias de usuario completadas}
 
-
 \begin{center}
-	\begin{tabular}{|l|l|c|}
+	\begin{tabularx}{\textwidth}{|l|X|c|}
 		\hline
 		\textbf{Identificador} & \textbf{Nombre}                            & \textbf{Puntos de historia} \\
 		\hline
@@ -50,42 +92,68 @@ La incorporación de estas herramientas de calidad desde las etapas más tempran
 		\hline
 		\usref{US-CI-04}       & Corrección automática del código           & 5                           \\
 		\hline
-	\end{tabular}
+	\end{tabularx}
 \end{center}
 
 \subsubsection*{Retrospectiva}
 
-El sprint finalizó con éxito, cumpliendo todos los objetivos planteados. El repositorio en GitHub quedó configurado con una base sólida mediante Vite y React, junto con la integración de controles de calidad automatizados que aseguran un código consistente desde el inicio del proyecto.
+El sprint finalizó con éxito, cumpliendo todos los objetivos planteados. El
+repositorio en GitHub quedó configurado con una base sólida mediante Vite y
+React, junto con la integración de controles de calidad automatizados que
+aseguran un código consistente desde el inicio del proyecto.
 
-La principal dificultad técnica consistió en implementar la corrección automática del código en un entorno \textit{monorepo} que contiene diferentes lenguajes de programación. Soluciones estándar como \texttt{husky} o \texttt{python pre-commit}, aunque útiles, dependen de que todo el repositorio esté desarrollado en un único lenguaje, lo cual no se adaptaba a las necesidades del proyecto.
+La principal dificultad técnica consistió en implementar la corrección
+automática del código en un entorno \textit{monorepo} que contiene diferentes
+lenguajes de programación. Soluciones estándar como \texttt{husky} o
+\texttt{python pre-commit}, aunque útiles, dependen de que todo el repositorio
+esté desarrollado en un único lenguaje, lo cual no se adaptaba a las
+necesidades del proyecto.
 
-Para superar esta limitación, se desarrolló un script personalizado en \texttt{bash} que detecta en qué partes del \textit{monorepo} se han realizado cambios (por ejemplo, el front-end en React o la memoria en \LaTeX) y aplica las herramientas de corrección más adecuadas para cada lenguaje. Este enfoque permite estandarizar la indentación, el espaciado y otros aspectos de estilo de forma automática, garantizando la coherencia de todo el código sin importar la diversidad tecnológica presente en el repositorio.
+Para superar esta limitación, se desarrolló un script personalizado en
+\texttt{bash} que detecta en qué partes del \textit{monorepo} se han realizado
+cambios (por ejemplo, el front-end en React o la memoria en \LaTeX) y aplica
+las herramientas de corrección más adecuadas para cada lenguaje. Este enfoque
+permite estandarizar la indentación, el espaciado y otros aspectos de estilo de
+forma automática, garantizando la coherencia de todo el código sin importar la
+diversidad tecnológica presente en el repositorio.
 
-Gracias a esta solución, el proceso de desarrollo se beneficia de una mayor calidad y consistencia, reduciendo la necesidad de correcciones manuales y evitando el riesgo de introducir errores por cambios de formato.
+Gracias a esta solución, el proceso de desarrollo se beneficia de una mayor
+calidad y consistencia, reduciendo la necesidad de correcciones manuales y
+evitando el riesgo de introducir errores por cambios de formato.
 
 \subsection*{Sprint 2: Despliegue automático}
 \addcontentsline{toc}{subsection}{Sprint 2: Despliegue automático}
 
-El segundo sprint se centra en automatizar el proceso de despliegue del sistema \textbf{Muncher} en la nube, estableciendo un entorno de desarrollo accesible y reproducible. El objetivo principal es lograr que, con cada cambio en la rama \texttt{main}, el sistema se despliegue automáticamente en un entorno remoto, garantizando una integración continua entre el desarrollo local y la infraestructura en la nube.
+El segundo sprint se centra en automatizar el proceso de despliegue del sistema
+\textbf{Muncher} en la nube, estableciendo un entorno de desarrollo accesible y
+reproducible. El objetivo principal es lograr que, con cada cambio en la rama
+\texttt{main}, el sistema se despliegue automáticamente en un entorno remoto,
+garantizando una integración continua entre el desarrollo local y la
+infraestructura en la nube.
 
-Para asegurar la consistencia y trazabilidad del proyecto, la infraestructura se define íntegramente como código (\textit{Infrastructure as Code}, IaC).
+Para asegurar la consistencia y trazabilidad del proyecto, la infraestructura
+se define íntegramente como código (\textit{Infrastructure as Code}, IaC).
 
-El despliegue automático debe ejecutarse de manera inmediata como respuesta a los \textit{commits} realizados en la rama principal, eliminando pasos manuales y reduciendo el riesgo de errores humanos durante la actualización del entorno de desarrollo.
+El despliegue automático debe ejecutarse de manera inmediata como respuesta a
+los \textit{commits} realizados en la rama principal, eliminando pasos manuales
+y reduciendo el riesgo de errores humanos durante la actualización del entorno
+de desarrollo.
 
 \subsubsection*{Objetivos iniciales}
 
 \begin{itemize}
 	\item Configurar un entorno de desarrollo en la nube accesible para el equipo.
 	\item Definir la infraestructura como código utilizando herramientas de IaC.
-	\item Implementar un flujo de integración y despliegue continuo (CI/CD) que se active automáticamente ante cambios en la rama \texttt{main}.
-	\item Garantizar la reproducibilidad del entorno para futuras fases del proyecto, como el despliegue en producción.
+	\item Implementar un flujo de integración y despliegue continuo (CI/CD) que se active
+	      automáticamente ante cambios en la rama \texttt{main}.
+	\item Garantizar la reproducibilidad del entorno para futuras fases del proyecto,
+	      como el despliegue en producción.
 \end{itemize}
 
 \subsubsection*{Historias de usuario completadas}
 
-
 \begin{center}
-	\begin{tabular}{|l|l|c|}
+	\begin{tabularx}{\textwidth}{|l|X|c|}
 		\hline
 		\textbf{Identificador} & \textbf{Nombre}                                 & \textbf{Puntos de historia} \\
 		\hline
@@ -93,5 +161,159 @@ El despliegue automático debe ejecutarse de manera inmediata como respuesta a l
 		\hline
 		\usref{US-DE-02}       & Despliegue en la nube del entorno de producción & 2                           \\
 		\hline
-	\end{tabular}
+	\end{tabularx}
 \end{center}
+
+\subsubsection*{Retrospectiva}
+
+El sprint concluyó con la implementación exitosa de la infraestructura de nube
+del proyecto \textbf{Muncher}. El desafío principal se centró en el análisis
+comparativo de los distintos proveedores de nube y en la selección de una
+plataforma que cumpliera los requisitos técnicos del sistema sin comprometer su
+flexibilidad ni aumentar los costes de operación. Este proceso exigió una
+evaluación profunda de configurabilidad, compatibilidad con contenedores,
+servicios gestionados y políticas de precios, donde \textbf{Render} destacó por
+ofrecer una solución completa dentro de su capa gratuita.
+
+Una vez seleccionada la plataforma, el despliegue resultó especialmente fluido.
+El sistema se configuró mediante una \textit{blueprint} común para ambos
+entornos —desarrollo y producción—, garantizando consistencia en la
+infraestructura y simplificando la replicación de recursos. La aplicación web
+estática se desplegó automáticamente en el entorno de desarrollo con cada
+commit a la rama \texttt{main}, integrándose con el flujo de integración
+continua del proyecto. Por su parte, los despliegues a producción se
+establecieron como procesos manuales para preservar la estabilidad del servicio
+y evitar cambios inesperados en el entorno final.
+
+El sprint permitió consolidar las bases técnicas de la infraestructura en la
+nube, culminando con un entorno operativo estable, reproducible y de bajo
+coste. Además, la experiencia con Render reafirmó la eficacia de definir la
+infraestructura como código y demostró que una configuración bien estructurada
+puede ofrecer una transición transparente entre entornos de desarrollo y
+producción sin complejidad adicional.
+
+\subsection*{Sprint 3: Pantalla de inicio}
+\addcontentsline{toc}{subsection}{Sprint 3: Pantalla de inicio}
+
+El tercer sprint se centra en el diseño y desarrollo de la \textbf{pantalla de
+	inicio} de la aplicación \textbf{Muncher}. Aunque pueda parecer una tarea
+limitada en alcance, este hito marca el inicio de la construcción del front‑end
+y sienta las bases de la identidad visual y de la experiencia de usuario del
+sistema. Su implementación implica definir la estructura fundamental de la
+interfaz y establecer criterios visuales y técnicos que guiarán el desarrollo
+de las siguientes vistas.
+
+Durante este sprint se tomarán decisiones clave sobre la arquitectura del
+front‑end, como la elección entre utilizar una librería de componentes
+preexistente de React —por ejemplo, MUI o Chakra UI— o desarrollar un conjunto
+propio de componentes adaptados a las necesidades del proyecto. Además, se
+trabajará en la definición de la identidad visual, seleccionando la paleta de
+colores, tipografías y elementos gráficos que representarán la marca
+\textbf{Muncher} en todas las pantallas.
+
+Otro aspecto esencial será garantizar un diseño \textbf{responsivo}, capaz de
+adaptarse correctamente a diferentes tamaños de pantalla y dispositivos. Esto
+implicará definir un sistema de maquetación flexible y patrones de diseño
+reutilizables que aseguren coherencia visual y una experiencia fluida tanto en
+escritorio como en dispositivos móviles. En resumen, este sprint establecerá
+los cimientos visuales y técnicos sobre los que se construirá toda la interfaz
+de usuario de la aplicación.
+
+La pantalla de inicio deberá incluir una serie de elementos clave orientados a
+la comunicación y a la usabilidad. Se incorporará una \textbf{barra de
+	navegación} que permita acceder a las principales secciones de la aplicación, y
+un \textbf{llamado a la acción} (\textit{call to action}) destacando las
+opciones para registrarse o iniciar sesión. Asimismo, se diseñará una
+\textbf{hero section} que muestre de manera clara y atractiva la utilidad y el
+valor principal de \textbf{Muncher} desde el primer vistazo. Finalmente, se
+añadirá una \textbf{lista de recetas destacadas} visible incluso sin iniciar
+sesión, de modo que los nuevos usuarios puedan explorar parte del contenido y
+comprender el propósito de la aplicación antes de registrarse.
+
+\subsubsection*{Objetivos iniciales}
+
+\begin{itemize}
+	\item Seleccionar el enfoque a la hora de crear los componentes del front-end:
+	      librería de componentes preexistente o desarrollo propio.
+	\item Seleccionar un sistema de gestión de estilos: CSS puro, CSS Modules, CSS in JS
+	      o Tailwind CSS.
+	\item Definir la paleta de colores, tipografías y elementos gráficos que
+	      representarán la marca \textbf{Muncher} en todas las pantallas.
+	\item Maquetar la pantalla de inicio de forma responsiva y accesible.
+	\item Implementar la pantalla de inicio en el front-end.
+	\item Asegurarse de que los textos de la aplicación se almacenan de forma separada al
+	      código.
+	\item Añadir control de ortografía y gramática a los textos de la aplicación.
+\end{itemize}
+
+\subsubsection*{Historias de usuario completadas}
+
+\begin{center}
+	\begin{tabularx}{\textwidth}{|l|X|c|}
+		\hline
+		\textbf{Identificador} & \textbf{Nombre}                      & \textbf{Puntos de historia} \\
+		\hline
+		\usref{US-MF-01}       & Maquetación de la pantalla de inicio & 5                           \\
+		\hline
+		\usref{US-MF-02}       & Internacionalización                 & 3                           \\
+		\hline
+		\usref{US-CI-05}       & Control de ortografía y gramática    & 2                           \\
+		\hline
+	\end{tabularx}
+\end{center}
+
+\subsubsection*{Retrospectiva}
+
+El tercer sprint ha concluido con la definición de la identidad visual de
+\textbf{Muncher} y la implementación funcional de su interfaz de bienvenida. El
+proceso de toma de decisiones técnicas ha sido fundamental para equilibrar la
+personalización estética con la eficiencia en el desarrollo.
+
+En cuanto a la arquitectura de componentes, se ha optado por un
+\textbf{desarrollo propio} en lugar de depender de librerías de componentes
+cerradas como MUI o Chakra UI. Esta decisión se fundamenta en la búsqueda de la
+máxima flexibilidad y en la disponibilidad de recursos y documentación actual
+que simplifican la creación de componentes a medida. El uso de referencias como
+\textbf{Flowbite} ha permitido adoptar un enfoque "hecho a mano" pero altamente
+eficiente, obteniendo componentes totalmente funcionales y adaptados a las
+necesidades específicas del proyecto sin la sobrecarga de una librería externa.
+
+Para la gestión de estilos, se ha seleccionado \textbf{Tailwind CSS}. Su
+facilidad de configuración, el impacto mínimo en el tamaño del \textit{bundle}
+final y la agilidad que ofrece para la creación de temas dinámicos fueron los
+factores determinantes frente a alternativas como CSS puro o CSS-in-JS.
+
+A nivel de diseño, se ha definido una identidad visual disruptiva: un estilo
+\textbf{desenfadado, colorido y divertido} inspirado en la estética de las
+revistas juveniles de los años 80 y 90. Esta dirección artística se materializa
+en una paleta de colores vibrante, el uso de formas angulosas con sombras muy
+marcadas y una tipografía de estilo urbano o \textit{grunge} para los
+titulares, dotando a la aplicación de una personalidad única en su sector.
+
+Finalmente, la maquetación se ha ejecutado bajo un enfoque
+\textbf{\textit{mobile-first}}. Este flujo de trabajo ha garantizado que la
+experiencia de usuario sea óptima en dispositivos móviles desde el inicio,
+facilitando la adaptación progresiva de la interfaz a pantallas de mayor
+resolución mediante los \textit{breakpoints} nativos de Tailwind, asegurando
+así una responsividad total y una jerarquía visual coherente en todo momento.
+
+\vspace{1cm}
+
+\begin{figure}[H]
+
+	\begin{subfigure}{0.5\textwidth}
+		\centering
+		\includegraphics[height=12cm]{../img/mobile-home-page.png}
+		\caption{Diseño para móviles}
+		\label{fig:sub-design-home-page-mobile}
+	\end{subfigure}
+	\begin{subfigure}{0.5\textwidth}
+		\centering
+		\includegraphics[height=12cm]{../img/desktop-home-page.png}
+		\caption{Diseño para ordenadores}
+		\label{fig:sub-design-home-page-desktop}
+	\end{subfigure}
+
+	\caption{Diseño de la pantalla de inicio de \textbf{Muncher} para dispositivos móviles y ordenadores.}
+	\label{fig:design-home-page}
+\end{figure}
