@@ -1,4 +1,3 @@
-import React from "react";
 import type { Recipe } from "../../services/recipes/types";
 import Pill from "../Pill/Pill";
 import type { RecipeCardVariant } from "./utils";
@@ -15,10 +14,10 @@ const cardVariants: Record<RecipeCardVariant, { bg: string; rotate: string }> =
     tertiary: { bg: "bg-tertiary", rotate: "transform rotate-1" },
   };
 
-const RecipeCard: React.FC<RecipeCardProps> = ({
+function RecipeCard({
   recipe: { name, description, imageUrl, pills },
   variant,
-}) => {
+}: RecipeCardProps) {
   const style = cardVariants[variant];
 
   return (
@@ -43,6 +42,6 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
       </div>
     </div>
   );
-};
+}
 
 export default RecipeCard;

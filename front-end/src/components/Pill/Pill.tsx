@@ -22,8 +22,8 @@ interface PillProps {
   color?: PillColor;
 }
 
-const Pill: React.FC<PillProps> = ({ content, color = "gray" }) => {
-  const colorClass = getPillColorClass(color as PillColor);
+function Pill({ content, color = "pink" }: PillProps) {
+  const colorClass = getPillColorClass(color);
   return (
     <span
       className={`inline-block px-3 py-1 text-sm font-semibold mr-2 mb-2 border-2 border-black shadow-[2px_2px_0px_#000] ${colorClass}`}
@@ -31,6 +31,6 @@ const Pill: React.FC<PillProps> = ({ content, color = "gray" }) => {
       {content}
     </span>
   );
-};
+}
 
 export default Pill;

@@ -1,4 +1,3 @@
-import React from "react";
 import RecipeCard from "../RecipeCard/RecipeCard";
 import type { Recipe } from "../../services/recipes/types";
 import { RECIPE_CARD_VARIANTS } from "../RecipeCard/utils";
@@ -7,7 +6,7 @@ interface RecipesListProps {
   recipes: Recipe[];
 }
 
-const RecipesList: React.FC<RecipesListProps> = ({ recipes }) => {
+function RecipesList({ recipes }: RecipesListProps) {
   return (
     <section className="py-8">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -25,6 +24,6 @@ const RecipesList: React.FC<RecipesListProps> = ({ recipes }) => {
       </div>
     </section>
   );
-};
+}
 
 export default RecipesList;
