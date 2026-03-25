@@ -12,6 +12,7 @@ const cardVariants: Record<RecipeCardVariant, { bg: string; rotate: string }> =
     primary: { bg: "bg-secondary", rotate: "transform -rotate-1" },
     secondary: { bg: "bg-primary", rotate: "transform rotate-2" },
     tertiary: { bg: "bg-tertiary", rotate: "transform rotate-1" },
+    quaternary: { bg: "bg-quaternary", rotate: "transform -rotate-2" },
   };
 
 function RecipeCard({
@@ -24,7 +25,7 @@ function RecipeCard({
     <div
       className={`shadow-lg bg-white transform transition-transform duration-300 ease-in-out font-sans p-2 border-4 border-black hover:scale-105 hover:rotate-0 ${style.rotate}`}
     >
-      <div className={`${style.bg} p-4`}>
+      <div className={`${style.bg} p-4 h-full flex flex-col justify-between`}>
         <img
           className="w-full h-48 object-cover border-4 border-black"
           src={imageUrl}

@@ -8,14 +8,19 @@
   --color-secondary-hover: #f5d226;
   --color-tertiary: #f472b6;
   --color-tertiary-hover: #ec4899;
+  --color-quaternary: #22d3ee;
+  --color-quaternary-hover: #1ebed1;
   --color-secondary-dark: #d4a017;
   --color-dark: #3d2b1f;
+  --color-paper-stock: #f1f5f9;
 
   /* Shadows */
   --shadow-secondary: 4px 4px 0px 0px var(--color-secondary);
   --shadow-secondary-hover: 2px 2px 0px 0px var(--color-secondary);
   --shadow-primary: 4px 4px 0px 0px var(--color-primary);
   --shadow-primary-hover: 2px 2px 0px 0px var(--color-primary);
+  --shadow-quaternary: 4px 4px 0px 0px var(--color-quaternary);
+  --shadow-quaternary-hover: 2px 2px 0px 0px var(--color-quaternary);
   --shadow-secondary-dark: 4px 4px 0px 0px var(--color-secondary-dark);
   --shadow-secondary-dark-hover: 2px 2px 0px 0px var(--color-secondary-dark);
 }
