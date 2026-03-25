@@ -32,7 +32,9 @@ function RecipeCard({
           alt={`Imagen de ${name}`}
         />
         <div className="px-1 py-4">
-          <div className="font-bold text-2xl mb-2 text-gray-800">{name}</div>
+          <div className="font-bold text-xl mb-2 text-gray-800 font-block">
+            {name}
+          </div>
           <p className="text-gray-700 text-base">{description}</p>
         </div>
         <div className="px-1 pt-4 pb-2">

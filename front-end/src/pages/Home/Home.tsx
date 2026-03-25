@@ -67,7 +67,7 @@ function Home() {
         >
           <div className="absolute inset-0 bg-black/40" />
           <div className="relative z-10 flex flex-col items-center text-center">
-            <h1 className="text-3xl font-bold text-white mb-2 drop-shadow-lg">
+            <h1 className="text-5xl font-bold text-white mb-2 drop-shadow-lg font-marker">
               Muncher
             </h1>
             <p className="text-white/90 text-lg mb-4 drop-shadow">
@@ -100,7 +100,9 @@ function Home() {
           <div className="absolute inset-0 flex items-center">
             <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-end">
               <div className="w-1/2 flex flex-col items-center text-center">
-                <h1 className="text-4xl font-bold text-white mb-2">Muncher</h1>
+                <h1 className="text-6xl font-bold text-white mb-2 font-marker">
+                  Muncher
+                </h1>
                 <p className="text-white/90 text-xl mb-6">
                   Comer sano no tiene que ser aburrido
                 </p>

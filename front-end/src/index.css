@@ -23,4 +23,8 @@
   --shadow-quaternary-hover: 2px 2px 0px 0px var(--color-quaternary);
   --shadow-secondary-dark: 4px 4px 0px 0px var(--color-secondary-dark);
   --shadow-secondary-dark-hover: 2px 2px 0px 0px var(--color-secondary-dark);
+
+  /* Fonts */
+  --font-marker: "Permanent Marker", cursive;
+  --font-block: "Rubik Mono One", sans-serif;
 }

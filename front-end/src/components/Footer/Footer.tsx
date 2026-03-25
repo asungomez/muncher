@@ -4,7 +4,7 @@ function Footer() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 text-white">
         <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
           <div>
-            <h2 className="text-2xl font-extrabold uppercase tracking-wider text-black">
+            <h2 className="text-2xl font-extrabold uppercase tracking-wider text-black font-marker">
               Muncher
             </h2>
             <p className="mt-1 text-sm text-black/90">
