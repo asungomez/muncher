@@ -1,4 +1,4 @@
-import type { PillColor } from "../../components/Pill/Pill";
+import type { PillColor } from "../../components/Pill/utils";
 
 export type Pill = {
   name: string;
