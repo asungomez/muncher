@@ -192,8 +192,8 @@ infraestructura como código y demostró que una configuración bien estructurad
 puede ofrecer una transición transparente entre entornos de desarrollo y
 producción sin complejidad adicional.
 
-\subsection*{Sprint 3: Pantalla de inicio}
-\addcontentsline{toc}{subsection}{Sprint 3: Pantalla de inicio}
+\subsection*{Sprint 3: Pantalla de inicio y controles de calidad del texto}
+\addcontentsline{toc}{subsection}{Sprint 3: Pantalla de inicio y controles de calidad del texto}
 
 El tercer sprint se centra en el diseño y desarrollo de la \textbf{pantalla de
 	inicio} de la aplicación \textbf{Muncher}. Aunque pueda parecer una tarea
@@ -316,6 +316,18 @@ de manera mucho más sencilla y eficiente. Esto garantiza que la comunicación
 con el usuario final mantenga un estándar de calidad profesional, minimizando
 errores tipográficos que podrían pasar desapercibidos en una revisión manual
 del código.
+
+Finalmente, para materializar este control de calidad sobre los textos
+extraídos, se ha integrado \textbf{cspell} como herramienta de corrección
+ortográfica. La elección de esta utilidad frente a otras alternativas como
+\textit{typos} —más orientada al ecosistema anglosajón— se debe a su robusto
+soporte y amplio diccionario para el idioma \textbf{español}. Además, su
+capacidad de integración directa con \textbf{ESLint} ha permitido unificar la
+validación de la sintaxis del código y la corrección tipográfica bajo un mismo
+flujo de ejecución. De este modo, mediante un único comando, el sistema es
+capaz de detectar tanto errores de programación como erratas en los contenidos
+de la interfaz, garantizando una entrega de software pulida en todos sus
+aspectos.
 
 \vspace{1cm}
 
