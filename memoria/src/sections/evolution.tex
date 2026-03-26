@@ -297,6 +297,26 @@ facilitando la adaptación progresiva de la interfaz a pantallas de mayor
 resolución mediante los \textit{breakpoints} nativos de Tailwind, asegurando
 así una responsividad total y una jerarquía visual coherente en todo momento.
 
+Por otro lado, se ha implementado la infraestructura para la
+\textbf{internacionalización (i18n)} de la aplicación. Aunque actualmente el
+sistema se ofrece exclusivamente en español, se ha considerado crítico ejecutar
+esta tarea en las etapas iniciales del desarrollo. Integrar un sistema de
+traducción una vez que la interfaz está avanzada supondría una refactorización
+titánica para extraer cientos de cadenas de texto embebidas en el código. Al
+centralizar todos los literales en ficheros de configuración independientes
+(habitualmente en formato \texttt{JSON}), se facilita no solo la futura
+escalabilidad a otros idiomas, sino también el mantenimiento y la consistencia
+editorial del sitio.
+
+Esta separación de intereses entre la lógica de presentación y el contenido
+textual ofrece una ventaja adicional: la optimización de los flujos de
+\textbf{control de calidad}. Al residir los textos fuera del código fuente, es
+posible aplicar herramientas automáticas de control de ortografía y gramática
+de manera mucho más sencilla y eficiente. Esto garantiza que la comunicación
+con el usuario final mantenga un estándar de calidad profesional, minimizando
+errores tipográficos que podrían pasar desapercibidos en una revisión manual
+del código.
+
 \vspace{1cm}
 
 \begin{figure}[H]
