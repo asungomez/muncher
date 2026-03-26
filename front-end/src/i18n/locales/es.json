@@ -1,0 +1,17 @@
+{
+  "app": {
+    "name": "Muncher",
+    "slogan": "Comer sano no tiene que ser aburrido"
+  },
+  "authentication": {
+    "log-in": "Iniciar sesión"
+  },
+  "footer": {
+    "contact": "Contacto",
+    "copyright": "© 2026 Muncher."
+  },
+  "home": {
+    "call-to-action": "Empezar",
+    "home": "Inicio"
+  }
+}
