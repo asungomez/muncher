@@ -3,13 +3,43 @@
 \addcontentsline{toc}{section}{Anexo I: Historias de usuario}
 \label{sec:anexo-historias-usuario}
 
-Las historias de usuario constituyen una técnica fundamental en el desarrollo ágil de software para capturar requerimientos desde la perspectiva del usuario final. Según Cohn \cite{Cohn2004}, "una historia de usuario describe funcionalidad que será valiosa para un usuario o cliente de un sistema o software", y están compuestas por tres aspectos: una descripción escrita utilizada para planificación y como recordatorio, conversaciones sobre la historia que ayudan a elaborar los detalles, y pruebas que pueden usarse para determinar cuándo una historia está completa1. Estas historias sirven como herramienta para alcanzar tanto requerimientos funcionales como no funcionales, funcionando como pasos individuales e incrementales que van acercando el desarrollo hacia el objetivo final del proyecto.
+Las historias de usuario constituyen una técnica fundamental en el desarrollo
+ágil de software para capturar requerimientos desde la perspectiva del usuario
+final. Según Cohn \cite{Cohn2004}, "una historia de usuario describe
+funcionalidad que será valiosa para un usuario o cliente de un sistema o
+software", y están compuestas por tres aspectos: una descripción escrita
+utilizada para planificación y como recordatorio, conversaciones sobre la
+historia que ayudan a elaborar los detalles, y pruebas que pueden usarse para
+determinar cuándo una historia está completa1. Estas historias sirven como
+herramienta para alcanzar tanto requerimientos funcionales como no funcionales,
+funcionando como pasos individuales e incrementales que van acercando el
+desarrollo hacia el objetivo final del proyecto.
 
-Cada historia de usuario representa una funcionalidad específica que aporta valor al usuario y puede ser implementada de forma independiente en una iteración del proyecto. La asignación de estas historias a las diferentes iteraciones se realizará en función de las prioridades establecidas a los requerimientos con los que se asocian, asegurando que las funcionalidades más críticas se desarrollen en primer lugar.
+Cada historia de usuario representa una funcionalidad específica que aporta
+valor al usuario y puede ser implementada de forma independiente en una
+iteración del proyecto. La asignación de estas historias a las diferentes
+iteraciones se realizará en función de las prioridades establecidas a los
+requerimientos con los que se asocian, asegurando que las funcionalidades más
+críticas se desarrollen en primer lugar.
 
-Para facilitar la planificación y estimación del esfuerzo de desarrollo, cada historia de usuario será valorada utilizando puntos de historia basados en la sucesión de Fibonacci (1, 2, 3, 5, 8). Como explica Cohn \cite{Cohn2005}, los estudios demuestran que somos mejores estimando cosas que caen dentro de un orden de magnitud, y estas secuencias no lineales funcionan bien porque reflejan la mayor incertidumbre asociada con estimaciones para unidades de trabajo más grandes. Los espacios en la secuencia de Fibonacci se vuelven apropiadamente más grandes a medida que los números aumentan, donde cada número debe pensarse como un "cajón" en el que se vierten elementos del tamaño apropiado. Los puntos no representan tiempo directamente, sino una medida relativa de complejidad, esfuerzo y riesgo asociado a cada historia.
+Para facilitar la planificación y estimación del esfuerzo de desarrollo, cada
+historia de usuario será valorada utilizando puntos de historia basados en la
+sucesión de Fibonacci (1, 2, 3, 5, 8). Como explica Cohn \cite{Cohn2005}, los
+estudios demuestran que somos mejores estimando cosas que caen dentro de un
+orden de magnitud, y estas secuencias no lineales funcionan bien porque
+reflejan la mayor incertidumbre asociada con estimaciones para unidades de
+trabajo más grandes. Los espacios en la secuencia de Fibonacci se vuelven
+apropiadamente más grandes a medida que los números aumentan, donde cada número
+debe pensarse como un "cajón" en el que se vierten elementos del tamaño
+apropiado. Los puntos no representan tiempo directamente, sino una medida
+relativa de complejidad, esfuerzo y riesgo asociado a cada historia.
 
-Cada historia de usuario desarrollada estará explícitamente relacionada con uno o varios requerimientos funcionales o no funcionales identificados previamente, estableciendo una trazabilidad clara entre las necesidades documentadas y su implementación práctica. Esta relación garantiza que cada incremento de funcionalidad contribuya de manera medible al cumplimiento de los objetivos del proyecto.
+Cada historia de usuario desarrollada estará explícitamente relacionada con uno
+o varios requerimientos funcionales o no funcionales identificados previamente,
+estableciendo una trazabilidad clara entre las necesidades documentadas y su
+implementación práctica. Esta relación garantiza que cada incremento de
+funcionalidad contribuya de manera medible al cumplimiento de los objetivos del
+proyecto.
 
 \subsection*{Configuración inicial}
 \addcontentsline{toc}{subsection}{Configuración inicial}
@@ -50,7 +80,8 @@ Cada historia de usuario desarrollada estará explícitamente relacionada con un
 				\item Existe una aplicación Vite + React.
 				\item La aplicación puede ejecutarse localmente.
 				\item La aplicación puede visitarse en el navegador.
-				\item La aplicación responde de forma automática a los cambios llevados a cabo en el código fuente.
+				\item La aplicación responde de forma automática a los cambios llevados a cabo en el
+				      código fuente.
 			\end{itemize}
 		},
 	tareas={
@@ -73,8 +104,10 @@ Cada historia de usuario desarrollada estará explícitamente relacionada con un
 				\item Existe una Github Action que ejecuta ESLint y Prettier sobre el código fuente.
 				\item El repositorio sólo permite cambios en la rama main mediante Pull Request.
 				\item La Github Action se ejecuta automáticamente cuando se crea un Pull Request.
-				\item La Pull Request no se puede fusionar hasta que la Github Action haya finalizado correctamente.
-				\item Existen comandos documentados para ejecutar ESLint y Prettier sobre el código fuente en local.
+				\item La Pull Request no se puede fusionar hasta que la Github Action haya finalizado
+				      correctamente.
+				\item Existen comandos documentados para ejecutar ESLint y Prettier sobre el código
+				      fuente en local.
 			\end{itemize}
 		},
 	tareas={
@@ -83,8 +116,10 @@ Cada historia de usuario desarrollada estará explícitamente relacionada con un
 				\item Configuración de ESLint y Prettier.
 				\item Configuración de Github Actions para ejecutar ESLint y Prettier.
 				\item Documentación de los comandos para ejecutar ESLint y Prettier en local.
-				\item Configuración del repositorio de Github para que sólo se permitan cambios en la rama main mediante Pull Request.
-				\item Configuración del repositorio para hacer la Github Action obligatoria para fusionar un Pull Request.
+				\item Configuración del repositorio de Github para que sólo se permitan cambios en la
+				      rama main mediante Pull Request.
+				\item Configuración del repositorio para hacer la Github Action obligatoria para
+				      fusionar un Pull Request.
 			\end{itemize}
 		}
 ]
@@ -98,22 +133,31 @@ Cada historia de usuario desarrollada estará explícitamente relacionada con un
 	puntos={5},
 	criterios={
 			\begin{itemize}
-				\item Existe un pre-commit hook que ejecuta ESLint y Prettier sobre el código fuente, modificando el código fuente para que cumpla con los estándares establecidos.
-				\item El pre-commit hook sólo se ejecuta sobre los archivos que han sido modificados en el commit.
-				\item El pre-commit hook corrige automáticamente los errores de formato y buenas prácticas de código.
+				\item Existe un pre-commit hook que ejecuta ESLint y Prettier sobre el código fuente,
+				      modificando el código fuente para que cumpla con los estándares establecidos.
+				\item El pre-commit hook sólo se ejecuta sobre los archivos que han sido modificados
+				      en el commit.
+				\item El pre-commit hook corrige automáticamente los errores de formato y buenas
+				      prácticas de código.
 				\item El pre-commit hook muestra un informe del resultado de su ejecución.
 				\item Existe documentación clara sobre el uso del pre-commit hook.
 			\end{itemize}
 		},
 	tareas={
 			\begin{itemize}
-				\item Encontrar un gestor de pre-commit hooks para el proyecto, teniendo en cuenta que se trata de un monorepo que tendrá sistemas en diferentes lenguajes de programación.
+				\item Encontrar un gestor de pre-commit hooks para el proyecto, teniendo en cuenta
+				      que se trata de un monorepo que tendrá sistemas en diferentes lenguajes de
+				      programación.
 				\item Instalar el gestor de pre-commit hooks elegido.
 				\item Añadir los correctores de ESLint y Prettier.
-				\item Asegurarse de que los correctores sólo se ejecutan sobre ficheros del front-end.
-				\item Asegurarse de que los correctores sólo se ejecutan sobre los ficheros que han sido modificados en el commit.
-				\item Asegurarse de que el pre-commit hook corrige automáticamente los errores de formato y buenas prácticas de código.
-				\item Asegurarse de que el pre-commit hook muestra un informe del resultado de su ejecución.
+				\item Asegurarse de que los correctores sólo se ejecutan sobre ficheros del
+				      front-end.
+				\item Asegurarse de que los correctores sólo se ejecutan sobre los ficheros que han
+				      sido modificados en el commit.
+				\item Asegurarse de que el pre-commit hook corrige automáticamente los errores de
+				      formato y buenas prácticas de código.
+				\item Asegurarse de que el pre-commit hook muestra un informe del resultado de su
+				      ejecución.
 				\item Documentación de los comandos para ejecutar ESLint y Prettier en local.
 			\end{itemize}
 		}
@@ -128,14 +172,44 @@ Cada historia de usuario desarrollada estará explícitamente relacionada con un
 	puntos={5},
 	criterios={
 			\begin{itemize}
-				\item El pre-commit hook ejecuta un análisis de ortografía y gramática sobre los textos visibles de la aplicación.
+				\item El pre-commit hook ejecuta un análisis de ortografía y gramática sobre los
+				      textos visibles de la aplicación.
 			\end{itemize}
 		},
 	tareas={
 			\begin{itemize}
 				\item Seleccionar un servicio de análisis de ortografía y gramática.
-				\item Configurar el servicio de análisis de ortografía y gramática para que se ejecute en el pre-commit hook.
-				\item Documentar el uso del servicio de análisis de ortografía y gramática en el pre-commit hook.
+				\item Configurar el servicio de análisis de ortografía y gramática para que se
+				      ejecute en el pre-commit hook.
+				\item Documentar el uso del servicio de análisis de ortografía y gramática en el
+				      pre-commit hook.
+			\end{itemize}
+		}
+]
+
+\us[
+	identificador=US-CI-06,
+	titulo={Base de datos local},
+	como={Desarrollador},
+	quiero={Tener una base de datos local para poder desarrollar y probar la aplicación sin necesidad de desplegarla en la nube},
+	requerimientos={\reqref{RNF-DE-04}},
+	puntos={8},
+	criterios={
+			\begin{itemize}
+				\item Existen instrucciones claras para configurar una base de datos local con el
+				      esquema necesario para el desarrollo de la aplicación.
+				\item La base de datos local puede ser utilizada para ejecutar la aplicación en
+				      local.
+			\end{itemize}
+		},
+	tareas={
+			\begin{itemize}
+				\item Seleccionar un sistema de gestión de bases de datos.
+				\item Diseñar el esquema de la base de datos.
+				\item Seleccionar una herramienta para gestionar el ciclo de vida de la base de
+				      datos.
+				\item Configurar la herramienta de gestión del ciclo de vida de la base de datos.
+				\item Documentar las instrucciones para configurar la base de datos local.
 			\end{itemize}
 		}
 ]
@@ -180,12 +254,40 @@ Cada historia de usuario desarrollada estará explícitamente relacionada con un
 				\item Existe un entorno de producción en la nube.
 				\item El despliegue en producción se realiza manualmente, sin automatización.
 				\item La aplicación es accesible a través de una URL de Internet.
-				\item La infraestructura de la aplicación en producción es idéntica a la del entorno de desarrollo.
+				\item La infraestructura de la aplicación en producción es idéntica a la del entorno
+				      de desarrollo.
 			\end{itemize}
 		},
 	tareas={
 			\begin{itemize}
-				\item Creación de la infraestructura de producción a partir de la infraestructura de desarrollo.
+				\item Creación de la infraestructura de producción a partir de la infraestructura de
+				      desarrollo.
+				\item Configuración de despliegue manual para producción.
+			\end{itemize}
+		}
+]
+
+\us[
+	identificador=US-DE-03,
+	titulo={Despliegue en la nube de la base de datos},
+	como={Desarrollador},
+	quiero={Sincronizar los cambios en el esquema de la base de datos entre entornos},
+	requerimientos={\reqref{RNF-DE-01}, \reqref{RNF-DE-02}, \reqref{RNF-DE-03}},
+	puntos={2},
+	criterios={
+			\begin{itemize}
+				\item Existe una base de datos en cada entorno de nube.
+				\item El despliegue en desarrollo de los cambios en el esquema se realiza
+				      automáticamente con cada cambio en la rama principal.
+				\item El despliegue en producción de los cambios en el esquema se realiza
+				      manualmente, sin automatización.
+			\end{itemize}
+		},
+	tareas={
+			\begin{itemize}
+				\item Creación de la infraestructura de desarrollo y producción para la base de
+				      datos.
+				\item Configuración de despliegue automático para desarrollo.
 				\item Configuración de despliegue manual para producción.
 			\end{itemize}
 		}
@@ -199,24 +301,30 @@ Cada historia de usuario desarrollada estará explícitamente relacionada con un
 	titulo={Maquetación de la pantalla de inicio},
 	como={Usuario},
 	quiero={Entender la funcionalidad de la aplicación desde el momento del acceso},
-	requerimientos={\reqref{RF-GU-01}, \reqref{RF-GU-02}, \reqref{RF-IR-07}, \reqref{RNF-CO-01}, \reqref{RNF-CO-02}},
+	requerimientos={\reqref{RF-GU-01}, \reqref{RF-GU-02}, \reqref{RF-IR-07}, \reqref{RNF-CO-01}, \reqref{RNF-CO-02}, \reqref{RNF-US-01}, \reqref{RNF-US-03}, \reqref{RNF-RE-01}},
 	puntos={8},
 	criterios={
 			\begin{itemize}
 				\item La pantalla de inicio tiene una barra de navegación.
-				\item La barra de navegación presenta el logo y un acceso directo a la pantalla de inicio.
+				\item La barra de navegación presenta el logo y un acceso directo a la pantalla de
+				      inicio.
 				\item La barra de inicio presenta opciones para registrarse o iniciar sesión.
 				\item La pantalla de inicio tiene una hero section.
 				\item La hero section describe claramente el propósito de la aplicación.
-				\item La hero section presenta un \textit{call to action} que guía el viaje de usuario hacia el registro o el inicio de sesión.
+				\item La hero section presenta un \textit{call to action} que guía el viaje de
+				      usuario hacia el registro o el inicio de sesión.
 				\item La pantalla de inicio presenta una lista de recetas destacadas.
-				\item La pantalla de inicio presenta un pie de página con información de contacto y enlaces a los documentos legales.
+				\item La pantalla de inicio presenta un pie de página con información de contacto y
+				      enlaces a los documentos legales.
 			\end{itemize}
 		},
 	tareas={
 			\begin{itemize}
-				\item Selección de la paleta de colores, tipografías y elementos gráficos que representarán la marca \textbf{Muncher} en todas las pantallas.
-				\item Selección de tecnologías front-end a utilizar: librería de componentes (preexistente o propia), sistema de gestión de estilos (CSS puro, CSS Modules, CSS in JS o Tailwind CSS).
+				\item Selección de la paleta de colores, tipografías y elementos gráficos que
+				      representarán la marca \textbf{Muncher} en todas las pantallas.
+				\item Selección de tecnologías front-end a utilizar: librería de componentes
+				      (preexistente o propia), sistema de gestión de estilos (CSS puro, CSS Modules,
+				      CSS in JS o Tailwind CSS).
 				\item Maquetación de la pantalla de inicio de forma responsiva y accesible.
 				\item Implementación de la pantalla de inicio en el front-end.
 			\end{itemize}
@@ -235,7 +343,8 @@ Cada historia de usuario desarrollada estará explícitamente relacionada con un
 				\item Los textos de la aplicación se almacenan de forma separada al código.
 				\item Los textos de la aplicación se encuentran en varios idiomas.
 				\item El usuario puede seleccionar el idioma de la aplicación.
-				\item La aplicación detecta el idioma del navegador del usuario y lo utiliza como idioma por defecto.
+				\item La aplicación detecta el idioma del navegador del usuario y lo utiliza como
+				      idioma por defecto.
 			\end{itemize}
 		},
 	tareas={

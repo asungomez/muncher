@@ -349,3 +349,56 @@ aspectos.
 	\caption{Diseño de la pantalla de inicio de \textbf{Muncher} para dispositivos móviles y ordenadores.}
 	\label{fig:design-home-page}
 \end{figure}
+
+\subsection*{Sprint 4: Infraestructura de persistencia y modelado de datos}
+\addcontentsline{toc}{subsection}{Sprint 4: Infraestructura de persistencia y modelado de datos}
+
+El cuarto sprint se centra en el establecimiento de la \textbf{capa de
+	persistencia} del sistema \textbf{Muncher}. Antes de abordar la lógica de
+negocio compleja o la gestión de sesiones, es imperativo dotar al proyecto de
+una infraestructura de datos sólida, escalable y automatizada. El objetivo
+principal es garantizar que la información de la aplicación no dependa de
+estados volátiles, estableciendo una base de datos operativa tanto en entornos
+locales como remotos.
+
+Este hito comienza con el modelado del primer subsistema del esquema: la
+\textbf{entidad de usuario}. Al ser la autenticación el primer servicio que se
+implementará en fases posteriores, el diseño del esquema inicial se centra en
+las propiedades, restricciones y relaciones necesarias para dar soporte a la
+identidad de los usuarios. Asimismo, se pone especial énfasis en la
+\textbf{gestión del ciclo de vida de la base de datos}, seleccionando
+herramientas que permitan versionar el esquema y automatizar su despliegue
+dentro del flujo de integración continua (CI/CD) ya establecido en sprints anteriores.
+
+\subsubsection*{Objetivos iniciales}
+
+\begin{itemize}
+	\item Evaluar y seleccionar un sistema de gestión de bases de datos (SGBD) adecuado
+	      para los requisitos técnicos de \textbf{Muncher}.
+	\item Diseñar el esquema relacional inicial centrado en el almacenamiento y gestión
+	      de usuarios.
+	\item Configurar e instanciar la base de datos en el entorno de desarrollo local.
+	\item Seleccionar un sistema de gestión de esquema (migraciones) que permita la
+	      trazabilidad de los cambios en la estructura de datos.
+	\item Implementar el esquema de forma local mediante la ejecución del sistema de
+	      migraciones seleccionado.
+	\item Desplegar una instancia de la base de datos en la nube sincronizada con la
+	      infraestructura actual.
+	\item Integrar la ejecución de migraciones en el \textit{pipeline} de CI/CD para
+	      garantizar que el entorno remoto refleje siempre el último estado del esquema
+	      de forma automática.
+\end{itemize}
+
+\subsubsection*{Historias de usuario completadas}
+
+\begin{center}
+	\begin{tabularx}{\textwidth}{|l|X|c|}
+		\hline
+		\textbf{Identificador} & \textbf{Nombre}                           & \textbf{Puntos de historia} \\
+		\hline
+		\usref{US-CI-06}       & Base de datos local                       & 8                           \\
+		\hline
+		\usref{US-DE-03}       & Despliegue en la nube de la base de datos & 2                           \\
+		\hline
+	\end{tabularx}
+\end{center}
