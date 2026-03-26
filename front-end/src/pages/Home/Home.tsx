@@ -1,8 +1,9 @@
 import Button from "../../components/Button/Button";
 import RecipesList from "../../components/RecipesList/RecipesList";
+import { useI18n } from "../../i18n/I18nProvider/context";
 import type { Recipe } from "../../services/recipes/types";
 
-const mockRecipes: Recipe[] = [
+const recipes: Recipe[] = [
   {
     id: "1",
     name: "Bol de verduras frescas",
@@ -57,6 +58,7 @@ const mockRecipes: Recipe[] = [
 ];
 
 function Home() {
+  const { t } = useI18n();
   return (
     <>
       <section className="h-[33vh] relative w-screen left-1/2 -translate-x-1/2 -mt-8">
@@ -68,10 +70,10 @@ function Home() {
           <div className="absolute inset-0 bg-black/40" />
           <div className="relative z-10 flex flex-col items-center text-center">
             <h1 className="text-5xl font-bold text-white mb-2 drop-shadow-lg font-marker">
-              Muncher
+              {t("app.name")}
             </h1>
             <p className="text-white/90 text-lg mb-4 drop-shadow">
-              Comer sano no tiene que ser aburrido
+              {t("app.slogan")}
             </p>
             <Button>Empezar</Button>
           </div>
@@ -101,18 +103,16 @@ function Home() {
             <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-end">
               <div className="w-1/2 flex flex-col items-center text-center">
                 <h1 className="text-6xl font-bold text-white mb-2 font-marker">
-                  Muncher
+                  {t("app.name")}
                 </h1>
-                <p className="text-white/90 text-xl mb-6">
-                  Comer sano no tiene que ser aburrido
-                </p>
-                <Button variant="secondary">Empezar</Button>
+                <p className="text-white/90 text-xl mb-6">{t("app.slogan")}</p>
+                <Button variant="secondary">{t("home.call-to-action")}</Button>
               </div>
             </div>
           </div>
         </div>
       </section>
-      <RecipesList recipes={mockRecipes} />
+      <RecipesList recipes={recipes} />
     </>
   );
 }
