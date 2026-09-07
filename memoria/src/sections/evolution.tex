@@ -132,15 +132,30 @@ distintas del mismo analizador, con lo que un cambio se aprueba en local y se
 rechaza en el servidor. El problema se agrava en un \textit{monorepo}, donde no
 existe una única cadena de herramientas que instalar, sino una por tecnología.
 
-La solución consistió en trasladar la ejecución de los controles al interior de
-un contenedor. Una única imagen reúne la totalidad de las cadenas de
-herramientas del proyecto, incluidos los \textit{runtimes} de cada lenguaje y
-sus dependencias, de manera que el único requisito en la máquina del
-desarrollador es disponer de git y de un motor de contenedores. El
+La solución consistió en trasladar al interior de contenedores la ejecución de
+todo aquello que el desarrollo requiere, tanto los controles como la propia
+aplicación, conforme al criterio expuesto en
+\hyperref[sec:entorno-local]{Entorno local}. En el caso de los controles, una
+única imagen reúne las cadenas de herramientas necesarias para aplicarlos, con
+los \textit{runtimes} y las dependencias fijados en su definición. El
 \textit{hook} de git se limita a delegar la ejecución en el contenedor, y la
 integración continua construye y emplea esa misma imagen en lugar de instalar
-herramientas por su cuenta. Al compartir un entorno idéntico, los resultados
-obtenidos en local y en el servidor dejan de poder divergir.
+herramientas por su cuenta, de modo que los resultados obtenidos en local y en
+el servidor dejan de poder divergir.
+
+La aplicación se trata del mismo modo, aunque con una diferencia importante.
+Cada componente dispone de su propia imagen, que contiene su \textit{runtime} y
+sus dependencias, pero no el código fuente: este permanece en la máquina del
+desarrollador y se monta en el contenedor durante la ejecución. De esta manera
+la imagen constituye una instantánea del entorno, mientras que el código sigue
+editándose con las herramientas habituales y los cambios se reflejan de
+inmediato, sin necesidad de reconstruir ni reiniciar nada. Los servicios que
+componen el sistema se declaran en una única composición y comparten una misma
+red, lo que les permite localizarse entre sí por su nombre y reproduce en local
+la topología del entorno desplegado. El resultado es que el desarrollador solo
+necesita git y Docker: ni los \textit{runtimes} de los
+lenguajes empleados, ni los gestores de dependencias, ni las herramientas de
+análisis se instalan en el sistema anfitrión.
 
 Gracias a esta solución, el proceso de desarrollo se beneficia de una mayor
 calidad y consistencia, reduciendo la necesidad de correcciones manuales,
