@@ -102,24 +102,50 @@ repositorio en GitHub quedó configurado con una base sólida mediante Vite y
 React, junto con la integración de controles de calidad automatizados que
 aseguran un código consistente desde el inicio del proyecto.
 
-La principal dificultad técnica consistió en implementar la corrección
-automática del código en un entorno \textit{monorepo} que contiene diferentes
-lenguajes de programación. Soluciones estándar como \texttt{husky} o
-\texttt{python pre-commit}, aunque útiles, dependen de que todo el repositorio
-esté desarrollado en un único lenguaje, lo cual no se adaptaba a las
-necesidades del proyecto.
+La primera dificultad técnica consistió en aplicar la corrección automática del
+código en un entorno \textit{monorepo} que reúne tecnologías distintas, cada una
+con sus propias herramientas y convenciones de estilo. El front-end en React se
+formatea con Prettier y se analiza con ESLint, mientras que el back-end en
+Python y las definiciones de las imágenes de contenedor exigen sus propios
+formateadores y analizadores estáticos; someter todos los archivos a todas las
+herramientas no tiene sentido, de modo que cada cambio debe dirigirse
+únicamente a las que le corresponden.
 
-Para superar esta limitación, se desarrolló un script personalizado en
-\texttt{bash} que detecta en qué partes del \textit{monorepo} se han realizado
-cambios (por ejemplo, el front-end en React o la memoria en \LaTeX) y aplica
-las herramientas de corrección más adecuadas para cada lenguaje. Este enfoque
-permite estandarizar la indentación, el espaciado y otros aspectos de estilo de
-forma automática, garantizando la coherencia de todo el código sin importar la
-diversidad tecnológica presente en el repositorio.
+Para resolverlo se adoptó \texttt{pre-commit} como gestor de los controles en la
+raíz del repositorio.\footnote{Documentación oficial: \url{https://pre-commit.com/}}
+Esta herramienta declara los controles en un único archivo de configuración y
+asocia cada uno a un patrón de rutas, por lo que es capaz de encaminar los
+archivos modificados hacia las herramientas pertinentes sin necesidad de lógica
+propia: los controles generales —espacios sobrantes, saltos de línea finales,
+validez de los archivos YAML y JSON o presencia de marcas de conflictos de
+fusión— se aplican a todo el repositorio, mientras que los específicos de cada
+lenguaje se limitan a los directorios que les conciernen.
+
+La segunda dificultad, de mayor calado, fue la dependencia de las herramientas
+instaladas en la máquina de cada desarrollador. Un control solo resulta útil si
+se ejecuta siempre y del mismo modo, y ninguna de esas dos condiciones se
+cumple cuando la cadena de herramientas se instala manualmente: basta con que
+una de ellas falte en un equipo para que el control se omita precisamente allí
+donde hacía falta. A ello se añade la divergencia de versiones, ya que cada
+desarrollador y la propia integración continua pueden ejecutar versiones
+distintas del mismo analizador, con lo que un cambio se aprueba en local y se
+rechaza en el servidor. El problema se agrava en un \textit{monorepo}, donde no
+existe una única cadena de herramientas que instalar, sino una por tecnología.
+
+La solución consistió en trasladar la ejecución de los controles al interior de
+un contenedor. Una única imagen reúne la totalidad de las cadenas de
+herramientas del proyecto, incluidos los tiempos de ejecución de cada lenguaje y
+sus dependencias, de manera que el único requisito en la máquina del
+desarrollador es disponer de git y de un motor de contenedores. El
+\textit{hook} de git se limita a delegar la ejecución en el contenedor, y la
+integración continua construye y emplea esa misma imagen en lugar de instalar
+herramientas por su cuenta. Al compartir un entorno idéntico, los resultados
+obtenidos en local y en el servidor dejan de poder divergir.
 
 Gracias a esta solución, el proceso de desarrollo se beneficia de una mayor
-calidad y consistencia, reduciendo la necesidad de correcciones manuales y
-evitando el riesgo de introducir errores por cambios de formato.
+calidad y consistencia, reduciendo la necesidad de correcciones manuales,
+evitando el riesgo de introducir errores por cambios de formato y garantizando
+que los controles se comporten de igual modo en cualquier entorno.
 
 \subsection*{Sprint 2: Despliegue automático}
 \addcontentsline{toc}{subsection}{Sprint 2: Despliegue automático}
