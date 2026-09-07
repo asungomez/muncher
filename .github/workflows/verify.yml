@@ -1,0 +1,23 @@
+name: Verify
+on:
+  pull_request:
+    branches:
+      - main
+
+# CI deliberately installs no toolchain of its own. It runs the same make
+# targets a developer runs, which build and use the same images, so the two
+# cannot drift apart.
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run every check
+        run: make checks
+
+      - name: Build the front-end
+        run: make front-end-build
+
+      - name: Build the memoria
+        run: make memoria-build

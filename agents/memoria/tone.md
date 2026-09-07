@@ -15,10 +15,19 @@ Terms that stay in their original form:
 - Product and tool names: *Muncher*, *Vite*, *React*, *FastAPI*, *GitHub*,
   *PostgreSQL*.
 - Established technical terms with no settled Spanish equivalent: *sprint*,
-  *front-end*, *testing*, *commit*, *deploy*. Prefer the Spanish term when one
-  is genuinely in use (*historia de usuario*, not *user story*;
+  *front-end*, *testing*, *commit*, *deploy*, *runtime*. Prefer the Spanish term
+  when one is genuinely in use (*historia de usuario*, not *user story*;
   *requerimiento*, not *requirement*; *listas de la compra*, not *shopping
   lists*).
+
+**Never translate a technical term literally when the result is not what
+Spanish-speaking practitioners actually say.** A literal rendering reads as
+translated text even when each word is correct — *tiempo de ejecución* for
+*runtime* is the canonical example, and it is wrong here regardless of being a
+dictionary-accurate gloss. When no established Spanish term exists, keep the
+English one in `\textit{...}`. Note that *entorno de ejecución* for *execution
+environment* is idiomatic and stays in Spanish; the test is usage, not
+etymology.
 - Method and framework names quoted as such: *MoSCoW*, *Must Have*,
   *Should Have*, *DSDM*.
 

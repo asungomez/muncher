@@ -20,3 +20,4 @@ Read the file that matches the task before starting work.
 | Read | When |
 | --- | --- |
 | [agents/memoria/readme.md](agents/memoria/readme.md) | Working on the project's memory docs (the LaTeX memoria). |
+| [agents/local-development/readme.md](agents/local-development/readme.md) | Working on local development: git hooks, container images, build scripts, tool configuration and the READMEs that document them. |

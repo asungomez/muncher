@@ -5,13 +5,11 @@
 - [Propósito](#propósito)
 - [Infraestructura](#infraestructura)
 - [Configuración inicial](#configuración-inicial)
-  - [Formateo de LaTeX (opcional)](#formateo-de-latex-opcional)
+- [Comandos disponibles](#comandos-disponibles)
+- [Controles de calidad](#controles-de-calidad)
+  - [Qué comprueba](#qué-comprueba)
 - [Memoria](#memoria)
-  - [Prerrequisitos](#prerrequisitos)
-  - [Generar la memoria](#generar-la-memoria)
 - [Front-end](#front-end)
-  - [Ejecutar la aplicación como un proceso Node.js](#ejecutar-la-aplicación-como-un-proceso-nodejs)
-  - [Verificar la aplicación](#verificar-la-aplicación)
 
 ## Propósito
 
@@ -29,122 +27,78 @@ La aplicación está desarrollada con la siguiente arquitectura tecnológica:
 
 ## Configuración inicial
 
-Después de clonar el repositorio, ejecuta el siguiente script para configurar los git hooks:
+Los únicos requisitos en tu máquina son **git** y **Docker**. No es necesario instalar Node.js, Yarn, LaTeX ni ninguna otra herramienta: todas viven dentro de las imágenes definidas en `docker/`, que se construyen automáticamente la primera vez que se necesitan.
+
+Después de clonar el repositorio, configura los git hooks:
 
 ```
-./scripts/setup-hooks.sh
+make setup
 ```
 
-Este script configura un pre-commit hook que automáticamente:
+## Comandos disponibles
 
-- **Front-end**: Ejecuta ESLint y Prettier sobre los archivos staged.
-- **Memoria**: Formatea archivos LaTeX con `latexindent` (opcional).
+Todas las tareas del repositorio se ejecutan con `make`. Los objetivos se agrupan por subsistema en el directorio `makefiles/` y llevan el nombre de aquel sobre el que actúan.
 
-### Formateo de LaTeX (opcional)
-
-El pre-commit hook puede formatear automáticamente los archivos `.tex` usando `latexindent`. Esta herramienta viene incluida con TeX Live, pero requiere dependencias de Perl adicionales.
-
-**Con permisos de administrador:**
-
-```bash
-sudo cpan File::HomeDir Log::Log4perl Log::Dispatch Unicode::GCString
-brew install latexindent
+```
+make            # lista los objetivos disponibles
 ```
 
-**Sin permisos de administrador (usando cpanminus):**
+| Objetivo | Descripción |
+| --- | --- |
+| `make up` | Arranca el entorno local en primer plano. |
+| `make front-end-up` | Arranca únicamente el servicio del front-end. |
+| `make down` | Detiene el entorno local y elimina sus contenedores. |
+| `make logs` | Muestra los logs del entorno en ejecución. |
+| `make checks` | Ejecuta todos los controles sobre el repositorio completo. |
+| `make checks-staged` | Ejecuta todos los controles sobre los archivos añadidos al índice. |
+| `make front-end-lint` | Analiza el front-end con ESLint. |
+| `make front-end-format` | Formatea el front-end con Prettier. |
+| `make front-end-build` | Genera los artefactos desplegables del front-end. |
+| `make memoria-lint` | Formatea las fuentes de la memoria con `latexindent`. |
+| `make memoria-build` | Genera el PDF de la memoria en `memoria/generated`. |
+| `make memoria-watch` | Regenera la memoria cada vez que cambian sus fuentes. |
+| `make shell` | Abre una shell en el contenedor de controles. |
+| `make setup` | Instala los git hooks. |
 
-```bash
-# Instalar cpanminus con local::lib
-curl -L https://cpanmin.us | perl - --local-lib=~/perl5 App::cpanminus
+## Controles de calidad
 
-# Activar local::lib
-eval "$(perl -I$HOME/perl5/lib/perl5 -Mlocal::lib=$HOME/perl5)"
+Los controles se gestionan con [pre-commit](https://pre-commit.com/) desde la raíz del repositorio y se ejecutan **dentro del contenedor**, tanto en tu máquina como en la integración continua. De este modo, un control que pasa en local pasa también en CI.
 
-# Instalar las dependencias
-cpanm File::HomeDir Log::Log4perl Log::Dispatch Unicode::GCString
-```
+El hook de `pre-commit` se ejecuta automáticamente en cada commit sobre los archivos añadidos al índice. Cuando un control corrige un archivo, el commit se detiene para que revises los cambios y los añadas al índice antes de volver a intentarlo.
 
-Después de instalar sin permisos de administrador, añade esta línea a tu `~/.zshrc` para que persista:
+Los objetivos `make front-end-lint`, `make front-end-format` y `make memoria-lint` seleccionan un control concreto de esa misma configuración, de modo que no pueden desviarse de lo que se comprueba al hacer commit.
 
-```bash
-eval "$(perl -I$HOME/perl5/lib/perl5 -Mlocal::lib=$HOME/perl5)"
-```
+### Qué comprueba
 
-Puedes verificar que funciona con:
+- **Todos los archivos**: espacios al final de línea, salto de línea final, finales de línea, sintaxis de YAML y JSON, marcas de conflictos de fusión, claves privadas y archivos de tamaño excesivo.
+- **Front-end**: ESLint y Prettier.
+- **Memoria**: formateo de los archivos `.tex` con `latexindent`.
 
-```bash
-echo "\\section{test}" | latexindent -s
-```
-
-Si `latexindent` no está disponible o no funciona, el hook simplemente omitirá el formateo de LaTeX y continuará sin errores.
+La configuración completa está en `.pre-commit-config.yaml`.
 
 ## Memoria
 
-### Prerrequisitos
-
-- LaTex (`brew install basictex`)
-
-### Instalar las dependencias
-
-La memoria LaTeX necesita algunas dependencias para poder generar el PDF correctamente. Para instalarlas, ejecuta:
+Las fuentes de la memoria se encuentran en la carpeta `memoria` y el PDF se genera en `memoria/generated`. No hace falta instalar LaTeX: la cadena de herramientas vive en la imagen definida en `docker/memoria.Dockerfile`.
 
 ```
-sudo tlmgr install enumitem
-```
-
-### Generar la memoria
-
-La memoria del proyecto se encuentra en la carpeta `memoria`. Para generar el PDF, ejecuta el script `make_memoria.sh`.
-
-```
-cd memoria
-./make_memoria.sh
-```
-
-El documento se genera en la carpeta `memoria/generated`.
-
-Para actualizar el documento en vivo cuando se ejecuta el código, se puede usar el script `watch-memoria.sh`.
-
-```
-cd memoria
-./watch-memoria.sh
+make memoria-build
+make memoria-watch
 ```
 
 ## Front-end
 
-### Ejecutar la aplicación como un proceso Node.js
-
-Prerrequisitos:
-
-- Node.js 24
-- Yarn
-
-Instalación de dependencias:
+No hace falta instalar Node.js ni Yarn, ni ejecutar `yarn install`: la cadena de herramientas y las dependencias viven en la imagen definida en `docker/front-end.Dockerfile`.
 
 ```
-yarn install
+make up
 ```
 
-Ejecución:
+La aplicación estará disponible en `http://localhost:5173`. El código fuente permanece en la máquina local y se monta en el contenedor, de modo que los cambios se recargan automáticamente en el navegador.
+
+Para publicar el servidor en otro puerto, define `MUNCHER_FRONT_END_PORT`:
 
 ```
-yarn dev
+MUNCHER_FRONT_END_PORT=5200 make up
 ```
 
-La aplicación estará disponible en `http://localhost:5173`.
-
-### Verificar la aplicación
-
-Los controles automáticos de calidad se ejecutan en cada Pull Request. Para ejecutarlos localmente, se puede usar el siguiente comando:
-
-```
-yarn lint:ci
-yarn format:ci
-```
-
-Si alguno de los controles falla, existen comandos para corregir los errores automáticamente:
-
-```
-yarn lint
-yarn format
-```
+Los servicios del entorno local se declaran en `compose.yaml` y comparten una misma red, a la que se incorporarán la API y la base de datos.

@@ -1,0 +1,132 @@
+\section*{Entorno local}
+\phantomsection
+\addcontentsline{toc}{section}{Entorno local}
+\label{sec:entorno-local}
+
+El desarrollo de software contemporáneo no se apoya en un único entorno de
+ejecución, sino en una sucesión de ellos que cada cambio recorre antes de llegar
+al usuario final: la máquina del desarrollador, los entornos de verificación
+automatizada, los de pruebas o preproducción y, finalmente, el de producción.
+Cada uno de estos escalones cumple una función distinta y aporta un nivel
+adicional de confianza sobre el cambio, pero todos comparten un mismo punto de
+partida, ya que ningún cambio llega a los siguientes entornos sin haberse
+escrito y ejecutado primero en el equipo de quien lo desarrolla. Esa posición
+inicial convierte al entorno local en el lugar más económico para detectar un
+error: cuanto más se parezca a producción, antes se manifiestan las
+discrepancias que de otro modo aparecerían en etapas donde su diagnóstico y
+corrección resultan considerablemente más costosos. En este sentido, Humble y
+Farley \cite{Humble2010} sostienen que resulta esencial emplear el mismo proceso
+de despliegue en todos los entornos —incluida la estación de trabajo del
+desarrollador—, pues solo después de haberlo ejecutado centenares de veces sobre
+entornos diversos cabe descartarlo como origen de un fallo. Los autores observan,
+además, que la frecuencia con la que se despliega en cada entorno es inversa al
+riesgo que este comporta: el desarrollador despliega continuamente, mientras que
+el entorno en el que menos se despliega, producción, es precisamente el más
+importante. Por este motivo, el objetivo
+que guía esta sección no es únicamente que el sistema pueda ejecutarse en la
+máquina del desarrollador, sino que pueda ejecutarse allí en condiciones lo más
+próximas posible a aquellas en las que funcionará una vez desplegado.
+
+\subsection*{Desarrollo en contenedores}
+\addcontentsline{toc}{subsection}{Desarrollo en contenedores}
+
+La dificultad de fondo a la hora de reproducir un entorno de ejecución no reside
+en el código, sino en todo aquello que lo rodea. Boettiger
+\cite{Boettiger2015}, al analizar los obstáculos que impiden reproducir
+resultados computacionales, lo expresa con precisión: "instalar o construir el
+software necesario para ejecutar el código en cuestión presupone la capacidad de
+recrear el entorno computacional de los investigadores originales". La
+observación procede del ámbito de la investigación científica, pero describe
+igualmente la situación de cualquier equipo de desarrollo: unas instrucciones de
+instalación presuponen un conjunto de versiones, dependencias y ajustes del
+sistema operativo que rara vez coinciden con los de la máquina en la que se
+leen, y ese desajuste se manifiesta como un fallo que solo se produce en algunos
+equipos.
+
+El desarrollo en contenedores aborda ese problema desplazando la definición del
+entorno del ámbito de la documentación al del código. Según el Instituto
+Nacional de Estándares y Tecnología \cite{Souppaya2017}, las tecnologías de
+virtualización de aplicaciones se orientan fundamentalmente a proporcionar "una
+forma portable, reutilizable y automatizable de empaquetar y ejecutar
+aplicaciones", y el término contenedor designa precisamente a estas tecnologías.
+La misma publicación señala que su naturaleza portable y declarativa permite a
+una organización mantener una gran consistencia entre los entornos de
+desarrollo, de pruebas y de producción, hasta el punto de que una imagen creada
+en un entorno de desarrollo puede trasladarse a uno de pruebas y copiarse
+después en producción sin necesidad de modificación alguna. Aplicado al entorno
+local, este enfoque implica que el desarrollador no reconstruye el entorno en su
+equipo, sino que instancia el mismo que se emplea en el resto de las etapas de
+la entrega.
+
+Entre los mecanismos que implementan este modelo, \textbf{Docker} es el de uso
+más extendido y el adoptado en este proyecto. Su documentación oficial lo define
+como una plataforma abierta para el desarrollo, la distribución y la ejecución de
+aplicaciones, y distingue dos conceptos complementarios: la imagen, que describe
+el contenido y la configuración del entorno, y el contenedor, que es una
+instancia ejecutable de una imagen.\footnote{Documentación oficial:
+	\url{https://docs.docker.com/get-started/docker-overview/}} Esa misma
+documentación resume la propiedad que resulta determinante para el entorno
+local: los contenedores contienen todo lo necesario para ejecutar la aplicación,
+de modo que no es preciso depender de lo que esté instalado en la máquina
+anfitriona, y quien recibe un contenedor obtiene exactamente el mismo que
+funciona del mismo modo. Es esta garantía, y no la mera comodidad de la
+instalación, la que justifica su adopción como base del entorno de desarrollo.
+
+\subsection*{Partes del entorno local}
+\addcontentsline{toc}{subsection}{Partes del entorno local}
+
+En el proyecto \textbf{Muncher}, el entorno local no se entiende únicamente como
+una réplica de la aplicación desplegada, sino como la suma de dos conjuntos de
+elementos: los que componen el sistema en ejecución y los que verifican que un
+cambio es correcto. Ambos deben poder levantarse en la máquina del
+desarrollador, y ambos deben corresponderse con lo que existe en la nube.
+
+El primer conjunto reproduce la aplicación completa. No se limita al componente
+sobre el que se está trabajando, sino que abarca todas las piezas necesarias
+para que el sistema funcione de extremo a extremo: el front-end, la API que
+atiende sus peticiones y la base de datos que sostiene la información. Cada una
+de ellas se corresponde con un servicio de los descritos en
+\hyperref[sec:infraestructura]{Infraestructura en la nube}, de manera que la
+definición del entorno local no constituye una configuración paralela, sino la
+contrapartida local de esa misma arquitectura. Levantar el sistema por partes
+—únicamente el front-end, o únicamente la API— resulta insuficiente, ya que
+buena parte de los fallos surgen precisamente en la interacción entre
+componentes: en la forma de las peticiones, en el esquema de los datos o en la
+configuración que los conecta.
+
+El segundo conjunto está formado por los controles de verificación. Un cambio no
+se considera terminado porque el sistema arranque, sino cuando supera las
+comprobaciones que la integración continua aplicará después: las pruebas
+estáticas de formato y análisis del código, las pruebas automatizadas, la
+verificación ortográfica y gramatical de los textos de la interfaz y la
+construcción de los artefactos desplegables. El requisito determinante es que
+estas comprobaciones sean exactamente las mismas en ambos lugares, y no dos
+implementaciones equivalentes mantenidas por separado. Cuando se definen una
+sola vez y se ejecutan tanto en el equipo del desarrollador como en el
+servidor, el resultado obtenido en local anticipa el de la integración
+continua; en caso contrario, el desarrollador descubre en el servidor
+discrepancias que su propia máquina no era capaz de mostrarle, que es
+exactamente la situación que el entorno local pretende evitar.
+
+Ambos conjuntos se ejecutan íntegramente dentro de contenedores Docker. Cada
+componente de la aplicación se levanta en el suyo, con la versión de su
+\textit{runtime} y sus dependencias fijadas en la imagen correspondiente, y los
+controles de verificación se ejecutan asimismo en una imagen que reúne las
+herramientas necesarias para aplicarlos. Los únicos requisitos en la máquina del
+desarrollador son, por tanto, un sistema de control de versiones y un motor de
+contenedores: ni los \textit{runtimes} de los lenguajes empleados, ni los
+gestores de dependencias, ni las herramientas de análisis o de formateo se
+instalan en el sistema anfitrión.
+
+Esta decisión es la que hace efectivas las dos exigencias planteadas más arriba.
+Por un lado, las imágenes que definen los componentes son las mismas que se
+despliegan en la nube, de modo que la correspondencia entre el entorno local y
+la infraestructura descrita en
+\hyperref[sec:infraestructura]{Infraestructura en la nube} deja de depender de
+que ambas configuraciones se mantengan sincronizadas a mano. Por otro, la
+integración continua no instala herramienta alguna por su cuenta, sino que
+construye y utiliza esa misma imagen de verificación, con lo que la identidad
+entre los controles locales y los remotos queda garantizada por construcción y
+no por convención. El contenedor deja así de ser un mecanismo de empaquetado
+para el despliegue y se convierte en el medio ordinario de trabajo durante todo
+el desarrollo.
