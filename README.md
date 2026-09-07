@@ -5,13 +5,13 @@
 - [Propósito](#propósito)
 - [Infraestructura](#infraestructura)
 - [Configuración inicial](#configuración-inicial)
-  - [Formateo de LaTeX (opcional)](#formateo-de-latex-opcional)
+- [Controles de calidad](#controles-de-calidad)
+  - [Ejecutar los controles a mano](#ejecutar-los-controles-a-mano)
+  - [Qué comprueba](#qué-comprueba)
 - [Memoria](#memoria)
-  - [Prerrequisitos](#prerrequisitos)
   - [Generar la memoria](#generar-la-memoria)
 - [Front-end](#front-end)
-  - [Ejecutar la aplicación como un proceso Node.js](#ejecutar-la-aplicación-como-un-proceso-nodejs)
-  - [Verificar la aplicación](#verificar-la-aplicación)
+  - [Ejecutar la aplicación](#ejecutar-la-aplicación)
 
 ## Propósito
 
@@ -29,76 +29,61 @@ La aplicación está desarrollada con la siguiente arquitectura tecnológica:
 
 ## Configuración inicial
 
+Los únicos requisitos en tu máquina son **git** y **Docker**. No es necesario instalar Node.js, Yarn, LaTeX ni ninguna otra herramienta: todas viven dentro de la imagen definida en `docker/ci.Dockerfile`, que se construye automáticamente la primera vez que se necesita.
+
 Después de clonar el repositorio, ejecuta el siguiente script para configurar los git hooks:
 
 ```
 ./scripts/setup-hooks.sh
 ```
 
-Este script configura un pre-commit hook que automáticamente:
+## Controles de calidad
 
-- **Front-end**: Ejecuta ESLint y Prettier sobre los archivos staged.
-- **Memoria**: Formatea archivos LaTeX con `latexindent` (opcional).
+Los controles se gestionan con [pre-commit](https://pre-commit.com/) desde la raíz del repositorio y se ejecutan **dentro del contenedor**, tanto en tu máquina como en la integración continua. De este modo, un control que pasa en local pasa también en CI.
 
-### Formateo de LaTeX (opcional)
+El hook de `pre-commit` se ejecuta automáticamente en cada commit sobre los archivos añadidos al índice. Cuando un control corrige un archivo, el commit se detiene para que revises los cambios y los añadas al índice antes de volver a intentarlo.
 
-El pre-commit hook puede formatear automáticamente los archivos `.tex` usando `latexindent`. Esta herramienta viene incluida con TeX Live, pero requiere dependencias de Perl adicionales.
+### Ejecutar los controles a mano
 
-**Con permisos de administrador:**
+Sobre los archivos añadidos al índice:
 
-```bash
-sudo cpan File::HomeDir Log::Log4perl Log::Dispatch Unicode::GCString
-brew install latexindent
+```
+./scripts/run-in-container.sh pre-commit run
 ```
 
-**Sin permisos de administrador (usando cpanminus):**
+Sobre todos los archivos del repositorio:
 
-```bash
-# Instalar cpanminus con local::lib
-curl -L https://cpanmin.us | perl - --local-lib=~/perl5 App::cpanminus
-
-# Activar local::lib
-eval "$(perl -I$HOME/perl5/lib/perl5 -Mlocal::lib=$HOME/perl5)"
-
-# Instalar las dependencias
-cpanm File::HomeDir Log::Log4perl Log::Dispatch Unicode::GCString
+```
+./scripts/run-in-container.sh pre-commit run --all-files
 ```
 
-Después de instalar sin permisos de administrador, añade esta línea a tu `~/.zshrc` para que persista:
+### Qué comprueba
 
-```bash
-eval "$(perl -I$HOME/perl5/lib/perl5 -Mlocal::lib=$HOME/perl5)"
-```
+- **Todos los archivos**: espacios al final de línea, salto de línea final, finales de línea, sintaxis de YAML y JSON, marcas de conflictos de fusión, claves privadas y archivos de tamaño excesivo.
+- **Front-end**: ESLint y Prettier.
+- **Memoria**: formateo de los archivos `.tex` con `latexindent`.
 
-Puedes verificar que funciona con:
-
-```bash
-echo "\\section{test}" | latexindent -s
-```
-
-Si `latexindent` no está disponible o no funciona, el hook simplemente omitirá el formateo de LaTeX y continuará sin errores.
+La configuración completa está en `.pre-commit-config.yaml`.
 
 ## Memoria
+
+> El resto de esta sección y la del front-end describen todavía la ejecución en
+> la máquina local. La contenedorización de la generación de la memoria y del
+> servidor de desarrollo está pendiente; los controles de calidad ya se
+> ejecutan dentro del contenedor.
 
 ### Prerrequisitos
 
 - LaTex (`brew install basictex`)
-
-### Instalar las dependencias
-
-La memoria LaTeX necesita algunas dependencias para poder generar el PDF correctamente. Para instalarlas, ejecuta:
-
-```
-sudo tlmgr install enumitem
-```
+- `sudo tlmgr install enumitem`
 
 ### Generar la memoria
 
-La memoria del proyecto se encuentra en la carpeta `memoria`. Para generar el PDF, ejecuta el script `make_memoria.sh`.
+La memoria del proyecto se encuentra en la carpeta `memoria`. Para generar el PDF, ejecuta el script `make-memoria.sh`.
 
 ```
 cd memoria
-./make_memoria.sh
+./make-memoria.sh
 ```
 
 El documento se genera en la carpeta `memoria/generated`.
@@ -112,39 +97,21 @@ cd memoria
 
 ## Front-end
 
-### Ejecutar la aplicación como un proceso Node.js
+### Ejecutar la aplicación
 
 Prerrequisitos:
 
 - Node.js 24
 - Yarn
 
-Instalación de dependencias:
+Instalación de dependencias y ejecución, desde el directorio `front-end`:
 
 ```
+cd front-end
 yarn install
-```
-
-Ejecución:
-
-```
 yarn dev
 ```
 
 La aplicación estará disponible en `http://localhost:5173`.
 
-### Verificar la aplicación
-
-Los controles automáticos de calidad se ejecutan en cada Pull Request. Para ejecutarlos localmente, se puede usar el siguiente comando:
-
-```
-yarn lint:ci
-yarn format:ci
-```
-
-Si alguno de los controles falla, existen comandos para corregir los errores automáticamente:
-
-```
-yarn lint
-yarn format
-```
+Para verificar la aplicación, consulta [Controles de calidad](#controles-de-calidad).

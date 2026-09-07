@@ -2,6 +2,10 @@
 
 # Setup script for git hooks in muncher monorepo
 # Run this once after cloning the repository
+#
+# The hook is linked by hand rather than with `pre-commit install`, because that
+# would require pre-commit on the developer's machine. The linked script runs
+# pre-commit inside the CI image instead.
 
 set -e
 

@@ -1,0 +1,64 @@
+# Every check in this repository runs through pre-commit, and pre-commit runs
+# inside the image built from docker/ci.Dockerfile. Nothing here is expected to
+# work against tools installed on the host.
+#
+# Language-specific hooks are declared as `local` + `language: system`: the
+# tools they invoke are already in the image, so pre-commit must not try to
+# provision environments for them.
+
+exclude: |
+  (?x)^(
+    front-end/node_modules/.*|
+    front-end/\.yarn/.*|
+    front-end/yarn\.lock|
+    memoria/generated/.*|
+    .*\.bak\d*$
+  )$
+
+repos:
+  # ---------------------------------------------------------------------------
+  # General fixes, applied to every file regardless of language
+  # ---------------------------------------------------------------------------
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: trailing-whitespace
+        args: [--markdown-linebreak-ext=md]
+      - id: end-of-file-fixer
+      - id: mixed-line-ending
+        args: [--fix=lf]
+      - id: check-yaml
+      # The tsconfig files are JSONC: TypeScript allows the comments they carry,
+      # a strict JSON parser does not. Prettier still formats them.
+      - id: check-json
+        exclude: ^front-end/tsconfig.*\.json$
+      - id: check-merge-conflict
+      - id: check-case-conflict
+      - id: detect-private-key
+      # Raised from the 500 kB default: the repository legitimately tracks
+      # screenshots and hero images.
+      - id: check-added-large-files
+        args: [--maxkb=8000]
+
+  # ---------------------------------------------------------------------------
+  # Language-specific fixes
+  # ---------------------------------------------------------------------------
+  - repo: local
+    hooks:
+      - id: eslint
+        name: eslint (front-end)
+        entry: scripts/hooks/eslint.sh
+        language: system
+        files: ^front-end/.*\.(js|jsx|ts|tsx|mjs|cjs)$
+
+      - id: prettier
+        name: prettier (front-end)
+        entry: scripts/hooks/prettier.sh
+        language: system
+        files: ^front-end/.*\.(js|jsx|ts|tsx|mjs|cjs|json|css|scss|md|html|yml|yaml)$
+
+      - id: latexindent
+        name: latexindent (memoria)
+        entry: scripts/hooks/latexindent.sh
+        language: system
+        files: ^memoria/.*\.tex$
