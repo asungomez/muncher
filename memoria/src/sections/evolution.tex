@@ -172,13 +172,22 @@ comparativo de los distintos proveedores de nube y en la selección de una
 plataforma que cumpliera los requisitos técnicos del sistema sin comprometer su
 flexibilidad ni aumentar los costes de operación. Este proceso exigió una
 evaluación profunda de configurabilidad, compatibilidad con contenedores,
-servicios gestionados y políticas de precios, donde \textbf{Render} destacó por
-ofrecer una solución completa dentro de su capa gratuita.
+servicios gestionados y políticas de precios. Las plataformas ligeras
+resultaron atractivas por su sencillez operativa y por la amplitud de sus capas
+gratuitas, pero el análisis detallado de dichas capas reveló que la persistencia
+de datos no podía sostenerse en ellas más allá de un plazo breve, lo que
+habría obligado a rehacer el despliegue sobre otro proveedor poco después de
+tener el sistema en funcionamiento. Por este motivo se seleccionó
+\textbf{Amazon Web Services}, que cubre los requisitos del sistema sin
+condicionar su continuidad y permite construir el entorno de desarrollo y el de
+producción sobre la misma infraestructura.
 
-Una vez seleccionada la plataforma, el despliegue resultó especialmente fluido.
-El sistema se configuró mediante una \textit{blueprint} común para ambos
-entornos —desarrollo y producción—, garantizando consistencia en la
-infraestructura y simplificando la replicación de recursos. La aplicación web
+Una vez seleccionada la plataforma, el despliegue se abordó definiendo la
+infraestructura como código. El sistema se describió mediante una plantilla
+común para ambos entornos —desarrollo y producción—, garantizando consistencia
+en la infraestructura y simplificando la replicación de recursos: la misma
+definición se instancia tantas veces como entornos sean necesarios, con las
+diferencias justas entre ellos expresadas como parámetros. La aplicación web
 estática se desplegó automáticamente en el entorno de desarrollo con cada
 commit a la rama \texttt{main}, integrándose con el flujo de integración
 continua del proyecto. Por su parte, los despliegues a producción se
@@ -187,10 +196,10 @@ y evitar cambios inesperados en el entorno final.
 
 El sprint permitió consolidar las bases técnicas de la infraestructura en la
 nube, culminando con un entorno operativo estable, reproducible y de bajo
-coste. Además, la experiencia con Render reafirmó la eficacia de definir la
-infraestructura como código y demostró que una configuración bien estructurada
-puede ofrecer una transición transparente entre entornos de desarrollo y
-producción sin complejidad adicional.
+coste. Además, la experiencia reafirmó la eficacia de definir la infraestructura
+como código y demostró que una configuración bien estructurada puede ofrecer una
+transición transparente entre entornos de desarrollo y producción sin
+complejidad adicional.
 
 \subsection*{Sprint 3: Pantalla de inicio y controles de calidad del texto}
 \addcontentsline{toc}{subsection}{Sprint 3: Pantalla de inicio y controles de calidad del texto}

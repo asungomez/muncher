@@ -2,3 +2,4 @@
 *.log
 memoria/**/*.bak*
 .yarn
+.claude/settings.local.json
