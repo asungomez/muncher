@@ -1,16 +1,18 @@
 #!/bin/bash
 # Builds the memoria into memoria/generated/.
 #
-# TeX Live lives in the image built from docker/memoria.Dockerfile, not on the
-# developer's machine. When run on the host this script does nothing but
-# delegate; the body below executes inside the container.
-# See agents/local-development/containerized-development.md.
+# Runs inside the image built from docker/memoria.Dockerfile. Invoke it through
+# `make memoria-build`, which takes care of the container.
 set -euo pipefail
 
 if [ -z "${MUNCHER_IN_CONTAINER:-}" ]; then
-	REPO_ROOT="$(git rev-parse --show-toplevel)"
-	exec "$REPO_ROOT/scripts/run-in-container.sh" --image memoria ./make-memoria.sh "$@"
+	echo "❌ this script runs inside the memoria container; use 'make memoria-build'" >&2
+	exit 1
 fi
+
+# Derived from the script's own location: the memoria image carries TeX Live, not
+# git, so the repository root cannot be asked for.
+cd "$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/memoria"
 
 mkdir -p generated
 # Two passes so the ToC builds

@@ -4,20 +4,20 @@ on:
     branches:
       - main
 
-# CI deliberately installs no toolchain of its own. It builds the same image a
-# developer's pre-commit hook builds and runs the same checks inside it, so the
-# two cannot drift apart.
+# CI deliberately installs no toolchain of its own. It runs the same make
+# targets a developer runs, which build and use the same images, so the two
+# cannot drift apart.
 jobs:
   verify:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - name: Build the CI image
-        run: docker build -f docker/ci.Dockerfile -t muncher-ci:local .
-
       - name: Run every check
-        run: ./scripts/run-in-container.sh pre-commit run --all-files --show-diff-on-failure
+        run: make checks
 
       - name: Build the front-end
-        run: ./scripts/run-in-container.sh bash -c 'cd front-end && yarn build'
+        run: make front-end-build
+
+      - name: Build the memoria
+        run: make memoria-build

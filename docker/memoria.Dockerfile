@@ -36,9 +36,6 @@ RUN apt-get update \
 		cm-super \
 	&& rm -rf /var/lib/apt/lists/*
 
-# The repository is bind mounted at run time and is owned by the host user.
-RUN git config --system --add safe.directory /workspace 2>/dev/null || true
+WORKDIR /workspace
 
-WORKDIR /workspace/memoria
-
-CMD ["./make-memoria.sh"]
+CMD ["scripts/memoria-build.sh"]

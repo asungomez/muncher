@@ -36,5 +36,25 @@ the developer.
 - **The task is the checks themselves.** Diagnosing a failing check, changing
   the tooling's configuration, or fixing something CI reported all require
   running it to know where you stand.
+- **The task is the tooling.** Changing an image, a make target, the compose
+  stack or the hook configuration cannot be verified by reading it. Run it.
 
 Outside those cases, no automatic runs.
+
+## When you do run them
+
+Use the make targets, never the underlying tool
+(see [make-targets.md](make-targets.md)):
+
+| Command | Runs |
+| --- | --- |
+| `make checks` | every check, over the whole repository |
+| `make checks-staged` | every check, over the staged files only |
+| `make front-end-lint` | ESLint |
+| `make front-end-format` | Prettier |
+| `make memoria-lint` | latexindent |
+| `make front-end-build` | the front-end build |
+| `make memoria-build` | the memoria build |
+
+Note that the fixing checks rewrite files in the working tree. After a run,
+report what was modified rather than leaving the developer to discover it.

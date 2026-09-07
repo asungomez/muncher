@@ -29,14 +29,17 @@ no Perl modules — is ever a prerequisite for working on this project.
 ## What this means in practice
 
 - Each toolchain in the monorepo gets an image that contains its dependencies
-  and the exact runtime versions the project targets.
-- Every developer-facing task is invoked through the container. A task that can
-  only be run by first installing something locally is not finished.
+  and the exact runtime versions the project targets. Images live in `docker/`,
+  one per toolchain.
+- Every developer-facing task is invoked through a make target that runs it in a
+  container — see [make-targets.md](make-targets.md). A task that can only be run
+  by first installing something locally is not finished.
 - Dependency installation happens in the image build, not as a step the
   developer remembers to run.
-- CI executes the same images as local development. CI must not install
-  toolchains of its own or pin versions independently — if CI and the local
-  environment can drift apart, the setup is wrong.
+- CI runs the same make targets a developer runs, which build and use the same
+  images. CI must not install toolchains of its own or pin versions
+  independently — if CI and the local environment can drift apart, the setup is
+  wrong.
 - Source code is mounted into the container rather than copied into it for
   development, so editing on the host takes effect immediately and generated
   output lands in the working tree where the developer expects it.
@@ -51,9 +54,9 @@ no Perl modules — is ever a prerequisite for working on this project.
 
 - When adding a tool, add it to an image — never to a list of things the
   developer must install.
-- When a task requires running something, run it through the project's
-  containerized entry point rather than invoking a host binary directly.
+- When a task requires running something, run it through its make target rather
+  than invoking a host binary, a script or `docker` directly.
 - When you find setup instructions that ask the developer to install a tool,
   treat them as a defect to report, not a pattern to follow.
-- Documentation for humans describes the containerized commands. It does not
-  document a host-install fallback, because there isn't one.
+- Documentation for humans lists make targets. It does not document a
+  host-install fallback, because there isn't one.

@@ -1,18 +1,19 @@
 #!/bin/bash
 # Rebuilds the memoria whenever anything under memoria/src changes.
 #
-# TeX Live lives in the image built from docker/memoria.Dockerfile, not on the
-# developer's machine. When run on the host this script does nothing but
-# delegate; the body below executes inside the container.
-# See agents/local-development/containerized-development.md.
-#
-# Stop it with Ctrl-C.
+# Runs inside the image built from docker/memoria.Dockerfile. Invoke it through
+# `make memoria-watch`, which takes care of the container. Stop it with Ctrl-C.
 set -uo pipefail
 
 if [ -z "${MUNCHER_IN_CONTAINER:-}" ]; then
-	REPO_ROOT="$(git rev-parse --show-toplevel)"
-	exec "$REPO_ROOT/scripts/run-in-container.sh" --image memoria ./watch-memoria.sh "$@"
+	echo "❌ this script runs inside the memoria container; use 'make memoria-watch'" >&2
+	exit 1
 fi
+
+# Derived from the script's own location: the memoria image carries TeX Live, not
+# git, so the repository root cannot be asked for.
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$REPO_ROOT/memoria"
 
 # Only define colors if stdout is a terminal
 if [[ -t 1 ]]; then
@@ -32,7 +33,7 @@ else
 fi
 
 build() {
-	if ./make-memoria.sh >/dev/null; then
+	if "$REPO_ROOT/scripts/memoria-build.sh" >/dev/null; then
 		echo -e "${GREEN}[watch] Build succeeded${RESET}"
 	else
 		echo -e "${RED}[watch] Build failed. Waiting for next change...${RESET}"

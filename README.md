@@ -5,13 +5,11 @@
 - [Propósito](#propósito)
 - [Infraestructura](#infraestructura)
 - [Configuración inicial](#configuración-inicial)
+- [Comandos disponibles](#comandos-disponibles)
 - [Controles de calidad](#controles-de-calidad)
-  - [Ejecutar los controles a mano](#ejecutar-los-controles-a-mano)
   - [Qué comprueba](#qué-comprueba)
 - [Memoria](#memoria)
-  - [Generar la memoria](#generar-la-memoria)
 - [Front-end](#front-end)
-  - [Ejecutar la aplicación](#ejecutar-la-aplicación)
 
 ## Propósito
 
@@ -29,13 +27,38 @@ La aplicación está desarrollada con la siguiente arquitectura tecnológica:
 
 ## Configuración inicial
 
-Los únicos requisitos en tu máquina son **git** y **Docker**. No es necesario instalar Node.js, Yarn, LaTeX ni ninguna otra herramienta: todas viven dentro de la imagen definida en `docker/ci.Dockerfile`, que se construye automáticamente la primera vez que se necesita.
+Los únicos requisitos en tu máquina son **git** y **Docker**. No es necesario instalar Node.js, Yarn, LaTeX ni ninguna otra herramienta: todas viven dentro de las imágenes definidas en `docker/`, que se construyen automáticamente la primera vez que se necesitan.
 
-Después de clonar el repositorio, ejecuta el siguiente script para configurar los git hooks:
+Después de clonar el repositorio, configura los git hooks:
 
 ```
-./scripts/setup-hooks.sh
+make setup
 ```
+
+## Comandos disponibles
+
+Todas las tareas del repositorio se ejecutan con `make`. Los objetivos se agrupan por subsistema en el directorio `makefiles/` y llevan el nombre de aquel sobre el que actúan.
+
+```
+make            # lista los objetivos disponibles
+```
+
+| Objetivo | Descripción |
+| --- | --- |
+| `make up` | Arranca el entorno local en primer plano. |
+| `make front-end-up` | Arranca únicamente el servicio del front-end. |
+| `make down` | Detiene el entorno local y elimina sus contenedores. |
+| `make logs` | Muestra los logs del entorno en ejecución. |
+| `make checks` | Ejecuta todos los controles sobre el repositorio completo. |
+| `make checks-staged` | Ejecuta todos los controles sobre los archivos añadidos al índice. |
+| `make front-end-lint` | Analiza el front-end con ESLint. |
+| `make front-end-format` | Formatea el front-end con Prettier. |
+| `make front-end-build` | Genera los artefactos desplegables del front-end. |
+| `make memoria-lint` | Formatea las fuentes de la memoria con `latexindent`. |
+| `make memoria-build` | Genera el PDF de la memoria en `memoria/generated`. |
+| `make memoria-watch` | Regenera la memoria cada vez que cambian sus fuentes. |
+| `make shell` | Abre una shell en el contenedor de controles. |
+| `make setup` | Instala los git hooks. |
 
 ## Controles de calidad
 
@@ -43,19 +66,7 @@ Los controles se gestionan con [pre-commit](https://pre-commit.com/) desde la ra
 
 El hook de `pre-commit` se ejecuta automáticamente en cada commit sobre los archivos añadidos al índice. Cuando un control corrige un archivo, el commit se detiene para que revises los cambios y los añadas al índice antes de volver a intentarlo.
 
-### Ejecutar los controles a mano
-
-Sobre los archivos añadidos al índice:
-
-```
-./scripts/run-in-container.sh pre-commit run
-```
-
-Sobre todos los archivos del repositorio:
-
-```
-./scripts/run-in-container.sh pre-commit run --all-files
-```
+Los objetivos `make front-end-lint`, `make front-end-format` y `make memoria-lint` seleccionan un control concreto de esa misma configuración, de modo que no pueden desviarse de lo que se comprueba al hacer commit.
 
 ### Qué comprueba
 
@@ -67,36 +78,19 @@ La configuración completa está en `.pre-commit-config.yaml`.
 
 ## Memoria
 
-No hace falta instalar LaTeX: la cadena de herramientas vive en la imagen definida en `docker/memoria.Dockerfile`, que se construye automáticamente la primera vez que se necesita.
-
-### Generar la memoria
-
-La memoria del proyecto se encuentra en la carpeta `memoria`. Para generar el PDF, ejecuta el script `make-memoria.sh`.
+Las fuentes de la memoria se encuentran en la carpeta `memoria` y el PDF se genera en `memoria/generated`. No hace falta instalar LaTeX: la cadena de herramientas vive en la imagen definida en `docker/memoria.Dockerfile`.
 
 ```
-cd memoria
-./make-memoria.sh
+make memoria-build
+make memoria-watch
 ```
-
-El documento se genera en la carpeta `memoria/generated`.
-
-Para regenerar el documento automáticamente cada vez que cambia el código fuente, se puede usar el script `watch-memoria.sh`.
-
-```
-cd memoria
-./watch-memoria.sh
-```
-
-Ambos scripts delegan su ejecución en el contenedor, de modo que se invocan igual que antes.
 
 ## Front-end
 
-### Ejecutar la aplicación
-
-No hace falta instalar Node.js ni Yarn, ni ejecutar `yarn install`: la cadena de herramientas y las dependencias viven en la imagen definida en `docker/front-end.Dockerfile`. El servidor de desarrollo se arranca con:
+No hace falta instalar Node.js ni Yarn, ni ejecutar `yarn install`: la cadena de herramientas y las dependencias viven en la imagen definida en `docker/front-end.Dockerfile`.
 
 ```
-./front-end/dev.sh
+make up
 ```
 
 La aplicación estará disponible en `http://localhost:5173`. El código fuente permanece en la máquina local y se monta en el contenedor, de modo que los cambios se recargan automáticamente en el navegador.
@@ -104,13 +98,7 @@ La aplicación estará disponible en `http://localhost:5173`. El código fuente 
 Para publicar el servidor en otro puerto, define `MUNCHER_FRONT_END_PORT`:
 
 ```
-MUNCHER_FRONT_END_PORT=5200 ./front-end/dev.sh
+MUNCHER_FRONT_END_PORT=5200 make up
 ```
 
-Los servicios del entorno local se declaran en `compose.yaml` y comparten una misma red, a la que se incorporarán la API y la base de datos. Para levantar el conjunto completo:
-
-```
-docker compose up --build
-```
-
-Para verificar la aplicación, consulta [Controles de calidad](#controles-de-calidad).
+Los servicios del entorno local se declaran en `compose.yaml` y comparten una misma red, a la que se incorporarán la API y la base de datos.
