@@ -67,15 +67,7 @@ La configuración completa está en `.pre-commit-config.yaml`.
 
 ## Memoria
 
-> El resto de esta sección y la del front-end describen todavía la ejecución en
-> la máquina local. La contenedorización de la generación de la memoria y del
-> servidor de desarrollo está pendiente; los controles de calidad ya se
-> ejecutan dentro del contenedor.
-
-### Prerrequisitos
-
-- LaTex (`brew install basictex`)
-- `sudo tlmgr install enumitem`
+No hace falta instalar LaTeX: la cadena de herramientas vive en la imagen definida en `docker/memoria.Dockerfile`, que se construye automáticamente la primera vez que se necesita.
 
 ### Generar la memoria
 
@@ -88,30 +80,37 @@ cd memoria
 
 El documento se genera en la carpeta `memoria/generated`.
 
-Para actualizar el documento en vivo cuando se ejecuta el código, se puede usar el script `watch-memoria.sh`.
+Para regenerar el documento automáticamente cada vez que cambia el código fuente, se puede usar el script `watch-memoria.sh`.
 
 ```
 cd memoria
 ./watch-memoria.sh
 ```
 
+Ambos scripts delegan su ejecución en el contenedor, de modo que se invocan igual que antes.
+
 ## Front-end
 
 ### Ejecutar la aplicación
 
-Prerrequisitos:
-
-- Node.js 24
-- Yarn
-
-Instalación de dependencias y ejecución, desde el directorio `front-end`:
+No hace falta instalar Node.js ni Yarn, ni ejecutar `yarn install`: la cadena de herramientas y las dependencias viven en la imagen definida en `docker/front-end.Dockerfile`. El servidor de desarrollo se arranca con:
 
 ```
-cd front-end
-yarn install
-yarn dev
+./front-end/dev.sh
 ```
 
-La aplicación estará disponible en `http://localhost:5173`.
+La aplicación estará disponible en `http://localhost:5173`. El código fuente permanece en la máquina local y se monta en el contenedor, de modo que los cambios se recargan automáticamente en el navegador.
+
+Para publicar el servidor en otro puerto, define `MUNCHER_FRONT_END_PORT`:
+
+```
+MUNCHER_FRONT_END_PORT=5200 ./front-end/dev.sh
+```
+
+Los servicios del entorno local se declaran en `compose.yaml` y comparten una misma red, a la que se incorporarán la API y la base de datos. Para levantar el conjunto completo:
+
+```
+docker compose up --build
+```
 
 Para verificar la aplicación, consulta [Controles de calidad](#controles-de-calidad).

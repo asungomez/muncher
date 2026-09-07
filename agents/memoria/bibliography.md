@@ -54,6 +54,14 @@ not.
 - Leave a `\cite{...}` pointing at a key with no `\bibitem`, or add a `\bibitem`
   nothing cites.
 
+## Finding sources
+
+To research a topic and come back with candidate sources, use the
+`find-sources` skill (`/find-sources <topic or question>`). It applies the rules
+below and returns a reading list — references, links, pages and verbatim
+passages — without writing anything into the memoria. Citing what it finds is a
+separate, deliberate step.
+
 ## Reuse before adding
 
 `memoria/src/sections/bibliography.tex` already lists the works below. Prefer

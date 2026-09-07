@@ -1,0 +1,41 @@
+# Local development stack.
+#
+# Every service is a snapshot of a runtime and its dependencies; the source code
+# is never baked in, but bind mounted from the host so that edits take effect
+# immediately. See agents/local-development/containerized-development.md.
+#
+# Start it with front-end/dev.sh, or directly:
+#   docker compose up --build
+#
+# The API and the database will join this same network as they are built, so
+# they can reach each other by service name.
+
+name: muncher
+
+services:
+  front-end:
+    build:
+      context: .
+      dockerfile: docker/front-end.Dockerfile
+    environment:
+      # Makes vite.config.ts poll for file changes: events from a bind mount are
+      # not delivered reliably to the container.
+      MUNCHER_IN_CONTAINER: "1"
+    ports:
+      - "${MUNCHER_FRONT_END_PORT:-5173}:5173"
+    volumes:
+      # The sources live on the host.
+      - ./front-end:/workspace/front-end
+      # node_modules is installed into the image, so it must not be covered by
+      # the bind mount above. This volume is seeded from the image; front-end/
+      # dev.sh renews it when yarn.lock changes.
+      - front-end-node-modules:/workspace/front-end/node_modules
+    networks:
+      - muncher
+
+networks:
+  muncher:
+    driver: bridge
+
+volumes:
+  front-end-node-modules:
