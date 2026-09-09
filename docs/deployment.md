@@ -158,6 +158,7 @@ Esta es la política que necesita el rol:
         "s3:GetBucketTagging",
         "s3:PutEncryptionConfiguration",
         "s3:GetEncryptionConfiguration",
+        "s3:GetBucketLocation",
         "s3:ListBucket",
         "s3:GetObject",
         "s3:PutObject",

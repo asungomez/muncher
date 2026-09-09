@@ -15,3 +15,7 @@ infra-lint: ## Validate the CloudFormation templates
 .PHONY: infra-deploy
 infra-deploy: ## Deploy the stack for ENVIRONMENT (default dev)
 	$(RUN) --image infra scripts/infra-deploy.sh $(ENVIRONMENT)
+
+.PHONY: front-end-deploy
+front-end-deploy: front-end-build ## Build and upload the front-end to ENVIRONMENT (default dev)
+	$(RUN) --image infra scripts/front-end-deploy.sh $(ENVIRONMENT)
