@@ -6,7 +6,8 @@
   - [1. Crear el proveedor de identidad OIDC](#1-crear-el-proveedor-de-identidad-oidc)
   - [2. Crear el rol](#2-crear-el-rol)
   - [3. Adjuntar la política de permisos](#3-adjuntar-la-política-de-permisos)
-  - [4. Configurar GitHub](#4-configurar-github)
+  - [4. Muro de acceso del entorno de desarrollo](#4-muro-de-acceso-del-entorno-de-desarrollo)
+  - [5. Configurar GitHub](#5-configurar-github)
 - [Mantener la política al día](#mantener-la-política-al-día)
 - [Destruir un entorno](#destruir-un-entorno)
 
@@ -182,6 +183,13 @@ Esta es la política que necesita el rol:
         "cloudfront:DeleteOriginAccessControl",
         "cloudfront:GetOriginAccessControl",
         "cloudfront:GetOriginAccessControlConfig",
+        "cloudfront:CreateFunction",
+        "cloudfront:UpdateFunction",
+        "cloudfront:DeleteFunction",
+        "cloudfront:DescribeFunction",
+        "cloudfront:GetFunction",
+        "cloudfront:PublishFunction",
+        "cloudfront:AssociateFunction",
         "cloudfront:CreateInvalidation"
       ],
       "Resource": "*"
@@ -266,7 +274,38 @@ la entrada de mayor alcance, y está restringida al prefijo `muncher-*`
 precisamente para que el rol no pueda concederse a sí mismo más permisos de los
 que tiene.
 
-### 4. Configurar GitHub
+### 4. Muro de acceso del entorno de desarrollo
+
+El front-end de `dev` queda detrás de una autenticación básica para que no sea
+accesible por cualquiera. Se activa únicamente si el stack recibe usuario y
+contraseña; sin ellos —como en `prod`— el sitio se sirve sin muro.
+
+Define las credenciales como **secretos del entorno `dev`**, no del repositorio:
+en **Settings** → **Environments** → **dev** → **Environment secrets**, añade
+
+```
+FRONTEND_LOGIN_USER
+FRONTEND_LOGIN_PASSWORD
+```
+
+El trabajo que despliega el stack declara el entorno al que va dirigido, y
+GitHub resuelve entonces los secretos de ese entorno —y prescinde de cualquiera
+que le pase quien lo invoque—, así que las credenciales solo existen para los
+despliegues de `dev`. Producción no las define y no puede recibirlas por
+ninguna vía: ni desde otro workflow, ni lanzando el despliegue a mano.
+
+El stack las recibe como parámetros y, si llegan vacías, no crea ningún muro.
+
+El muro se implementa con una función de CloudFront que se ejecuta en cada
+petición y devuelve `401` hasta que el navegador envía las credenciales, de modo
+que el formulario es el propio diálogo del navegador y la aplicación no contiene
+ninguna pantalla de acceso.
+
+> Es una barrera contra accesos casuales, no un control de seguridad: la
+> contraseña queda legible en el código de la función para quien tenga permiso
+> de lectura sobre CloudFront. No la reutilices de ningún otro sitio.
+
+### 5. Configurar GitHub
 
 El ARN del rol no es un secreto, así que basta con una **variable** del
 repositorio. En **Settings** → **Secrets and variables** → **Actions** →

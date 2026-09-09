@@ -18,6 +18,30 @@ Parameters:
     # provision the production one.
     Default: dev
 
+  FrontEndLoginUser:
+    Type: String
+    Description: >-
+      User for the login wall in front of the front-end. Leave empty, together
+      with the password, to serve the site without one.
+    Default: ""
+
+  FrontEndLoginPassword:
+    Type: String
+    Description: >-
+      Password for the login wall. Only takes effect when the user is set too.
+    Default: ""
+    # Keeps the value out of the console and the stack events. Note that it is
+    # still readable from the function this template generates, so the wall is a
+    # barrier against casual access, not a secret-bearing security control.
+    NoEcho: true
+
+Conditions:
+  # The wall exists only when both halves of the credential are supplied, so an
+  # environment deployed without them — production — has no wall at all.
+  LoginWallEnabled: !And
+    - !Not [!Equals [!Ref FrontEndLoginUser, ""]]
+    - !Not [!Equals [!Ref FrontEndLoginPassword, ""]]
+
 Resources:
   # Holds the compiled front-end. Never public: CloudFront is the only reader,
   # authorised by the bucket policy below.
@@ -162,6 +186,45 @@ Resources:
       ServiceToken: !GetAtt FrontEndBucketEmptier.Arn
       Bucket: !Ref FrontEndBucket
 
+  # Enforces HTTP basic authentication at the edge, before the request reaches
+  # the bucket. A CloudFront function rather than Lambda@Edge: the first two
+  # million invocations a month are free, and it needs no role, no log group and
+  # no VPC. The browser's own credentials dialog serves as the login form.
+  FrontEndLoginWall:
+    Type: AWS::CloudFront::Function
+    Condition: LoginWallEnabled
+    Properties:
+      Name: !Sub muncher-front-end-login-${Environment}
+      AutoPublish: true
+      FunctionConfig:
+        Comment: !Sub Login wall for the ${Environment} front-end
+        Runtime: cloudfront-js-2.0
+      FunctionCode: !Sub
+        - |
+          function handler(event) {
+              var request = event.request;
+              var authorization = request.headers.authorization;
+
+              if (authorization && authorization.value === "Basic ${Credentials}") {
+                  return request;
+              }
+
+              // 401 with this header is what makes the browser show its own
+              // credentials prompt, so the application needs no login screen.
+              return {
+                  statusCode: 401,
+                  statusDescription: "Unauthorized",
+                  headers: {
+                      "www-authenticate": {
+                          value: 'Basic realm="muncher ${Environment}", charset="UTF-8"'
+                      },
+                      "cache-control": { value: "no-store" }
+                  }
+              };
+          }
+        - Credentials:
+            Fn::Base64: !Sub "${FrontEndLoginUser}:${FrontEndLoginPassword}"
+
   FrontEndOriginAccessControl:
     Type: AWS::CloudFront::OriginAccessControl
     Properties:
@@ -204,6 +267,13 @@ Resources:
           # Managed CachingOptimized policy. Using a managed policy avoids
           # maintaining one of our own.
           CachePolicyId: 658327ea-f89d-4fab-a63d-7e88639e58f6
+          # Runs on every viewer request, including cache hits, so the wall
+          # cannot be bypassed by requesting something already cached.
+          FunctionAssociations: !If
+            - LoginWallEnabled
+            - - EventType: viewer-request
+                FunctionARN: !GetAtt FrontEndLoginWall.FunctionARN
+            - !Ref AWS::NoValue
         CustomErrorResponses:
           - ErrorCode: 403
             ResponseCode: 200

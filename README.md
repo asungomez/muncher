@@ -11,6 +11,8 @@
 - [Memoria](#memoria)
 - [Front-end](#front-end)
 - [Despliegue](#despliegue)
+  - [Configurar el despliegue en tu propia cuenta](#configurar-el-despliegue-en-tu-propia-cuenta)
+  - [Muro de acceso del entorno de desarrollo](#muro-de-acceso-del-entorno-de-desarrollo)
 
 ## Propósito
 
@@ -127,6 +129,42 @@ El despliegue está repartido en cuatro workflows:
 El front-end espera al stack cuando este se despliega, y arranca de inmediato cuando no hay cambios de infraestructura. `deploy-infra.yml` y `deploy-front-end.yml` pueden lanzarse por separado desde la pestaña de acciones de GitHub, indicando el entorno, y en ese caso despliegan sin comprobar si algo ha cambiado.
 
 `prod` nunca se despliega como efecto de un `push`: requiere lanzar `deploy-prod.yml` a mano. Para exigir además una aprobación, añade revisores obligatorios al entorno `prod` en la configuración del repositorio.
+
+### Configurar el despliegue en tu propia cuenta
+
+Si clonas o bifurcas este repositorio, los workflows no funcionarán hasta que apuntes a una cuenta de AWS propia. Hacen falta cuatro cosas.
+
+**1. Un rol de despliegue en AWS.** GitHub Actions no usa claves de acceso, sino que asume un rol mediante OIDC. Su creación —el proveedor de identidad, la política de confianza y los permisos— está detallada en [docs/deployment.md](docs/deployment.md). Recuerda ajustar la condición `sub` de la política de confianza a **tu** repositorio, no a este.
+
+**2. Dos variables del repositorio.** En **Settings** → **Secrets and variables** → **Actions** → **Variables**:
+
+| Variable | Valor |
+| --- | --- |
+| `AWS_DEPLOYMENT_ROLE_ARN` | ARN del rol del paso anterior. |
+| `AWS_REGION` | Región en la que se despliega, por ejemplo `eu-west-1`. |
+
+Son variables y no secretos porque ninguno de los dos valores es confidencial.
+
+**3. Los entornos `dev` y `prod`.** En **Settings** → **Environments**, crea uno con cada nombre. Los workflows los declaran, así que GitHub los crearía por su cuenta en el primer despliegue, pero creándolos a mano puedes configurarlos antes: en `prod` conviene añadir **Required reviewers**, de modo que cada despliegue de producción espere una aprobación.
+
+**4. Las credenciales del muro de acceso**, si quieres proteger `dev`. Se explican en la sección siguiente.
+
+Con eso, un cambio en `main` despliega `dev`, y `prod` se despliega lanzando `deploy-prod.yml` a mano.
+
+### Muro de acceso del entorno de desarrollo
+
+El front-end de `dev` está protegido con una autenticación básica que resuelve el propio navegador, para que el entorno no sea accesible por cualquiera. No hay pantalla de acceso en la aplicación: es el diálogo de credenciales del navegador, servido por una función de CloudFront que se ejecuta en cada petición.
+
+El muro existe únicamente si el stack recibe usuario y contraseña. Para activarlo, define las credenciales como **secretos del entorno `dev`** —no del repositorio— en **Settings** → **Environments** → **dev** → **Environment secrets**:
+
+```
+FRONTEND_LOGIN_USER
+FRONTEND_LOGIN_PASSWORD
+```
+
+Ese ámbito es lo que hace que producción no pueda quedar protegida por accidente: el trabajo que despliega declara el entorno al que va dirigido, así que solo resuelve los secretos de ese entorno. Como `prod` no los define, se despliega sin muro, y ningún workflow ni ejecución manual puede cambiarlo. Si no defines ninguno de los dos, `dev` también se sirve sin protección.
+
+> Es una barrera contra accesos casuales, no un control de seguridad: la contraseña queda legible en el código de la función para quien tenga permiso de lectura sobre CloudFront. No reutilices una contraseña de ningún otro sitio.
 
 Para desplegar desde tu máquina, con tus propias credenciales de AWS en el entorno:
 

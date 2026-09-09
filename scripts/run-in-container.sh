@@ -47,17 +47,19 @@ RUN_ARGS=(
 	--env MUNCHER_IN_CONTAINER=1
 )
 
-# AWS credentials are never stored in the repository or baked into an image:
-# they are forwarded from the environment that invoked make — a local profile, or
-# the role GitHub Actions assumed through OIDC. Only variables that are actually
-# set are passed on.
+# Credentials are never stored in the repository or baked into an image: they are
+# forwarded from the environment that invoked make — a local profile, or the role
+# GitHub Actions assumed through OIDC, plus the login wall credentials. Only
+# variables that are actually set are passed on.
 for aws_var in \
 	AWS_ACCESS_KEY_ID \
 	AWS_SECRET_ACCESS_KEY \
 	AWS_SESSION_TOKEN \
 	AWS_REGION \
 	AWS_DEFAULT_REGION \
-	AWS_PROFILE; do
+	AWS_PROFILE \
+	FRONTEND_LOGIN_USER \
+	FRONTEND_LOGIN_PASSWORD; do
 	if [ -n "${!aws_var:-}" ]; then
 		RUN_ARGS+=(--env "${aws_var}=${!aws_var}")
 	fi
