@@ -59,7 +59,8 @@ for aws_var in \
 	AWS_DEFAULT_REGION \
 	AWS_PROFILE \
 	FRONTEND_LOGIN_USER \
-	FRONTEND_LOGIN_PASSWORD; do
+	FRONTEND_LOGIN_PASSWORD \
+	MUNCHER_REQUIRE_LOGIN_WALL; do
 	if [ -n "${!aws_var:-}" ]; then
 		RUN_ARGS+=(--env "${aws_var}=${!aws_var}")
 	fi
