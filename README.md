@@ -113,7 +113,20 @@ La infraestructura se define como código en plantillas de CloudFormation y se d
 
 La configuración inicial de ese rol —el proveedor de identidad OIDC, las políticas y las variables del repositorio— está documentada en [docs/deployment.md](docs/deployment.md). Es el paso previo a cualquier aprovisionamiento.
 
-Cada entorno es un stack creado a partir de `infra/muncher.yaml`, cuyo único parámetro es el nombre del entorno. El de `dev` se despliega automáticamente con cada cambio en `main`, mediante el workflow `deploy-dev.yml`, y también puede lanzarse a mano desde la pestaña de acciones de GitHub.
+Cada entorno es un stack creado a partir de `infra/muncher.yaml`, cuyo único parámetro es el nombre del entorno.
+
+El despliegue está repartido en cuatro workflows:
+
+| Workflow | Cometido |
+| --- | --- |
+| `deploy-dev.yml` | Se ejecuta con cada cambio en `main`. Detecta qué ha cambiado y llama a los dos siguientes en el orden adecuado. |
+| `deploy-infra.yml` | Despliega el stack. Se ejecuta si ha cambiado algo en `infra/`. |
+| `deploy-front-end.yml` | Compila el front-end y lo sube. Se ejecuta si ha cambiado algo en `front-end/`, o si se ha desplegado el stack. |
+| `deploy-prod.yml` | Despliega el stack y el front-end en `prod`. Solo se lanza a mano. |
+
+El front-end espera al stack cuando este se despliega, y arranca de inmediato cuando no hay cambios de infraestructura. `deploy-infra.yml` y `deploy-front-end.yml` pueden lanzarse por separado desde la pestaña de acciones de GitHub, indicando el entorno, y en ese caso despliegan sin comprobar si algo ha cambiado.
+
+`prod` nunca se despliega como efecto de un `push`: requiere lanzar `deploy-prod.yml` a mano. Para exigir además una aprobación, añade revisores obligatorios al entorno `prod` en la configuración del repositorio.
 
 Para desplegar desde tu máquina, con tus propias credenciales de AWS en el entorno:
 

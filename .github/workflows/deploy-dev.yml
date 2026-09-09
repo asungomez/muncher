@@ -4,50 +4,67 @@ on:
   push:
     branches:
       - main
-  # Lets the environment be redeployed, or recreated after being torn down,
-  # without pushing a commit.
+  # Deploys everything, regardless of what changed.
   workflow_dispatch:
 
-# CloudFormation refuses concurrent operations on the same stack, so runs queue
-# instead of racing. In-progress runs are not cancelled: interrupting a
-# deployment mid-flight is worse than waiting for it.
-concurrency:
-  group: deploy-dev
-  cancel-in-progress: false
-
+# Decides what changed and in what order the pieces deploy. The work itself lives
+# in deploy-infra.yml and deploy-front-end.yml, which can also be run on their
+# own from the Actions tab.
 jobs:
-  deploy:
+  changes:
     runs-on: ubuntu-latest
+    outputs:
+      infra: ${{ steps.filter.outputs.infra }}
+      # Named without a hyphen: '-' is also the subtraction operator in
+      # expressions, and dot access to a hyphenated property is not documented.
+      frontend: ${{ steps.filter.outputs.frontend }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: filter
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            infra:
+              - 'infra/**'
+              - 'scripts/infra-deploy.sh'
+              - 'docker/infra.Dockerfile'
+              - '.github/workflows/deploy-infra.yml'
+            frontend:
+              - 'front-end/**'
+              - 'scripts/front-end-deploy.sh'
+              - '.github/workflows/deploy-front-end.yml'
 
-    environment:
-      name: dev
-      url: ${{ steps.outputs.outputs.url }}
-
+  infra:
+    needs: changes
+    # Skipped when nothing under infra/ changed. A manual run deploys regardless.
+    if: >-
+      needs.changes.outputs.infra == 'true' ||
+      github.event_name == 'workflow_dispatch'
     permissions:
       id-token: write
       contents: read
+    uses: ./.github/workflows/deploy-infra.yml
+    with:
+      environment: dev
 
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v6
-        with:
-          role-to-assume: ${{ vars.AWS_DEPLOYMENT_ROLE_ARN }}
-          aws-region: ${{ vars.AWS_REGION }}
-
-      - name: Deploy the stack
-        run: make infra-deploy ENVIRONMENT=dev
-
-      - name: Deploy the front-end
-        run: make front-end-deploy ENVIRONMENT=dev
-
-      - name: Read the stack outputs
-        id: outputs
-        run: |
-          url="$(aws cloudformation describe-stacks \
-            --stack-name muncher-dev \
-            --query "Stacks[0].Outputs[?OutputKey=='FrontEndUrl'].OutputValue" \
-            --output text)"
-          echo "url=$url" >> "$GITHUB_OUTPUT"
-          echo "### Front-end: $url" >> "$GITHUB_STEP_SUMMARY"
+  front-end:
+    needs: [changes, infra]
+    # Runs when the infrastructure job succeeded *or* was skipped, which is what
+    # makes the ordering work: a skipped dependency would otherwise skip this job
+    # too. It does not run if the infrastructure deployment failed, since the
+    # bucket it uploads to may not exist.
+    #
+    # The front-end is deployed when its own files changed, and also when the
+    # infrastructure was redeployed, because a replaced bucket starts empty.
+    if: >-
+      !cancelled() &&
+      (needs.infra.result == 'success' || needs.infra.result == 'skipped') &&
+      (needs.changes.outputs.frontend == 'true' ||
+       needs.infra.result == 'success' ||
+       github.event_name == 'workflow_dispatch')
+    permissions:
+      id-token: write
+      contents: read
+    uses: ./.github/workflows/deploy-front-end.yml
+    with:
+      environment: dev

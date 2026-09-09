@@ -1,0 +1,62 @@
+name: Deploy front-end
+
+on:
+  # Called by deploy-dev.yml, which waits for the infrastructure first.
+  workflow_call:
+    inputs:
+      environment:
+        description: Environment to deploy
+        type: string
+        default: dev
+  # Deploys on demand, whether or not anything changed.
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: Environment to deploy
+        type: choice
+        options:
+          - dev
+          - prod
+        default: dev
+
+# One upload at a time per environment: two concurrent syncs with --delete could
+# remove each other's files. The newest is the one worth keeping, so a superseded
+# run is cancelled.
+concurrency:
+  group: deploy-front-end-${{ inputs.environment }}
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    environment:
+      name: ${{ inputs.environment }}
+      url: ${{ steps.deploy.outputs.url }}
+
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: ${{ vars.AWS_DEPLOYMENT_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      # Builds and uploads: the target depends on front-end-build, so the
+      # artifacts cannot be stale.
+      - name: Build and deploy the front-end
+        run: make front-end-deploy ENVIRONMENT=${{ inputs.environment }}
+
+      - name: Read the deployed URL
+        id: deploy
+        run: |
+          url="$(aws cloudformation describe-stacks \
+            --stack-name muncher-${{ inputs.environment }} \
+            --query "Stacks[0].Outputs[?OutputKey=='FrontEndUrl'].OutputValue" \
+            --output text)"
+          echo "url=$url" >> "$GITHUB_OUTPUT"
