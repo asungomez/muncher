@@ -222,13 +222,21 @@ Esta es la política que necesita el rol:
       "Action": [
         "logs:CreateLogGroup",
         "logs:DeleteLogGroup",
-        "logs:DescribeLogGroups",
         "logs:PutRetentionPolicy",
         "logs:DeleteRetentionPolicy",
         "logs:TagResource",
         "logs:ListTagsForResource"
       ],
-      "Resource": "arn:aws:logs:<REGION>:<ACCOUNT_ID>:log-group:/aws/lambda/muncher-*"
+      "Resource": [
+        "arn:aws:logs:<REGION>:<ACCOUNT_ID>:log-group:/aws/lambda/muncher-*",
+        "arn:aws:logs:<REGION>:<ACCOUNT_ID>:log-group:/aws/lambda/muncher-*:*"
+      ]
+    },
+    {
+      "Sid": "StackLogGroupsDescribe",
+      "Effect": "Allow",
+      "Action": "logs:DescribeLogGroups",
+      "Resource": "*"
     }
   ]
 }
@@ -242,6 +250,10 @@ Dos decisiones de esta política son deliberadas:
 - **CloudFront usa `"Resource": "*"`** porque sus acciones sobre distribuciones
   no admiten ARN a nivel de recurso. Allí donde una acción sí lo permite, se
   limita.
+- **`logs:DescribeLogGroups` va en su propia sentencia con `"Resource": "*"`**
+  porque tampoco admite restricción por recurso: es una limitación del servicio,
+  no un descuido. CloudFormation la invoca para leer el ARN del grupo de logs, de
+  modo que sin ella el despliegue falla al crear el rol que lo referencia.
 
 La política contiene exactamente lo que necesita la plantilla actual, y nada
 más.

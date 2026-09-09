@@ -18,20 +18,74 @@ STACK="muncher-${ENVIRONMENT}"
 
 cd "$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
-# The template is not validated here: cfn-lint is one of the checks, so it runs
-# on every commit and gates the pull request. By the time a change reaches this
-# script it has already been validated.
+stack_status() {
+	aws cloudformation describe-stacks \
+		--stack-name "$STACK" \
+		--query 'Stacks[0].StackStatus' \
+		--output text 2>/dev/null || echo "DOES_NOT_EXIST"
+}
+
+# Prints why the deployment failed, so the reason is in this output rather than
+# only in the console. CloudFormation reports the cause on the individual
+# resource, not on the stack, and lists events newest first — the oldest failure
+# is the real one, everything after it is fallout from the rollback.
+report_failure() {
+	echo ""
+	echo "::group::CloudFormation failures for ${STACK}"
+	aws cloudformation describe-stack-events \
+		--stack-name "$STACK" \
+		--query "reverse(StackEvents[?contains(ResourceStatus, 'FAILED')].[Timestamp,LogicalResourceId,ResourceType,ResourceStatusReason])" \
+		--output table 2>/dev/null || echo "(no events could be read)"
+	echo "::endgroup::"
+
+	# The first failure, repeated outside the collapsed group so it is visible
+	# without expanding anything, and added to the run summary.
+	local reason
+	reason="$(aws cloudformation describe-stack-events \
+		--stack-name "$STACK" \
+		--query "reverse(StackEvents[?ResourceStatusReason!=null && contains(ResourceStatus, 'FAILED')])[0].[LogicalResourceId,ResourceStatusReason]" \
+		--output text 2>/dev/null || true)"
+
+	if [ -n "$reason" ]; then
+		echo ""
+		echo "❌ First failure: ${reason}"
+		if [ -n "${GITHUB_STEP_SUMMARY:-}" ]; then
+			{
+				echo "### Deployment of \`${STACK}\` failed"
+				echo ""
+				echo '```'
+				echo "${reason}"
+				echo '```'
+			} >> "$GITHUB_STEP_SUMMARY"
+		fi
+	fi
+}
+
+STATUS="$(stack_status)"
+
+# A stack whose creation failed holds no resources and cannot be updated, so it
+# has to be removed before another attempt. Deleting it is safe precisely
+# because nothing was ever provisioned.
+if [ "$STATUS" = "ROLLBACK_COMPLETE" ] || [ "$STATUS" = "REVIEW_IN_PROGRESS" ]; then
+	echo "🧹 ${STACK} is in ${STATUS} from a failed creation; deleting it first..."
+	aws cloudformation delete-stack --stack-name "$STACK"
+	aws cloudformation wait stack-delete-complete --stack-name "$STACK"
+fi
+
 echo "🚀 Deploying ${STACK}..."
 # CAPABILITY_NAMED_IAM because the template names the role it creates.
 # --no-fail-on-empty-changeset so that redeploying an unchanged template
 # succeeds instead of failing the build.
-aws cloudformation deploy \
+if ! aws cloudformation deploy \
 	--template-file infra/muncher.yaml \
 	--stack-name "$STACK" \
 	--parameter-overrides "Environment=${ENVIRONMENT}" \
 	--capabilities CAPABILITY_NAMED_IAM \
 	--no-fail-on-empty-changeset \
-	--tags "Environment=${ENVIRONMENT}" Project=muncher
+	--tags "Environment=${ENVIRONMENT}" Project=muncher; then
+	report_failure
+	exit 1
+fi
 
 echo "✅ Deployed. Stack outputs:"
 aws cloudformation describe-stacks \
