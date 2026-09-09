@@ -16,6 +16,7 @@ RUN := ./scripts/run-in-container.sh
 include makefiles/local-env.mk
 include makefiles/checks.mk
 include makefiles/memoria.mk
+include makefiles/infra.mk
 
 .PHONY: help
 help: ## List the available targets

@@ -1,0 +1,252 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Description: >-
+  Muncher. One stack per environment: create a stack from this template and give
+  it an Environment name. Everything else is derived, so dev and prod differ by
+  exactly one value.
+
+Parameters:
+  Environment:
+    Type: String
+    Description: >-
+      Name of the environment this stack provisions. Every resource name is
+      derived from it, so two stacks can coexist in one account.
+    AllowedValues:
+      - dev
+      - prod
+    # The cheap environment is the default: an unset parameter must never
+    # provision the production one.
+    Default: dev
+
+Resources:
+  # Holds the compiled front-end. Never public: CloudFront is the only reader,
+  # authorised by the bucket policy below.
+  FrontEndBucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      # Bucket names are globally unique, hence the account id.
+      BucketName: !Sub muncher-front-end-${Environment}-${AWS::AccountId}
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              # SSE-S3 rather than SSE-KMS: KMS would add a per-request charge
+              # and would require the distribution to sign every origin request.
+              SSEAlgorithm: AES256
+      Tags:
+        - Key: Environment
+          Value: !Ref Environment
+
+  # CloudFormation cannot delete a bucket that still holds objects, so deleting
+  # the stack would fail on a bucket that has ever been deployed to. These four
+  # resources empty it first: the custom resource below depends on the bucket, so
+  # on deletion it is removed before it, and its handler clears the contents.
+  FrontEndBucketEmptierLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      # Named after the function so that Lambda writes here instead of creating
+      # a log group of its own, which would outlive the stack.
+      LogGroupName: !Sub /aws/lambda/muncher-front-end-emptier-${Environment}
+      RetentionInDays: 7
+
+  FrontEndBucketEmptierRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub muncher-front-end-emptier-${Environment}
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: empty-front-end-bucket
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:ListBucket
+                  - s3:ListBucketVersions
+                Resource: !GetAtt FrontEndBucket.Arn
+              - Effect: Allow
+                Action:
+                  - s3:DeleteObject
+                  - s3:DeleteObjectVersion
+                Resource: !Sub ${FrontEndBucket.Arn}/*
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: !GetAtt FrontEndBucketEmptierLogGroup.Arn
+
+  FrontEndBucketEmptier:
+    Type: AWS::Lambda::Function
+    # Without this the function may be created before the log group exists, and
+    # Lambda would create an unmanaged one on first invocation.
+    DependsOn: FrontEndBucketEmptierLogGroup
+    Properties:
+      FunctionName: !Sub muncher-front-end-emptier-${Environment}
+      Description: !Sub Empties the ${Environment} front-end bucket when the stack is deleted
+      Runtime: python3.13
+      Handler: index.handler
+      Role: !GetAtt FrontEndBucketEmptierRole.Arn
+      Timeout: 300
+      MemorySize: 256
+      Code:
+        ZipFile: |
+          import boto3
+          import cfnresponse
+
+          s3 = boto3.client("s3")
+
+
+          def empty(bucket):
+              deleted = 0
+
+              # Each round lists from the beginning rather than paginating:
+              # deleting the objects a paginator has already listed invalidates
+              # the marker it would continue from, which silently leaves
+              # everything past the first page in place.
+              while True:
+                  page = s3.list_object_versions(Bucket=bucket, MaxKeys=1000)
+                  objects = [
+                      {"Key": item["Key"], "VersionId": item["VersionId"]}
+                      for key in ("Versions", "DeleteMarkers")
+                      for item in page.get(key, [])
+                  ]
+
+                  if not objects:
+                      return deleted
+
+                  s3.delete_objects(Bucket=bucket, Delete={"Objects": objects})
+                  deleted += len(objects)
+
+
+          def handler(event, context):
+              # Only deletion needs to do anything; the resource exists solely to
+              # be torn down before the bucket it points at.
+              if event["RequestType"] != "Delete":
+                  cfnresponse.send(event, context, cfnresponse.SUCCESS, {})
+                  return
+
+              bucket = event["ResourceProperties"]["Bucket"]
+              try:
+                  deleted = empty(bucket)
+                  print(f"Deleted {deleted} objects from {bucket}")
+              except s3.exceptions.NoSuchBucket:
+                  # Already gone: nothing to empty, and nothing to fail over.
+                  print(f"{bucket} does not exist")
+              except Exception as error:
+                  # Reporting the failure leaves the stack in DELETE_FAILED, which
+                  # is recoverable by retrying, rather than silently leaving a
+                  # bucket that then blocks its own deletion.
+                  print(f"Failed to empty {bucket}: {error}")
+                  cfnresponse.send(
+                      event, context, cfnresponse.FAILED, {}, reason=str(error)
+                  )
+                  return
+
+              cfnresponse.send(event, context, cfnresponse.SUCCESS, {})
+
+  FrontEndBucketContents:
+    Type: AWS::CloudFormation::CustomResource
+    Properties:
+      ServiceToken: !GetAtt FrontEndBucketEmptier.Arn
+      Bucket: !Ref FrontEndBucket
+
+  FrontEndOriginAccessControl:
+    Type: AWS::CloudFront::OriginAccessControl
+    Properties:
+      OriginAccessControlConfig:
+        Name: !Sub muncher-front-end-${Environment}
+        OriginAccessControlOriginType: s3
+        SigningBehavior: always
+        SigningProtocol: sigv4
+
+  FrontEndDistribution:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Comment: !Sub muncher-front-end-${Environment}
+        Enabled: true
+        HttpVersion: http2and3
+        IPV6Enabled: true
+        DefaultRootObject: index.html
+        # Cheapest class: North America and Europe only. Nothing about this
+        # project justifies paying for the other edge locations.
+        PriceClass: PriceClass_100
+        Origins:
+          - Id: front-end-bucket
+            DomainName: !GetAtt FrontEndBucket.RegionalDomainName
+            OriginAccessControlId: !GetAtt FrontEndOriginAccessControl.Id
+            # Required, and required to be empty, when using an access control
+            # instead of the legacy origin access identity.
+            S3OriginConfig:
+              OriginAccessIdentity: ""
+        DefaultCacheBehavior:
+          TargetOriginId: front-end-bucket
+          ViewerProtocolPolicy: redirect-to-https
+          Compress: true
+          AllowedMethods:
+            - GET
+            - HEAD
+          CachedMethods:
+            - GET
+            - HEAD
+          # Managed CachingOptimized policy. Using a managed policy avoids
+          # maintaining one of our own.
+          CachePolicyId: 658327ea-f89d-4fab-a63d-7e88639e58f6
+        CustomErrorResponses:
+          - ErrorCode: 403
+            ResponseCode: 200
+            ResponsePagePath: /index.html
+            ErrorCachingMinTTL: 0
+          - ErrorCode: 404
+            ResponseCode: 200
+            ResponsePagePath: /index.html
+            ErrorCachingMinTTL: 0
+        ViewerCertificate:
+          # No custom domain: the distribution is served over its own
+          # *.cloudfront.net name and certificate.
+          CloudFrontDefaultCertificate: true
+      Tags:
+        - Key: Environment
+          Value: !Ref Environment
+
+  FrontEndBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref FrontEndBucket
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: AllowCloudFrontRead
+            Effect: Allow
+            Principal:
+              Service: cloudfront.amazonaws.com
+            Action: s3:GetObject
+            Resource: !Sub ${FrontEndBucket.Arn}/*
+            Condition:
+              StringEquals:
+                AWS:SourceArn: !Sub arn:${AWS::Partition}:cloudfront::${AWS::AccountId}:distribution/${FrontEndDistribution}
+
+Outputs:
+  FrontEndBucketName:
+    Description: Bucket the compiled front-end is uploaded to
+    Value: !Ref FrontEndBucket
+
+  FrontEndDistributionId:
+    Description: Distribution to invalidate after an upload
+    Value: !Ref FrontEndDistribution
+
+  FrontEndUrl:
+    Description: Public URL of the front-end
+    Value: !Sub https://${FrontEndDistribution.DomainName}

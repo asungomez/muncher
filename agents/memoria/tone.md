@@ -19,6 +19,11 @@ Terms that stay in their original form:
   when one is genuinely in use (*historia de usuario*, not *user story*;
   *requerimiento*, not *requirement*; *listas de la compra*, not *shopping
   lists*).
+- **Names of cloud services and their concepts are never translated**: *stack*,
+  not *pila*; *bucket*, not *cubo*. This applies wherever the project writes
+  Spanish, including the documents under `docs/`, not only the memoria. The
+  exception is *plantilla* for *template*, which is established usage and stays
+  in Spanish.
 
 **Never translate a technical term literally when the result is not what
 Spanish-speaking practitioners actually say.** A literal rendering reads as

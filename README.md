@@ -10,6 +10,7 @@
   - [Qué comprueba](#qué-comprueba)
 - [Memoria](#memoria)
 - [Front-end](#front-end)
+- [Despliegue](#despliegue)
 
 ## Propósito
 
@@ -57,6 +58,8 @@ make            # lista los objetivos disponibles
 | `make memoria-lint` | Formatea las fuentes de la memoria con `latexindent`. |
 | `make memoria-build` | Genera el PDF de la memoria en `memoria/generated`. |
 | `make memoria-watch` | Regenera la memoria cada vez que cambian sus fuentes. |
+| `make infra-lint` | Valida las plantillas de CloudFormation. |
+| `make infra-deploy` | Despliega el stack del entorno indicado (`ENVIRONMENT`, por defecto `dev`). |
 | `make shell` | Abre una shell en el contenedor de controles. |
 | `make setup` | Instala los git hooks. |
 
@@ -102,3 +105,17 @@ MUNCHER_FRONT_END_PORT=5200 make up
 ```
 
 Los servicios del entorno local se declaran en `compose.yaml` y comparten una misma red, a la que se incorporarán la API y la base de datos.
+
+## Despliegue
+
+La infraestructura se define como código en plantillas de CloudFormation y se despliega desde GitHub Actions, que asume un rol de IAM en la cuenta de AWS.
+
+La configuración inicial de ese rol —el proveedor de identidad OIDC, las políticas y las variables del repositorio— está documentada en [docs/deployment.md](docs/deployment.md). Es el paso previo a cualquier aprovisionamiento.
+
+Cada entorno es un stack creado a partir de `infra/muncher.yaml`, cuyo único parámetro es el nombre del entorno. El de `dev` se despliega automáticamente con cada cambio en `main`, mediante el workflow `deploy-dev.yml`, y también puede lanzarse a mano desde la pestaña de acciones de GitHub.
+
+Para desplegar desde tu máquina, con tus propias credenciales de AWS en el entorno:
+
+```
+make infra-deploy ENVIRONMENT=dev
+```
