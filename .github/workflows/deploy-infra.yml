@@ -14,18 +14,6 @@ on:
           for environments that must never be publicly reachable.
         type: boolean
         default: false
-    secrets:
-      # Declared so the names exist in the `secrets` context of this called
-      # workflow — without a declaration they resolve to empty here, whatever the
-      # environment defines. Callers pass nothing: the values come from the
-      # secrets of the environment the deploy job targets, which take precedence
-      # over anything a caller could pass.
-      FRONTEND_LOGIN_USER:
-        description: User for the front-end login wall
-        required: false
-      FRONTEND_LOGIN_PASSWORD:
-        description: Password for the front-end login wall
-        required: false
   # Deploys on demand, whether or not anything changed — for recreating an
   # environment that was torn down, or reapplying after a manual change.
   workflow_dispatch:
@@ -69,12 +57,12 @@ jobs:
       # The same target a developer runs, in the same image, so the two cannot
       # drift apart. See agents/local-development/containerized-development.md.
       - name: Deploy the stack
-        # Resolved from the secrets of the environment this job targets, not
-        # from the repository and not from the caller: because this job declares
-        # an environment, GitHub uses the environment's secret and ignores
-        # anything a caller passes. An environment that does not define them —
-        # production — therefore deploys with no login wall, and cannot be given
-        # one by any caller or by a manual run.
+        # Resolved from the secrets of the environment this job targets. They
+        # are deliberately NOT declared under `on.workflow_call.secrets`: a
+        # declared secret that the caller does not pass resolves to empty and
+        # hides the environment's own value. Because the environment supplies
+        # them, an environment that does not define them — production — deploys
+        # with no login wall and cannot be given one by any caller.
         env:
           FRONTEND_LOGIN_USER: ${{ secrets.FRONTEND_LOGIN_USER }}
           FRONTEND_LOGIN_PASSWORD: ${{ secrets.FRONTEND_LOGIN_PASSWORD }}
