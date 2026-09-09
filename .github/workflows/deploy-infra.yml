@@ -1,0 +1,54 @@
+name: Deploy infra
+
+on:
+  # Called by deploy-dev.yml, which decides whether the infrastructure changed.
+  workflow_call:
+    inputs:
+      environment:
+        description: Environment to deploy
+        type: string
+        default: dev
+  # Deploys on demand, whether or not anything changed — for recreating an
+  # environment that was torn down, or reapplying after a manual change.
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: Environment to deploy
+        type: choice
+        options:
+          - dev
+          - prod
+        default: dev
+
+# CloudFormation refuses concurrent operations on the same stack, so runs queue
+# instead of racing. In-progress runs are not cancelled: interrupting a
+# deployment mid-flight is worse than waiting for it.
+concurrency:
+  group: deploy-infra-${{ inputs.environment }}
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    environment: ${{ inputs.environment }}
+
+    permissions:
+      # Required for the OIDC token that the role assumption exchanges. Without
+      # it no token is issued and the deployment fails at the credentials step.
+      id-token: write
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: ${{ vars.AWS_DEPLOYMENT_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      # The same target a developer runs, in the same image, so the two cannot
+      # drift apart. See agents/local-development/containerized-development.md.
+      - name: Deploy the stack
+        run: make infra-deploy ENVIRONMENT=${{ inputs.environment }}

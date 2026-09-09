@@ -1,0 +1,32 @@
+name: Deploy prod
+
+# Manual only, and deliberately so: production is never deployed as a
+# side effect of pushing. There is no path filtering either — a manual run
+# deploys the stack and the front-end, in that order.
+#
+# The gate on who may run this belongs to the `prod` environment in the
+# repository settings: adding required reviewers there makes every production
+# deployment wait for an approval.
+on:
+  workflow_dispatch:
+
+jobs:
+  infra:
+    permissions:
+      # Required for the OIDC token that the role assumption exchanges.
+      id-token: write
+      contents: read
+    uses: ./.github/workflows/deploy-infra.yml
+    with:
+      environment: prod
+
+  # Waits for the stack: the bucket it uploads to has to exist first. A failed
+  # infrastructure deployment therefore stops the front-end from being uploaded.
+  front-end:
+    needs: infra
+    permissions:
+      id-token: write
+      contents: read
+    uses: ./.github/workflows/deploy-front-end.yml
+    with:
+      environment: prod
