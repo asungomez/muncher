@@ -1,0 +1,53 @@
+name: Deploy infrastructure
+description: >-
+  Deploys the CloudFormation stack for one environment. Implemented as a
+  composite action rather than a reusable workflow so that its steps run inside
+  the calling job: a job that declares an environment can read that
+  environment's secrets, while a workflow called with `workflow_call` cannot
+  (actions/runner#1490, closed as not planned).
+
+inputs:
+  environment:
+    description: Environment to deploy
+    required: true
+  role-to-assume:
+    description: ARN of the IAM role to assume
+    required: true
+  aws-region:
+    description: Region to deploy into
+    required: true
+  require-login-wall:
+    description: >-
+      Fail rather than deploy if the login wall credentials are missing. Set for
+      environments that must never be publicly reachable.
+    required: false
+    default: "false"
+  login-user:
+    description: >-
+      User for the front-end login wall. Passed by the caller from the secrets
+      of the environment being deployed; empty means no wall.
+    required: false
+    default: ""
+  login-password:
+    description: Password for the front-end login wall
+    required: false
+    default: ""
+
+runs:
+  using: composite
+  steps:
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v6
+      with:
+        role-to-assume: ${{ inputs.role-to-assume }}
+        aws-region: ${{ inputs.aws-region }}
+
+    # The same target a developer runs, in the same image, so the two cannot
+    # drift apart. See agents/local-development/containerized-development.md.
+    - name: Deploy the stack
+      shell: bash
+      env:
+        FRONTEND_LOGIN_USER: ${{ inputs.login-user }}
+        FRONTEND_LOGIN_PASSWORD: ${{ inputs.login-password }}
+        MUNCHER_REQUIRE_LOGIN_WALL: ${{ inputs.require-login-wall == 'true' && '1' || '' }}
+      run: make infra-deploy ENVIRONMENT=${{ inputs.environment }}

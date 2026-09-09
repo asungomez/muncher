@@ -147,7 +147,7 @@ Son variables y no secretos porque ninguno de los dos valores es confidencial.
 
 **3. Los entornos `dev` y `prod`.** En **Settings** → **Environments**, crea uno con cada nombre. Los workflows los declaran, así que GitHub los crearía por su cuenta en el primer despliegue, pero creándolos a mano puedes configurarlos antes: en `prod` conviene añadir **Required reviewers**, de modo que cada despliegue de producción espere una aprobación.
 
-**4. Las credenciales del muro de acceso**, si quieres proteger `dev`. Se explican en la sección siguiente.
+**4. Las credenciales del muro de acceso** de `dev`, como secretos de ese entorno. Se explican en la sección siguiente.
 
 Con eso, un cambio en `main` despliega `dev`, y `prod` se despliega lanzando `deploy-prod.yml` a mano.
 
@@ -155,14 +155,14 @@ Con eso, un cambio en `main` despliega `dev`, y `prod` se despliega lanzando `de
 
 El front-end de `dev` está protegido con una autenticación básica que resuelve el propio navegador, para que el entorno no sea accesible por cualquiera. No hay pantalla de acceso en la aplicación: es el diálogo de credenciales del navegador, servido por una función de CloudFront que se ejecuta en cada petición.
 
-El muro existe únicamente si el stack recibe usuario y contraseña. Para activarlo, define las credenciales como **secretos del entorno `dev`** —no del repositorio— en **Settings** → **Environments** → **dev** → **Environment secrets**:
+El muro existe únicamente si el despliegue recibe usuario y contraseña. Defínelos como **secretos del entorno `dev`** —no del repositorio— en **Settings** → **Environments** → **dev** → **Environment secrets**:
 
 ```
 FRONTEND_LOGIN_USER
 FRONTEND_LOGIN_PASSWORD
 ```
 
-Ese ámbito es lo que hace que producción no pueda quedar protegida por accidente: el trabajo que despliega declara el entorno al que va dirigido, así que solo resuelve los secretos de ese entorno. Como `prod` no los define, se despliega sin muro, y ningún workflow ni ejecución manual puede cambiarlo. Si no defines ninguno de los dos, `dev` también se sirve sin protección.
+Ese ámbito es lo que mantiene los entornos separados: `prod` no los define, así que se sirve sin muro y no puede recibir uno por descuido. En `dev`, en cambio, la ausencia de credenciales se trata como un error y el despliegue falla en lugar de dejar el entorno accesible.
 
 > Es una barrera contra accesos casuales, no un control de seguridad: la contraseña queda legible en el código de la función para quien tenga permiso de lectura sobre CloudFront. No reutilices una contraseña de ningún otro sitio.
 

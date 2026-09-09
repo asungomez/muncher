@@ -7,9 +7,10 @@ on:
   # Deploys everything, regardless of what changed.
   workflow_dispatch:
 
-# Decides what changed and in what order the pieces deploy. The work itself lives
-# in deploy-infra.yml and deploy-front-end.yml, which can also be run on their
-# own from the Actions tab.
+# Decides what changed and in what order the pieces deploy. The stack is
+# deployed by the composite action in .github/actions/deploy-infra, and the
+# front-end by deploy-front-end.yml, which can also be run on their own from the
+# Actions tab.
 jobs:
   changes:
     runs-on: ubuntu-latest
@@ -28,7 +29,7 @@ jobs:
               - 'infra/**'
               - 'scripts/infra-deploy.sh'
               - 'docker/infra.Dockerfile'
-              - '.github/workflows/deploy-infra.yml'
+              - '.github/actions/deploy-infra/**'
             frontend:
               - 'front-end/**'
               - 'scripts/front-end-deploy.sh'
@@ -40,13 +41,29 @@ jobs:
     if: >-
       needs.changes.outputs.infra == 'true' ||
       github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    # An ordinary job rather than a call to a reusable workflow, because only a
+    # job that declares an environment can read that environment's secrets.
+    environment: dev
     permissions:
+      # Required for the OIDC token that the role assumption exchanges.
       id-token: write
       contents: read
-    uses: ./.github/workflows/deploy-infra.yml
-    with:
-      environment: dev
-      require-login-wall: true
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ./.github/actions/deploy-infra
+        with:
+          environment: dev
+          role-to-assume: ${{ vars.AWS_DEPLOYMENT_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+          # The development environment is not allowed to be publicly reachable,
+          # so a deployment without these credentials fails rather than quietly
+          # exposing it.
+          require-login-wall: true
+          # Resolved from the secrets of the dev environment declared above.
+          login-user: ${{ secrets.FRONTEND_LOGIN_USER }}
+          login-password: ${{ secrets.FRONTEND_LOGIN_PASSWORD }}
 
   front-end:
     needs: [changes, infra]
