@@ -72,6 +72,25 @@ if [ "$STATUS" = "ROLLBACK_COMPLETE" ] || [ "$STATUS" = "REVIEW_IN_PROGRESS" ]; 
 	aws cloudformation wait stack-delete-complete --stack-name "$STACK"
 fi
 
+# The login wall is enabled by supplying both halves of the credential. They
+# arrive as environment variables — from the dev environment's secrets in CI —
+# and are simply absent for environments that should be public.
+PARAMETERS=("Environment=${ENVIRONMENT}")
+if [ -n "${FRONTEND_LOGIN_USER:-}" ] && [ -n "${FRONTEND_LOGIN_PASSWORD:-}" ]; then
+	PARAMETERS+=(
+		"FrontEndLoginUser=${FRONTEND_LOGIN_USER}"
+		"FrontEndLoginPassword=${FRONTEND_LOGIN_PASSWORD}"
+	)
+	echo "🔒 Login wall enabled for ${ENVIRONMENT}"
+elif [ -n "${FRONTEND_LOGIN_USER:-}" ] || [ -n "${FRONTEND_LOGIN_PASSWORD:-}" ]; then
+	# Half a credential is a misconfiguration, not a request for a public site:
+	# saying so is better than silently deploying without a wall.
+	echo "❌ FRONTEND_LOGIN_USER and FRONTEND_LOGIN_PASSWORD must be set together" >&2
+	exit 1
+else
+	echo "🔓 No login wall for ${ENVIRONMENT}: no credentials supplied"
+fi
+
 echo "🚀 Deploying ${STACK}..."
 # CAPABILITY_NAMED_IAM because the template names the role it creates.
 # --no-fail-on-empty-changeset so that redeploying an unchanged template
@@ -79,7 +98,7 @@ echo "🚀 Deploying ${STACK}..."
 if ! aws cloudformation deploy \
 	--template-file infra/muncher.yaml \
 	--stack-name "$STACK" \
-	--parameter-overrides "Environment=${ENVIRONMENT}" \
+	--parameter-overrides "${PARAMETERS[@]}" \
 	--capabilities CAPABILITY_NAMED_IAM \
 	--no-fail-on-empty-changeset \
 	--tags "Environment=${ENVIRONMENT}" Project=muncher; then
