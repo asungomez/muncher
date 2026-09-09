@@ -60,6 +60,7 @@ make            # lista los objetivos disponibles
 | `make memoria-watch` | Regenera la memoria cada vez que cambian sus fuentes. |
 | `make infra-lint` | Valida las plantillas de CloudFormation. |
 | `make infra-deploy` | Despliega el stack del entorno indicado (`ENVIRONMENT`, por defecto `dev`). |
+| `make front-end-deploy` | Compila el front-end y lo sube al entorno indicado. |
 | `make shell` | Abre una shell en el contenedor de controles. |
 | `make setup` | Instala los git hooks. |
 
@@ -118,4 +119,7 @@ Para desplegar desde tu máquina, con tus propias credenciales de AWS en el ento
 
 ```
 make infra-deploy ENVIRONMENT=dev
+make front-end-deploy ENVIRONMENT=dev
 ```
+
+El primer comando crea o actualiza el stack; el segundo compila el front-end y sube los archivos al bucket, invalidando la caché de CloudFront.

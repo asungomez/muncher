@@ -39,6 +39,9 @@ jobs:
       - name: Deploy the stack
         run: make infra-deploy ENVIRONMENT=dev
 
+      - name: Deploy the front-end
+        run: make front-end-deploy ENVIRONMENT=dev
+
       - name: Read the stack outputs
         id: outputs
         run: |
