@@ -46,6 +46,7 @@ jobs:
     uses: ./.github/workflows/deploy-infra.yml
     with:
       environment: dev
+      require-login-wall: true
 
   front-end:
     needs: [changes, infra]

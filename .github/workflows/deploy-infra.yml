@@ -8,6 +8,24 @@ on:
         description: Environment to deploy
         type: string
         default: dev
+      require-login-wall:
+        description: >-
+          Fail rather than deploy if the login wall credentials are missing. Set
+          for environments that must never be publicly reachable.
+        type: boolean
+        default: false
+    secrets:
+      # Declared so the names exist in the `secrets` context of this called
+      # workflow — without a declaration they resolve to empty here, whatever the
+      # environment defines. Callers pass nothing: the values come from the
+      # secrets of the environment the deploy job targets, which take precedence
+      # over anything a caller could pass.
+      FRONTEND_LOGIN_USER:
+        description: User for the front-end login wall
+        required: false
+      FRONTEND_LOGIN_PASSWORD:
+        description: Password for the front-end login wall
+        required: false
   # Deploys on demand, whether or not anything changed — for recreating an
   # environment that was torn down, or reapplying after a manual change.
   workflow_dispatch:
@@ -60,4 +78,5 @@ jobs:
         env:
           FRONTEND_LOGIN_USER: ${{ secrets.FRONTEND_LOGIN_USER }}
           FRONTEND_LOGIN_PASSWORD: ${{ secrets.FRONTEND_LOGIN_PASSWORD }}
+          MUNCHER_REQUIRE_LOGIN_WALL: ${{ inputs.require-login-wall && '1' || '' }}
         run: make infra-deploy ENVIRONMENT=${{ inputs.environment }}
