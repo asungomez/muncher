@@ -296,6 +296,12 @@ ninguna vía: ni desde otro workflow, ni lanzando el despliegue a mano.
 
 El stack las recibe como parámetros y, si llegan vacías, no crea ningún muro.
 
+En el caso de `dev` esa situación se considera un error, no una decisión: el
+despliegue falla en lugar de dejar el entorno accesible. Si ves ese fallo,
+comprueba que los secretos están definidos en el entorno `dev` y no en otro
+sitio: unos secretos del repositorio con ese mismo nombre no sirven, porque el
+trabajo que despliega resuelve los del entorno al que va dirigido.
+
 El muro se implementa con una función de CloudFront que se ejecuta en cada
 petición y devuelve `401` hasta que el navegador envía las credenciales, de modo
 que el formulario es el propio diálogo del navegador y la aplicación no contiene

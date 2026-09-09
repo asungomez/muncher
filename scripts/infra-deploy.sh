@@ -87,6 +87,15 @@ elif [ -n "${FRONTEND_LOGIN_USER:-}" ] || [ -n "${FRONTEND_LOGIN_PASSWORD:-}" ];
 	# saying so is better than silently deploying without a wall.
 	echo "❌ FRONTEND_LOGIN_USER and FRONTEND_LOGIN_PASSWORD must be set together" >&2
 	exit 1
+elif [ -n "${MUNCHER_REQUIRE_LOGIN_WALL:-}" ]; then
+	# This environment is not allowed to be publicly reachable, so missing
+	# credentials are a failure rather than a decision to serve it openly.
+	# Reaching here means the secrets are not visible to the deployment: check
+	# that they are defined on the environment being deployed.
+	echo "❌ ${ENVIRONMENT} requires the login wall, but FRONTEND_LOGIN_USER and" >&2
+	echo "   FRONTEND_LOGIN_PASSWORD are empty. Define them as secrets of the" >&2
+	echo "   ${ENVIRONMENT} environment; see docs/deployment.md." >&2
+	exit 1
 else
 	echo "🔓 No login wall for ${ENVIRONMENT}: no credentials supplied"
 fi
