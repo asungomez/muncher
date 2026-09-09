@@ -231,9 +231,20 @@ definición se instancia tantas veces como entornos sean necesarios, con las
 diferencias justas entre ellos expresadas como parámetros. La aplicación web
 estática se desplegó automáticamente en el entorno de desarrollo con cada
 commit a la rama \texttt{main}, integrándose con el flujo de integración
-continua del proyecto. Por su parte, los despliegues a producción se
-establecieron como procesos manuales para preservar la estabilidad del servicio
-y evitar cambios inesperados en el entorno final.
+continua del proyecto. Los despliegues a producción, en cambio, no se
+desencadenan a partir de ningún cambio en el código: se lanzan de forma
+explícita, aunque el proceso que ejecutan está igualmente automatizado y es el
+mismo que se emplea en desarrollo. Lo que se reserva a una decisión humana es
+únicamente el momento de desplegar, de modo que se preserva la estabilidad del
+servicio sin renunciar a la reproducibilidad del procedimiento.
+
+La restricción de acceso al entorno de desarrollo, recogida en
+\reqref{RNF-SE-05}, se resolvió durante este mismo sprint. Un entorno de
+desarrollo desplegado en la nube es, por defecto, tan accesible como el de
+producción: cualquiera que conozca su dirección puede visitarlo, cuando su
+finalidad es servir únicamente al equipo que lo utiliza para verificar los
+cambios. Para evitarlo se interpuso una autenticación básica en el punto de
+entrada de la aplicación.
 
 El sprint permitió consolidar las bases técnicas de la infraestructura en la
 nube, culminando con un entorno operativo estable, reproducible y de bajo

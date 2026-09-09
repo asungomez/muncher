@@ -222,13 +222,15 @@ proyecto.
 	titulo={Despliegue en la nube del entorno de desarollo},
 	como={Desarrollador},
 	quiero={Poder acceder a la aplicación desde cualquier dispositivo con acceso a internet},
-	requerimientos={\reqref{RNF-DE-01}, \reqref{RNF-DE-02}},
+	requerimientos={\reqref{RNF-DE-01}, \reqref{RNF-DE-02}, \reqref{RNF-SE-03}, \reqref{RNF-SE-05}},
 	puntos={8},
 	criterios={
 			\begin{itemize}
 				\item Existe un entorno de desarrollo en la nube.
 				\item Cada nuevo commit a la rama main se despliega automáticamente a la nube.
 				\item La aplicación es accesible a través de una URL de Internet.
+				\item Sólo el equipo de desarrollo tiene acceso al entorno de desarrollo en la nube.
+				\item Las credenciales de despliegue en la nube se almacenan de forma segura y no se exponen en el código fuente.
 			\end{itemize}
 		},
 	tareas={
@@ -238,6 +240,8 @@ proyecto.
 				\item Configuración de la infraestructura como código.
 				\item Creación de la infraestructura en el ciclo de CD (Continuous Deployment).
 				\item Despliegue del código fuente del front-end a la nube.
+				\item Configuración de la autenticación para el acceso al entorno de desarrollo en la
+				      nube.
 			\end{itemize}
 		}
 ]
