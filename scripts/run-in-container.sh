@@ -47,6 +47,28 @@ RUN_ARGS=(
 	--env MUNCHER_IN_CONTAINER=1
 )
 
+# AWS credentials are never stored in the repository or baked into an image:
+# they are forwarded from the environment that invoked make — a local profile, or
+# the role GitHub Actions assumed through OIDC. Only variables that are actually
+# set are passed on.
+for aws_var in \
+	AWS_ACCESS_KEY_ID \
+	AWS_SECRET_ACCESS_KEY \
+	AWS_SESSION_TOKEN \
+	AWS_REGION \
+	AWS_DEFAULT_REGION \
+	AWS_PROFILE; do
+	if [ -n "${!aws_var:-}" ]; then
+		RUN_ARGS+=(--env "${aws_var}=${!aws_var}")
+	fi
+done
+
+# A local profile keeps its credentials in ~/.aws, which the container cannot see
+# unless it is mounted. Read-only: the container has no reason to write there.
+if [ -n "${AWS_PROFILE:-}" ] && [ -d "$HOME/.aws" ]; then
+	RUN_ARGS+=(--volume "$HOME/.aws:/root/.aws:ro")
+fi
+
 # node_modules is installed into the CI image, so it cannot live in the bind
 # mount that covers /workspace. A named volume seeded from the image keeps it out
 # of the working tree. Keying the volume on the lockfile means a dependency

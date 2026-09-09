@@ -53,7 +53,9 @@ RUN ln -s ../lib/node_modules/npm/bin/npm-cli.js /usr/local/bin/npm \
 ENV VIRTUAL_ENV=/opt/pre-commit-venv
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 RUN python3 -m venv "$VIRTUAL_ENV" \
-	&& pip install --no-cache-dir pre-commit==4.4.0
+	&& pip install --no-cache-dir \
+		pre-commit==4.4.0 \
+		cfn-lint==1.56.1
 
 # Hook environments are baked into the image so that running a check never
 # downloads anything. PRE_COMMIT_HOME is outside /workspace, which is bind

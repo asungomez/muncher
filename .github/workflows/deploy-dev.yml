@@ -1,0 +1,50 @@
+name: Deploy dev
+
+on:
+  push:
+    branches:
+      - main
+  # Lets the environment be redeployed, or recreated after being torn down,
+  # without pushing a commit.
+  workflow_dispatch:
+
+# CloudFormation refuses concurrent operations on the same stack, so runs queue
+# instead of racing. In-progress runs are not cancelled: interrupting a
+# deployment mid-flight is worse than waiting for it.
+concurrency:
+  group: deploy-dev
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    environment:
+      name: dev
+      url: ${{ steps.outputs.outputs.url }}
+
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: ${{ vars.AWS_DEPLOYMENT_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - name: Deploy the stack
+        run: make infra-deploy ENVIRONMENT=dev
+
+      - name: Read the stack outputs
+        id: outputs
+        run: |
+          url="$(aws cloudformation describe-stacks \
+            --stack-name muncher-dev \
+            --query "Stacks[0].Outputs[?OutputKey=='FrontEndUrl'].OutputValue" \
+            --output text)"
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+          echo "### Front-end: $url" >> "$GITHUB_STEP_SUMMARY"

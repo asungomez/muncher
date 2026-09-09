@@ -27,7 +27,12 @@ repos:
       - id: end-of-file-fixer
       - id: mixed-line-ending
         args: [--fix=lf]
+      # The CloudFormation templates are excluded: their short-form intrinsics
+      # (!Ref, !GetAtt, !Sub) are custom tags that a plain YAML parser cannot
+      # construct. The cfn-lint hook below validates them instead, and it
+      # understands the tags.
       - id: check-yaml
+        exclude: ^infra/
       # The tsconfig files are JSONC: TypeScript allows the comments they carry,
       # a strict JSON parser does not. Prettier still formats them.
       - id: check-json
@@ -62,3 +67,9 @@ repos:
         entry: scripts/hooks/latexindent.sh
         language: system
         files: ^memoria/.*\.tex$
+
+      - id: cfn-lint
+        name: cfn-lint (infra)
+        entry: cfn-lint
+        language: system
+        files: ^infra/.*\.(yaml|yml)$
