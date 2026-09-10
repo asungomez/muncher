@@ -1,21 +1,15 @@
 name: Deploy infra
 
+# Deploys on demand, whether or not anything changed — for recreating an
+# environment that was torn down, or reapplying after a manual change. The
+# automatic path lives in deploy-dev.yml and deploy-prod.yml, which run the same
+# composite action.
+#
+# This is no longer a reusable workflow: a workflow called with `workflow_call`
+# cannot read the secrets of the environment it declares, so the deployment steps
+# live in .github/actions/deploy-infra and run inside a job that declares the
+# environment.
 on:
-  # Called by deploy-dev.yml, which decides whether the infrastructure changed.
-  workflow_call:
-    inputs:
-      environment:
-        description: Environment to deploy
-        type: string
-        default: dev
-      require-login-wall:
-        description: >-
-          Fail rather than deploy if the login wall credentials are missing. Set
-          for environments that must never be publicly reachable.
-        type: boolean
-        default: false
-  # Deploys on demand, whether or not anything changed — for recreating an
-  # environment that was torn down, or reapplying after a manual change.
   workflow_dispatch:
     inputs:
       environment:
@@ -37,6 +31,8 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
 
+    # Declared on the job itself, which is what gives its steps access to this
+    # environment's secrets.
     environment: ${{ inputs.environment }}
 
     permissions:
@@ -48,23 +44,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v6
+      - uses: ./.github/actions/deploy-infra
         with:
+          environment: ${{ inputs.environment }}
           role-to-assume: ${{ vars.AWS_DEPLOYMENT_ROLE_ARN }}
           aws-region: ${{ vars.AWS_REGION }}
-
-      # The same target a developer runs, in the same image, so the two cannot
-      # drift apart. See agents/local-development/containerized-development.md.
-      - name: Deploy the stack
-        # Resolved from the secrets of the environment this job targets. They
-        # are deliberately NOT declared under `on.workflow_call.secrets`: a
-        # declared secret that the caller does not pass resolves to empty and
-        # hides the environment's own value. Because the environment supplies
-        # them, an environment that does not define them — production — deploys
-        # with no login wall and cannot be given one by any caller.
-        env:
-          FRONTEND_LOGIN_USER: ${{ secrets.FRONTEND_LOGIN_USER }}
-          FRONTEND_LOGIN_PASSWORD: ${{ secrets.FRONTEND_LOGIN_PASSWORD }}
-          MUNCHER_REQUIRE_LOGIN_WALL: ${{ inputs.require-login-wall && '1' || '' }}
-        run: make infra-deploy ENVIRONMENT=${{ inputs.environment }}
+          # Development must never be publicly reachable.
+          require-login-wall: ${{ inputs.environment == 'dev' }}
+          # Resolved from the secrets of the environment above. An environment
+          # that does not define them deploys with no login wall.
+          login-user: ${{ secrets.FRONTEND_LOGIN_USER }}
+          login-password: ${{ secrets.FRONTEND_LOGIN_PASSWORD }}

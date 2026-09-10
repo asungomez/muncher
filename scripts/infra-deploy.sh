@@ -72,9 +72,10 @@ if [ "$STATUS" = "ROLLBACK_COMPLETE" ] || [ "$STATUS" = "REVIEW_IN_PROGRESS" ]; 
 	aws cloudformation wait stack-delete-complete --stack-name "$STACK"
 fi
 
-# The login wall is enabled by supplying both halves of the credential. They
-# arrive as environment variables — from the dev environment's secrets in CI —
-# and are simply absent for environments that should be public.
+# The login wall is enabled by supplying both halves of the credential. In CI
+# they come from the secrets of the environment being deployed, read by the job
+# that declares it; locally they come from your own environment. An environment
+# that supplies neither is deployed without a wall.
 PARAMETERS=("Environment=${ENVIRONMENT}")
 if [ -n "${FRONTEND_LOGIN_USER:-}" ] && [ -n "${FRONTEND_LOGIN_PASSWORD:-}" ]; then
 	PARAMETERS+=(
@@ -93,8 +94,8 @@ elif [ -n "${MUNCHER_REQUIRE_LOGIN_WALL:-}" ]; then
 	# Reaching here means the secrets are not visible to the deployment: check
 	# that they are defined on the environment being deployed.
 	echo "❌ ${ENVIRONMENT} requires the login wall, but FRONTEND_LOGIN_USER and" >&2
-	echo "   FRONTEND_LOGIN_PASSWORD are empty. Define them as secrets of the" >&2
-	echo "   ${ENVIRONMENT} environment; see docs/deployment.md." >&2
+	echo "   FRONTEND_LOGIN_PASSWORD are empty. In CI they come from the secrets of" >&2
+	echo "   the ${ENVIRONMENT} environment; see docs/deployment.md." >&2
 	exit 1
 else
 	echo "🔓 No login wall for ${ENVIRONMENT}: no credentials supplied"

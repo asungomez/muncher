@@ -12,13 +12,22 @@ on:
 
 jobs:
   infra:
+    runs-on: ubuntu-latest
+    # Production defines no login wall credentials, so none are found and the
+    # site is served openly — which is the intent for production.
+    environment: prod
     permissions:
       # Required for the OIDC token that the role assumption exchanges.
       id-token: write
       contents: read
-    uses: ./.github/workflows/deploy-infra.yml
-    with:
-      environment: prod
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ./.github/actions/deploy-infra
+        with:
+          environment: prod
+          role-to-assume: ${{ vars.AWS_DEPLOYMENT_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
 
   # Waits for the stack: the bucket it uploads to has to exist first. A failed
   # infrastructure deployment therefore stops the front-end from being uploaded.

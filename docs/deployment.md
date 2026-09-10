@@ -280,32 +280,31 @@ El front-end de `dev` queda detrás de una autenticación básica para que no se
 accesible por cualquiera. Se activa únicamente si el stack recibe usuario y
 contraseña; sin ellos —como en `prod`— el sitio se sirve sin muro.
 
-Define las credenciales como **secretos del entorno `dev`**, no del repositorio:
-en **Settings** → **Environments** → **dev** → **Environment secrets**, añade
+Define las credenciales como **secretos del entorno `dev`**, no del
+repositorio: en **Settings** → **Environments** → **dev** → **Environment
+secrets**, añade
 
 ```
 FRONTEND_LOGIN_USER
 FRONTEND_LOGIN_PASSWORD
 ```
 
-El trabajo que despliega el stack declara el entorno al que va dirigido, y
-GitHub resuelve entonces los secretos de ese entorno —y prescinde de cualquiera
-que le pase quien lo invoque—, así que las credenciales solo existen para los
-despliegues de `dev`. Producción no las define y no puede recibirlas por
-ninguna vía: ni desde otro workflow, ni lanzando el despliegue a mano.
+El trabajo que despliega el stack declara el entorno al que va dirigido, y solo
+por eso puede leer sus secretos. Es también el motivo por el que el despliegue
+está implementado como una acción compuesta —`.github/actions/deploy-infra`— y
+no como un workflow reutilizable: un workflow invocado con `workflow_call` no
+tiene acceso a los secretos del entorno que declara, aunque lo declare
+([actions/runner#1490](https://github.com/actions/runner/issues/1490), cerrado
+sin previsión de cambio). Los pasos de una acción compuesta, en cambio, se
+ejecutan dentro del trabajo que la invoca, y ese trabajo sí los ve.
 
-El stack las recibe como parámetros y, si llegan vacías, no crea ningún muro.
+Como `prod` no define esos secretos, se despliega sin muro y no puede recibir
+uno por descuido. Para `dev`, en cambio, la ausencia de credenciales se
+considera un error y no una decisión: el despliegue falla en lugar de dejar el
+entorno accesible.
 
-En el caso de `dev` esa situación se considera un error, no una decisión: el
-despliegue falla en lugar de dejar el entorno accesible. Si ves ese fallo,
-comprueba que los secretos están definidos en el entorno `dev` y no en otro
-sitio: unos secretos del repositorio con ese mismo nombre no sirven, porque el
-trabajo que despliega resuelve los del entorno al que va dirigido.
-
-El muro se implementa con una función de CloudFront que se ejecuta en cada
-petición y devuelve `401` hasta que el navegador envía las credenciales, de modo
-que el formulario es el propio diálogo del navegador y la aplicación no contiene
-ninguna pantalla de acceso.
+Si quieres sobreescribirlas puntualmente en un despliegue local, define
+`FRONTEND_LOGIN_USER` y `FRONTEND_LOGIN_PASSWORD` en tu propio entorno.
 
 > Es una barrera contra accesos casuales, no un control de seguridad: la
 > contraseña queda legible en el código de la función para quien tenga permiso
