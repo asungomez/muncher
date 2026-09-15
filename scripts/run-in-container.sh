@@ -47,22 +47,21 @@ RUN_ARGS=(
 	--env MUNCHER_IN_CONTAINER=1
 )
 
-# Credentials are never stored in the repository or baked into an image: they are
-# forwarded from the environment that invoked make — a local profile, or the role
-# GitHub Actions assumed through OIDC, plus the login wall credentials. Only
-# variables that are actually set are passed on.
-for aws_var in \
-	AWS_ACCESS_KEY_ID \
-	AWS_SECRET_ACCESS_KEY \
-	AWS_SESSION_TOKEN \
-	AWS_REGION \
-	AWS_DEFAULT_REGION \
-	AWS_PROFILE \
-	FRONTEND_LOGIN_USER \
-	FRONTEND_LOGIN_PASSWORD \
-	MUNCHER_REQUIRE_LOGIN_WALL; do
-	if [ -n "${!aws_var:-}" ]; then
-		RUN_ARGS+=(--env "${aws_var}=${!aws_var}")
+# Configuration reaches the scripts through the environment: AWS credentials from
+# a local profile or from the role GitHub Actions assumed through OIDC, and the
+# project's own settings. Nothing is stored in the repository or baked into an
+# image.
+#
+# Forwarded by prefix rather than by name on purpose. An explicit list has to be
+# extended every time a setting is added, and forgetting to do so does not fail:
+# the variable is simply absent inside the container and whatever it controlled
+# is silently skipped.
+for name in $(compgen -A variable | grep -E '^(AWS_|MUNCHER_|FRONTEND_LOGIN_)' | sort -u); do
+	# MUNCHER_IN_CONTAINER is set below; forwarding the host's value would be
+	# meaningless.
+	[ "$name" = "MUNCHER_IN_CONTAINER" ] && continue
+	if [ -n "${!name:-}" ]; then
+		RUN_ARGS+=(--env "${name}=${!name}")
 	fi
 done
 
