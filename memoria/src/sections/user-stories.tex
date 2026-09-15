@@ -187,33 +187,6 @@ proyecto.
 		}
 ]
 
-\us[
-	identificador=US-CI-06,
-	titulo={Base de datos local},
-	como={Desarrollador},
-	quiero={Tener una base de datos local para poder desarrollar y probar la aplicación sin necesidad de desplegarla en la nube},
-	requerimientos={\reqref{RNF-DE-04}},
-	puntos={8},
-	criterios={
-			\begin{itemize}
-				\item Existen instrucciones claras para configurar una base de datos local con el
-				      esquema necesario para el desarrollo de la aplicación.
-				\item La base de datos local puede ser utilizada para ejecutar la aplicación en
-				      local.
-			\end{itemize}
-		},
-	tareas={
-			\begin{itemize}
-				\item Seleccionar un sistema de gestión de bases de datos.
-				\item Diseñar el esquema de la base de datos.
-				\item Seleccionar una herramienta para gestionar el ciclo de vida de la base de
-				      datos.
-				\item Configurar la herramienta de gestión del ciclo de vida de la base de datos.
-				\item Documentar las instrucciones para configurar la base de datos local.
-			\end{itemize}
-		}
-]
-
 \subsection*{Despliegue en la nube}
 \addcontentsline{toc}{subsection}{Despliegue en la nube}
 
@@ -266,32 +239,6 @@ proyecto.
 			\begin{itemize}
 				\item Creación de la infraestructura de producción a partir de la infraestructura de
 				      desarrollo.
-				\item Configuración de despliegue manual para producción.
-			\end{itemize}
-		}
-]
-
-\us[
-	identificador=US-DE-03,
-	titulo={Despliegue en la nube de la base de datos},
-	como={Desarrollador},
-	quiero={Sincronizar los cambios en el esquema de la base de datos entre entornos},
-	requerimientos={\reqref{RNF-DE-01}, \reqref{RNF-DE-02}, \reqref{RNF-DE-03}},
-	puntos={2},
-	criterios={
-			\begin{itemize}
-				\item Existe una base de datos en cada entorno de nube.
-				\item El despliegue en desarrollo de los cambios en el esquema se realiza
-				      automáticamente con cada cambio en la rama principal.
-				\item El despliegue en producción de los cambios en el esquema se realiza
-				      manualmente, sin automatización.
-			\end{itemize}
-		},
-	tareas={
-			\begin{itemize}
-				\item Creación de la infraestructura de desarrollo y producción para la base de
-				      datos.
-				\item Configuración de despliegue automático para desarrollo.
 				\item Configuración de despliegue manual para producción.
 			\end{itemize}
 		}
