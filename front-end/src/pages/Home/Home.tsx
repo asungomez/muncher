@@ -75,7 +75,7 @@ function Home() {
             <p className="text-white/90 text-lg mb-4 drop-shadow">
               {t("app.slogan")}
             </p>
-            <Button>Empezar</Button>
+            <Button>{t("home.call-to-action")}</Button>
           </div>
         </div>
 

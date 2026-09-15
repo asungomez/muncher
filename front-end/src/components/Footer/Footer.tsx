@@ -14,6 +14,8 @@ function Footer() {
           </div>
           <div className="text-sm text-black/95">
             <p className="font-semibold">{t("footer.contact")}:</p>
+            {/* Placeholder: the project has no contact address. Deliberately
+                not translated — see agents/front-end/i18n.md. */}
             <p>hola@muncher.io</p>
           </div>
         </div>

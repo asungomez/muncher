@@ -27,4 +27,5 @@ Read the file that matches the task before starting work.
 | --- | --- |
 | [agents/memoria/readme.md](agents/memoria/readme.md) | Working on the project's memory docs (the LaTeX memoria). |
 | [agents/local-development/readme.md](agents/local-development/readme.md) | Working on local development: make targets, container images, git hooks, tool configuration and the READMEs that document them. |
+| [agents/front-end/readme.md](agents/front-end/readme.md) | Working on the front-end application. |
 | [agents/infra/readme.md](agents/infra/readme.md) | Working on the cloud infrastructure. |
