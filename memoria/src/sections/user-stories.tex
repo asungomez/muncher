@@ -222,7 +222,7 @@ proyecto.
 	titulo={Despliegue en la nube del entorno de desarollo},
 	como={Desarrollador},
 	quiero={Poder acceder a la aplicación desde cualquier dispositivo con acceso a internet},
-	requerimientos={\reqref{RNF-DE-01}, \reqref{RNF-DE-02}, \reqref{RNF-SE-03}, \reqref{RNF-SE-05}},
+	requerimientos={\reqref{RNF-DE-01}, \reqref{RNF-DE-02}, \reqref{RNF-DE-05}, \reqref{RNF-SE-03}, \reqref{RNF-SE-05}},
 	puntos={8},
 	criterios={
 			\begin{itemize}
@@ -231,6 +231,7 @@ proyecto.
 				\item La aplicación es accesible a través de una URL de Internet.
 				\item Sólo el equipo de desarrollo tiene acceso al entorno de desarrollo en la nube.
 				\item Las credenciales de despliegue en la nube se almacenan de forma segura y no se exponen en el código fuente.
+				\item La aplicación de desarrollo se sirve desde un subdominio del dominio principal del proyecto.
 			\end{itemize}
 		},
 	tareas={
@@ -242,6 +243,7 @@ proyecto.
 				\item Despliegue del código fuente del front-end a la nube.
 				\item Configuración de la autenticación para el acceso al entorno de desarrollo en la
 				      nube.
+				\item Configuración del dominio personalizado para el entorno de desarrollo.
 			\end{itemize}
 		}
 ]
@@ -251,22 +253,24 @@ proyecto.
 	titulo={Despliegue en la nube del entorno de producción},
 	como={Usuario},
 	quiero={Poder acceder a la aplicación desde cualquier dispositivo con acceso a internet},
-	requerimientos={\reqref{RNF-CO-01}, \reqref{RNF-DE-01}, \reqref{RNF-DE-02}, \reqref{RNF-DE-03}, \reqref{RNF-RE-04}},
+	requerimientos={\reqref{RNF-CO-01}, \reqref{RNF-DE-01}, \reqref{RNF-DE-02}, \reqref{RNF-DE-03}, \reqref{RNF-DE-05}, \reqref{RNF-RE-04}},
 	puntos={8},
 	criterios={
 			\begin{itemize}
 				\item Existe un entorno de producción en la nube.
-				\item El despliegue en producción se realiza manualmente, sin automatización.
+				\item El despliegue en producción se realiza automáticamente, pero se lanza manualmente.
 				\item La aplicación es accesible a través de una URL de Internet.
 				\item La infraestructura de la aplicación en producción es idéntica a la del entorno
 				      de desarrollo.
+				\item La aplicación de producción se sirve desde el dominio principal del proyecto.
 			\end{itemize}
 		},
 	tareas={
 			\begin{itemize}
 				\item Creación de la infraestructura de producción a partir de la infraestructura de
 				      desarrollo.
-				\item Configuración de despliegue manual para producción.
+				\item Configuración de despliegue automático para producción.
+				\item Configuración del dominio personalizado para el entorno de producción.
 			\end{itemize}
 		}
 ]
