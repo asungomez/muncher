@@ -61,6 +61,10 @@ jobs:
           # so a deployment without these credentials fails rather than quietly
           # exposing it.
           require-login-wall: true
+          # Empty until the domain is registered, which serves dev from its
+          # CloudFront name.
+          domain-name: ${{ vars.MUNCHER_DOMAIN_NAME }}
+          use-environment-subdomain: "true"
           # Resolved from the secrets of the dev environment declared above.
           login-user: ${{ secrets.FRONTEND_LOGIN_USER }}
           login-password: ${{ secrets.FRONTEND_LOGIN_PASSWORD }}

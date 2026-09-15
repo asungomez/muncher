@@ -51,6 +51,9 @@ jobs:
           aws-region: ${{ vars.AWS_REGION }}
           # Development must never be publicly reachable.
           require-login-wall: ${{ inputs.environment == 'dev' }}
+          domain-name: ${{ vars.MUNCHER_DOMAIN_NAME }}
+          # Only development is served from a subdomain named after itself.
+          use-environment-subdomain: ${{ inputs.environment == 'dev' }}
           # Resolved from the secrets of the environment above. An environment
           # that does not define them deploys with no login wall.
           login-user: ${{ secrets.FRONTEND_LOGIN_USER }}

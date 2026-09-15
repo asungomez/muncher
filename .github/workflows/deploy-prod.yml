@@ -28,6 +28,9 @@ jobs:
           environment: prod
           role-to-assume: ${{ vars.AWS_DEPLOYMENT_ROLE_ARN }}
           aws-region: ${{ vars.AWS_REGION }}
+          domain-name: ${{ vars.MUNCHER_DOMAIN_NAME }}
+          # Production is served from the domain itself, without a subdomain.
+          use-environment-subdomain: "false"
 
   # Waits for the stack: the bucket it uploads to has to exist first. A failed
   # infrastructure deployment therefore stops the front-end from being uploaded.

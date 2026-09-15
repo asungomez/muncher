@@ -22,6 +22,18 @@ inputs:
       environments that must never be publicly reachable.
     required: false
     default: "false"
+  domain-name:
+    description: >-
+      Registered domain the environment is served from. Empty serves it from its
+      CloudFront domain and creates no certificate or DNS records.
+    required: false
+    default: ""
+  use-environment-subdomain:
+    description: >-
+      Serve from a subdomain named after the environment (dev.muncher.com)
+      rather than from the domain itself (muncher.com).
+    required: false
+    default: "true"
   login-user:
     description: >-
       User for the front-end login wall. Passed by the caller from the secrets
@@ -50,4 +62,6 @@ runs:
         FRONTEND_LOGIN_USER: ${{ inputs.login-user }}
         FRONTEND_LOGIN_PASSWORD: ${{ inputs.login-password }}
         MUNCHER_REQUIRE_LOGIN_WALL: ${{ inputs.require-login-wall == 'true' && '1' || '' }}
+        MUNCHER_DOMAIN_NAME: ${{ inputs.domain-name }}
+        MUNCHER_USE_ENVIRONMENT_SUBDOMAIN: ${{ inputs.use-environment-subdomain }}
       run: make infra-deploy ENVIRONMENT=${{ inputs.environment }}
