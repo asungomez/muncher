@@ -76,7 +76,64 @@ fi
 # they come from the secrets of the environment being deployed, read by the job
 # that declares it; locally they come from your own environment. An environment
 # that supplies neither is deployed without a wall.
+# A certificate used by CloudFront has to live in us-east-1, and CloudFormation
+# cannot create a resource outside its own region, so the certificate is a stack
+# of its own deployed there. Its ARN travels to the main stack as a parameter:
+# exports cannot be imported across regions.
+#
+# Without a domain none of this happens and the site is served from its
+# CloudFront name, exactly as before.
+CERTIFICATE_ARN=""
+if [ -n "${MUNCHER_DOMAIN_NAME:-}" ]; then
+	# The zone is not created here: it belongs to the domain registration, is
+	# shared by every environment, and outlives any single stack.
+	HOSTED_ZONE_ID="$(
+		aws route53 list-hosted-zones-by-name \
+			--dns-name "${MUNCHER_DOMAIN_NAME}." \
+			--max-items 1 \
+			--query 'HostedZones[0].[Id,Name]' \
+			--output text 2>/dev/null |
+			awk -v want="${MUNCHER_DOMAIN_NAME}." '$2 == want { sub(".*/", "", $1); print $1 }'
+	)"
+
+	if [ -z "$HOSTED_ZONE_ID" ]; then
+		echo "❌ no Route 53 hosted zone found for ${MUNCHER_DOMAIN_NAME}." >&2
+		echo "   Register the domain with Route 53, or delegate it to a zone in" >&2
+		echo "   this account; see docs/deployment.md." >&2
+		exit 1
+	fi
+
+	echo "🔐 Issuing the certificate for ${MUNCHER_DOMAIN_NAME} in us-east-1..."
+	echo "   (validation is automatic but can take a few minutes)"
+	aws cloudformation deploy \
+		--region us-east-1 \
+		--template-file infra/certificate.yaml \
+		--stack-name "${STACK}-certificate" \
+		--parameter-overrides \
+		"Environment=${ENVIRONMENT}" \
+		"DomainName=${MUNCHER_DOMAIN_NAME}" \
+		"UseEnvironmentSubdomain=${MUNCHER_USE_ENVIRONMENT_SUBDOMAIN:-true}" \
+		"HostedZoneId=${HOSTED_ZONE_ID}" \
+		--no-fail-on-empty-changeset \
+		--tags "Environment=${ENVIRONMENT}" Project=muncher
+
+	CERTIFICATE_ARN="$(
+		aws cloudformation describe-stacks \
+			--region us-east-1 \
+			--stack-name "${STACK}-certificate" \
+			--query "Stacks[0].Outputs[?OutputKey=='CertificateArn'].OutputValue" \
+			--output text
+	)"
+fi
+
 PARAMETERS=("Environment=${ENVIRONMENT}")
+if [ -n "${MUNCHER_DOMAIN_NAME:-}" ]; then
+	PARAMETERS+=(
+		"DomainName=${MUNCHER_DOMAIN_NAME}"
+		"UseEnvironmentSubdomain=${MUNCHER_USE_ENVIRONMENT_SUBDOMAIN:-true}"
+		"CertificateArn=${CERTIFICATE_ARN}"
+	)
+fi
 if [ -n "${FRONTEND_LOGIN_USER:-}" ] && [ -n "${FRONTEND_LOGIN_PASSWORD:-}" ]; then
 	PARAMETERS+=(
 		"FrontEndLoginUser=${FRONTEND_LOGIN_USER}"

@@ -1,0 +1,67 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Description: >-
+  TLS certificate for one Muncher environment. Deployed separately from
+  infra/muncher.yaml because a certificate used by CloudFront must live in
+  us-east-1, while the rest of the system lives in the region that serves its
+  users.
+
+Parameters:
+  Environment:
+    Type: String
+    Description: Environment this certificate belongs to.
+    AllowedValues:
+      - dev
+      - prod
+    Default: dev
+
+  DomainName:
+    Type: String
+    Description: Registered domain, without any subdomain.
+    MinLength: 3
+
+  UseEnvironmentSubdomain:
+    Type: String
+    Description: >-
+      Whether the environment is served from a subdomain named after it
+      (dev.muncher.com) or from the domain itself (muncher.com).
+    AllowedValues:
+      - "true"
+      - "false"
+    Default: "true"
+
+  HostedZoneId:
+    Type: String
+    Description: >-
+      Route 53 zone hosting the domain. ACM writes the validation record into it,
+      which is what lets this stack complete without a manual step.
+    MinLength: 1
+
+Conditions:
+  UseSubdomain: !Equals [!Ref UseEnvironmentSubdomain, "true"]
+
+Resources:
+  Certificate:
+    Type: AWS::CertificateManager::Certificate
+    Properties:
+      DomainName: !If
+        - UseSubdomain
+        - !Sub ${Environment}.${DomainName}
+        - !Ref DomainName
+      ValidationMethod: DNS
+      # Naming the zone is what makes ACM add the validation CNAME itself. Without
+      # it the stack would wait for a record somebody has to create by hand.
+      DomainValidationOptions:
+        - DomainName: !If
+            - UseSubdomain
+            - !Sub ${Environment}.${DomainName}
+            - !Ref DomainName
+          HostedZoneId: !Ref HostedZoneId
+      Tags:
+        - Key: Environment
+          Value: !Ref Environment
+
+Outputs:
+  CertificateArn:
+    Description: Certificate to attach to the distribution in the main stack
+    Value: !Ref Certificate

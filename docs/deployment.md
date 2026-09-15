@@ -8,6 +8,8 @@
   - [3. Adjuntar la política de permisos](#3-adjuntar-la-política-de-permisos)
   - [4. Muro de acceso del entorno de desarrollo](#4-muro-de-acceso-del-entorno-de-desarrollo)
   - [5. Configurar GitHub](#5-configurar-github)
+- [Dominio propio](#dominio-propio)
+  - [Cómo se reparte entre stacks](#cómo-se-reparte-entre-stacks)
 - [Mantener la política al día](#mantener-la-política-al-día)
 - [Destruir un entorno](#destruir-un-entorno)
 
@@ -136,7 +138,10 @@ Esta es la política que necesita el rol:
         "cloudformation:GetTemplateSummary",
         "cloudformation:ListStackResources"
       ],
-      "Resource": "arn:aws:cloudformation:<REGION>:<ACCOUNT_ID>:stack/muncher-*/*"
+      "Resource": [
+        "arn:aws:cloudformation:<REGION>:<ACCOUNT_ID>:stack/muncher-*/*",
+        "arn:aws:cloudformation:us-east-1:<ACCOUNT_ID>:stack/muncher-*/*"
+      ]
     },
     {
       "Sid": "CloudFormationValidate",
@@ -242,6 +247,39 @@ Esta es la política que necesita el rol:
       ]
     },
     {
+      "Sid": "Certificates",
+      "Effect": "Allow",
+      "Action": [
+        "acm:RequestCertificate",
+        "acm:DescribeCertificate",
+        "acm:DeleteCertificate",
+        "acm:AddTagsToCertificate",
+        "acm:RemoveTagsFromCertificate",
+        "acm:ListTagsForCertificate"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "DnsRecords",
+      "Effect": "Allow",
+      "Action": [
+        "route53:ChangeResourceRecordSets",
+        "route53:ListResourceRecordSets",
+        "route53:GetHostedZone"
+      ],
+      "Resource": "arn:aws:route53:::hostedzone/*"
+    },
+    {
+      "Sid": "DnsZoneLookup",
+      "Effect": "Allow",
+      "Action": [
+        "route53:ListHostedZones",
+        "route53:ListHostedZonesByName",
+        "route53:GetChange"
+      ],
+      "Resource": "*"
+    },
+    {
       "Sid": "StackLogGroupsDescribe",
       "Effect": "Allow",
       "Action": "logs:DescribeLogGroups",
@@ -259,6 +297,13 @@ Dos decisiones de esta política son deliberadas:
 - **CloudFront usa `"Resource": "*"`** porque sus acciones sobre distribuciones
   no admiten ARN a nivel de recurso. Allí donde una acción sí lo permite, se
   limita.
+- **Las acciones de ACM y la búsqueda de zonas usan `"Resource": "*"`** porque
+  no admiten restricción por recurso: al pedir un certificado todavía no existe
+  el recurso al que referirse, y listar zonas es por naturaleza una operación
+  sobre la cuenta. Los cambios en los registros DNS sí se limitan a las zonas
+  alojadas de la cuenta.
+- **CloudFormation aparece con dos regiones** porque el certificado se despliega
+  en `us-east-1` aunque el resto del sistema no.
 - **`logs:DescribeLogGroups` va en su propia sentencia con `"Resource": "*"`**
   porque tampoco admite restricción por recurso: es una limitación del servicio,
   no un descuido. CloudFormation la invoca para leer el ARN del grupo de logs, de
@@ -347,6 +392,49 @@ jobs:
 
 Sin `id-token: write` no se emite ningún token OIDC y la asunción del rol
 falla, que es la causa habitual de que el primer despliegue no funcione.
+
+## Dominio propio
+
+Sin dominio, cada entorno se sirve desde su URL de CloudFront y no hace falta
+nada de lo que sigue. Para servirlos desde un dominio propio:
+
+**1. Registra el dominio en Route 53.** El registro crea la zona alojada, que es
+compartida por todos los entornos y no pertenece a ningún stack. Un dominio
+registrado en otro proveedor también sirve, siempre que delegues sus servidores
+de nombres a una zona alojada de esta cuenta: lo que hace falta es que ACM pueda
+escribir en ella el registro de validación.
+
+**2. Define la variable del repositorio** `MUNCHER_DOMAIN_NAME` con el dominio,
+sin subdominio y sin protocolo:
+
+```
+MUNCHER_DOMAIN_NAME = muncher.com
+```
+
+Es una variable y no un secreto: un dominio es público por definición.
+
+**3. Vuelve a desplegar.** A partir de ahí, `dev` se sirve en
+`dev.muncher.com` y `prod` en `muncher.com`. La diferencia la marca cada
+workflow, que indica si el entorno usa un subdominio con su nombre.
+
+### Cómo se reparte entre stacks
+
+Un certificado utilizado por CloudFront tiene que estar en `us-east-1`, y
+CloudFormation no puede crear recursos fuera de su propia región. Por eso el
+certificado vive en su propio stack —`infra/certificate.yaml`, desplegado en
+`us-east-1` como `muncher-<entorno>-certificate`— mientras el resto del sistema
+sigue en la región que atiende a los usuarios. `make infra-deploy` despliega
+primero el certificado y pasa su ARN como parámetro al stack principal, porque
+los valores exportados no pueden importarse entre regiones.
+
+Los registros DNS, en cambio, se declaran en el stack principal: Route 53 es un
+servicio global y sus registros pueden crearse desde cualquier región. Son
+registros de tipo *alias*, que funcionan en el dominio raíz —donde un CNAME no
+está permitido— y cuyas consultas no se facturan.
+
+La emisión del certificado es automática pero no inmediata: ACM escribe el
+registro de validación y el stack espera hasta que se emite, lo que puede tardar
+unos minutos en el primer despliegue.
 
 ## Mantener la política al día
 

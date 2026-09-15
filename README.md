@@ -13,6 +13,10 @@
 - [Despliegue](#despliegue)
   - [Configurar el despliegue en tu propia cuenta](#configurar-el-despliegue-en-tu-propia-cuenta)
   - [Muro de acceso del entorno de desarrollo](#muro-de-acceso-del-entorno-de-desarrollo)
+  - [Dominio propio](#dominio-propio)
+    - [1. Registrar el dominio en la consola de Route 53](#1-registrar-el-dominio-en-la-consola-de-route-53)
+    - [2. Definir la variable del repositorio](#2-definir-la-variable-del-repositorio)
+    - [3. Volver a desplegar](#3-volver-a-desplegar)
 
 ## Propósito
 
@@ -165,6 +169,42 @@ FRONTEND_LOGIN_PASSWORD
 Ese ámbito es lo que mantiene los entornos separados: `prod` no los define, así que se sirve sin muro y no puede recibir uno por descuido. En `dev`, en cambio, la ausencia de credenciales se trata como un error y el despliegue falla en lugar de dejar el entorno accesible.
 
 > Es una barrera contra accesos casuales, no un control de seguridad: la contraseña queda legible en el código de la función para quien tenga permiso de lectura sobre CloudFront. No reutilices una contraseña de ningún otro sitio.
+
+### Dominio propio
+
+Si no se configura ningún dominio, cada entorno se sirve desde su URL de CloudFront, que es lo que ocurre por defecto. Para usar un dominio propio hay un único paso manual —el registro— y el resto lo hace el despliegue.
+
+#### 1. Registrar el dominio en la consola de Route 53
+
+El registro de un dominio no puede automatizarse: es una compra no reembolsable, exige aceptar los términos de ICANN y, en algunos casos, verificar por correo la dirección del contacto. Por eso se hace una sola vez desde la consola.
+
+1. Entra en la [consola de Route 53](https://console.aws.amazon.com/route53/) y ve a **Domains** → **Registered domains**.
+2. Pulsa **Register domains**, escribe el dominio que quieres y pulsa **Search** para comprobar si está libre. Si lo está, aparecerá en la lista de dominios seleccionados.
+3. Pulsa **Proceed to checkout**.
+4. En la página **Pricing**, elige el número de años y si quieres renovación automática. Ten en cuenta que ni el registro ni las renovaciones son reembolsables.
+5. En **Contact information**, rellena los datos del contacto registrante, administrativo y técnico. Conviene usar el nombre que figura en tu documento de identidad, porque algunos registros lo exigen para cambios posteriores. Aquí puedes activar también la protección de privacidad para que tus datos no aparezcan en las consultas WHOIS.
+6. En **Review**, revisa los datos, marca la casilla de los términos del servicio y pulsa **Submit**.
+7. Ve a **Domains** → **Requests** para seguir el estado. Si la dirección de correo del contacto registrante no se había usado antes para registrar un dominio, recibirás un correo de verificación de `noreply@registrar.amazon` (o de `noreply@domainnameverification.net`, según el registrador del TLD). **Hay que seguir sus instrucciones**: si no se verifica, ICANN obliga a suspender el dominio y deja de ser accesible.
+
+Al completarse el registro, Route 53 crea automáticamente la zona alojada del dominio. No hace falta crearla ni configurarla: el despliegue la localiza por su nombre.
+
+> No uses este dominio como correo del usuario raíz de esta misma cuenta de AWS. Si la cuenta se suspendiera, el dominio se suspende en cinco días, y con él el correo con el que recuperarías el acceso.
+
+#### 2. Definir la variable del repositorio
+
+En **Settings** → **Secrets and variables** → **Actions** → **Variables**:
+
+```
+MUNCHER_DOMAIN_NAME = muncher.com
+```
+
+Es una variable y no un secreto: un dominio es público por definición.
+
+#### 3. Volver a desplegar
+
+Con eso, `dev` pasa a servirse en `dev.muncher.com` y `prod` en `muncher.com`, sin subdominio. El certificado, los registros DNS y la configuración de CloudFront los crea el propio despliegue; el primero tarda unos minutos más de lo habitual, porque espera a que se emita el certificado. Los detalles y el reparto entre stacks están en [docs/deployment.md](docs/deployment.md).
+
+Si el dominio está registrado en otro proveedor, también sirve: delega sus servidores de nombres a una zona alojada de esta cuenta. Lo que necesita el despliegue es poder escribir en esa zona.
 
 Para desplegar desde tu máquina, con tus propias credenciales de AWS en el entorno:
 

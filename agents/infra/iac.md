@@ -78,6 +78,16 @@ dependencies through `Ref` and `Fn::GetAtt`, and use `DependsOn` only where a
 dependency exists that those do not express. Where two resources appear to need
 each other, one of them almost always needs splitting.
 
+One deliberate exception exists, and it is worth stating so it is not mistaken
+for drift: **the TLS certificate is a stack of its own**, in `us-east-1`. A
+certificate used by CloudFront must be in that region, and CloudFormation cannot
+create a resource outside the region it is deployed to, so no single stack can
+hold both it and resources that belong elsewhere. `make infra-deploy` still
+creates a working environment in one command — it deploys the certificate stack
+first and passes its ARN into the main one, since exports cannot cross regions —
+but an environment is two stacks rather than one. Adding a third would need the
+same standard of justification: a constraint AWS imposes, not a preference.
+
 Some things genuinely cannot live inside the stack — a registered domain, or a
 certificate that must exist in another region. Those are **inputs**, taken as
 parameters and documented as prerequisites with how to obtain them. They are the

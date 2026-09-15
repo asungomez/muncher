@@ -35,9 +35,46 @@ Parameters:
     # barrier against casual access, not a secret-bearing security control.
     NoEcho: true
 
+  DomainName:
+    Type: String
+    Description: >-
+      Registered domain the environment is served from — for example
+      muncher.com. Empty serves the site from its CloudFront domain instead, and
+      creates no DNS records or certificate.
+    Default: ""
+
+  UseEnvironmentSubdomain:
+    Type: String
+    Description: >-
+      Whether to serve this environment from a subdomain named after it
+      (dev.muncher.com) or from the domain itself (muncher.com).
+    AllowedValues:
+      - "true"
+      - "false"
+    Default: "true"
+
+  CertificateArn:
+    Type: String
+    Description: >-
+      Certificate covering the name above, issued by the stack in
+      infra/certificate.yaml. Required when a domain is given, because a
+      certificate for CloudFront has to be created in us-east-1 and this stack
+      is not deployed there.
+    Default: ""
+
 Conditions:
   # The wall exists only when both halves of the credential are supplied, so an
   # environment deployed without them — production — has no wall at all.
+  # A domain is in play only when both halves are present: the name, and the
+  # certificate that a stack in us-east-1 had to issue for it.
+  HasDomain: !And
+    - !Not [!Equals [!Ref DomainName, ""]]
+    - !Not [!Equals [!Ref CertificateArn, ""]]
+
+  UseSubdomain: !And
+    - !Not [!Equals [!Ref DomainName, ""]]
+    - !Equals [!Ref UseEnvironmentSubdomain, "true"]
+
   LoginWallEnabled: !And
     - !Not [!Equals [!Ref FrontEndLoginUser, ""]]
     - !Not [!Equals [!Ref FrontEndLoginPassword, ""]]
@@ -283,13 +320,59 @@ Resources:
             ResponseCode: 200
             ResponsePagePath: /index.html
             ErrorCachingMinTTL: 0
-        ViewerCertificate:
+        # The name the distribution answers to, when there is one. Without it
+        # CloudFront serves only its own *.cloudfront.net name.
+        Aliases: !If
+          - HasDomain
+          - - !If
+              - UseSubdomain
+              - !Sub ${Environment}.${DomainName}
+              - !Ref DomainName
+          - !Ref AWS::NoValue
+        ViewerCertificate: !If
+          - HasDomain
+          - AcmCertificateArn: !Ref CertificateArn
+            SslSupportMethod: sni-only
+            MinimumProtocolVersion: TLSv1.2_2021
           # No custom domain: the distribution is served over its own
           # *.cloudfront.net name and certificate.
-          CloudFrontDefaultCertificate: true
+          - CloudFrontDefaultCertificate: true
       Tags:
         - Key: Environment
           Value: !Ref Environment
+
+  # Points the name at the distribution. Alias records rather than CNAMEs: they
+  # work at the domain itself, where a CNAME is not allowed, and queries against
+  # them are not billed. Route 53 is global, so these belong in this stack even
+  # though the certificate could not.
+  #
+  # The zone is addressed by name rather than by id, so this stack needs no
+  # parameter for it. Z2FDTNDATAQYW2 is CloudFront's fixed hosted zone id, the
+  # same for every distribution.
+  FrontEndDnsRecords:
+    Type: AWS::Route53::RecordSetGroup
+    Condition: HasDomain
+    Properties:
+      HostedZoneName: !Sub ${DomainName}.
+      RecordSets:
+        - Name: !If
+            - UseSubdomain
+            - !Sub ${Environment}.${DomainName}
+            - !Ref DomainName
+          Type: A
+          AliasTarget:
+            DNSName: !GetAtt FrontEndDistribution.DomainName
+            HostedZoneId: Z2FDTNDATAQYW2
+            EvaluateTargetHealth: false
+        - Name: !If
+            - UseSubdomain
+            - !Sub ${Environment}.${DomainName}
+            - !Ref DomainName
+          Type: AAAA
+          AliasTarget:
+            DNSName: !GetAtt FrontEndDistribution.DomainName
+            HostedZoneId: Z2FDTNDATAQYW2
+            EvaluateTargetHealth: false
 
   FrontEndBucketPolicy:
     Type: AWS::S3::BucketPolicy
@@ -319,4 +402,10 @@ Outputs:
 
   FrontEndUrl:
     Description: Public URL of the front-end
-    Value: !Sub https://${FrontEndDistribution.DomainName}
+    Value: !If
+      - HasDomain
+      - !If
+        - UseSubdomain
+        - !Sub https://${Environment}.${DomainName}
+        - !Sub https://${DomainName}
+      - !Sub https://${FrontEndDistribution.DomainName}
