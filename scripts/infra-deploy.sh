@@ -87,17 +87,29 @@ CERTIFICATE_ARN=""
 if [ -n "${MUNCHER_DOMAIN_NAME:-}" ]; then
 	# The zone is not created here: it belongs to the domain registration, is
 	# shared by every environment, and outlives any single stack.
-	HOSTED_ZONE_ID="$(
+	# stderr is kept, not discarded: when this call is refused the reason is the
+	# only thing worth reading, and under `set -e` a failure here would otherwise
+	# end the script with no output at all.
+	if ! zone_lookup="$(
 		aws route53 list-hosted-zones-by-name \
 			--dns-name "${MUNCHER_DOMAIN_NAME}." \
 			--max-items 1 \
 			--query 'HostedZones[0].[Id,Name]' \
-			--output text 2>/dev/null |
+			--output text 2>&1
+	)"; then
+		echo "❌ could not look up the hosted zone for ${MUNCHER_DOMAIN_NAME}:" >&2
+		echo "   ${zone_lookup}" >&2
+		exit 1
+	fi
+
+	HOSTED_ZONE_ID="$(
+		printf '%s\n' "$zone_lookup" |
 			awk -v want="${MUNCHER_DOMAIN_NAME}." '$2 == want { sub(".*/", "", $1); print $1 }'
 	)"
 
 	if [ -z "$HOSTED_ZONE_ID" ]; then
 		echo "❌ no Route 53 hosted zone found for ${MUNCHER_DOMAIN_NAME}." >&2
+		echo "   Route 53 returned: ${zone_lookup}" >&2
 		echo "   Register the domain with Route 53, or delegate it to a zone in" >&2
 		echo "   this account; see docs/deployment.md." >&2
 		exit 1
