@@ -187,6 +187,39 @@ proyecto.
 		}
 ]
 
+\us[
+	identificador=US-CI-06,
+	titulo={Ejecución local de la API},
+	como={Desarrollador},
+	quiero={Ver mi proyecto en funcionamiento para poder verificar que los cambios que realizo tienen el efecto deseado},
+	requerimientos={\reqref{RNF-DE-04}},
+	puntos={1},
+	criterios={
+			\begin{itemize}
+				\item Existe una aplicación REST construida con FastAPI.
+				\item La aplicación es accesible desde el entorno local.
+				\item La aplicación expone un \textit{endpoint} \texttt{/docs} con su
+				      documentación.
+				\item La aplicación genera automáticamente su especificación OpenAPI.
+				\item La aplicación expone un \textit{endpoint} \texttt{/recipes} que
+				      devuelve datos fijados en el código.
+				\item El servidor se reinicia automáticamente ante cambios en el código
+				      fuente.
+				\item Existe documentación sobre cómo lanzar el servidor en los ficheros de
+				      documentación del repositorio.
+			\end{itemize}
+		},
+	tareas={
+			\begin{itemize}
+				\item Creación de la API en el entorno local.
+				\item Configuración de OpenAPI y del \textit{endpoint} \texttt{/docs}.
+				\item Configuración del entorno local.
+				\item Creación del \textit{endpoint} \texttt{/recipes}.
+				\item Actualización de la documentación del repositorio.
+			\end{itemize}
+		}
+]
+
 \subsection*{Despliegue en la nube}
 \addcontentsline{toc}{subsection}{Despliegue en la nube}
 

@@ -410,3 +410,68 @@ aspectos.
 	\caption{Diseño de la pantalla de inicio de \textbf{Muncher} para dispositivos móviles y ordenadores.}
 	\label{fig:design-home-page}
 \end{figure}
+
+\subsection*{Sprint 4: Creación de la API}
+\addcontentsline{toc}{subsection}{Sprint 4: Creación de la API}
+
+El cuarto sprint aborda la construcción de la \textbf{API} de \textbf{Muncher},
+el componente que hasta ahora faltaba para que el sistema deje de ser una
+interfaz sin sustento y pase a operar sobre información real. La aplicación web
+desarrollada en los sprints anteriores resuelve la presentación, pero no dispone
+de ningún lugar donde consultar o guardar los datos que muestra; la API será
+precisamente ese punto de acceso, el único a través del cual el front-end
+obtenga y modifique la información persistente del sistema.
+
+Concentrar el acceso a los datos en un único componente no responde
+exclusivamente a una necesidad de organización. Todo aquello que se ejecuta en
+el navegador queda expuesto a quien lo utiliza: el código puede inspeccionarse,
+las peticiones pueden observarse y modificarse, y ninguna comprobación
+efectuada en el cliente puede considerarse fiable, puesto que nada impide
+eludirla. Por este motivo, las operaciones cuya ejecución no resulta segura en
+el lado del cliente —la validación definitiva de los datos que entran en el
+sistema, la aplicación de las reglas de negocio y el manejo de cualquier
+credencial de acceso a servicios externos— residirán en la API, donde se
+ejecutan en un entorno controlado y no accesible al usuario.
+
+El desarrollo seguirá el mismo criterio aplicado al resto del proyecto:
+construir primero en local y desplegar después. La API se incorporará a la
+composición de servicios del entorno local, de modo que pueda desarrollarse y
+probarse contra el front-end antes de existir en la nube, y solo una vez
+comprobado su funcionamiento se llevará al entorno desplegado empleando la
+misma definición de infraestructura como código que sostiene los despliegues
+actuales.
+
+Finalmente, la API se publicará \textbf{bajo el mismo dominio que el
+	front-end}, como una ruta más del punto de entrada ya existente en lugar de
+como un servicio con dirección propia. Esta disposición evita las peticiones
+entre orígenes distintos y la configuración de CORS que estas exigirían, y
+permite que el acceso a la API quede restringido al front-end, que es su único
+consumidor previsto: ningún cliente ajeno al sistema deberá poder alcanzarla
+directamente.
+
+\subsubsection*{Objetivos iniciales}
+
+\begin{itemize}
+	\item Seleccionar el tipo de API: REST, GraphQL u otras alternativas.
+	\item Seleccionar la tecnología de la API: lenguaje y framework.
+	\item Construir una API con un \textit{endpoint} de prueba.
+	\item Seleccionar el mecanismo de comunicación entre el front-end y la API
+	      —por ejemplo SWR—, así como la forma de generar los tipos del cliente a
+	      partir de la especificación OpenAPI.
+	\item Desplegar la API en el entorno local.
+	\item Conectar el front-end con la API del entorno local.
+	\item Seleccionar la infraestructura sobre la que se desplegará la API.
+	\item Desplegar la API en la nube.
+\end{itemize}
+
+\subsubsection*{Historias de usuario completadas}
+
+\begin{center}
+	\begin{tabularx}{\textwidth}{|l|X|c|}
+		\hline
+		\textbf{Identificador} & \textbf{Nombre}           & \textbf{Puntos de historia} \\
+		\hline
+		\usref{US-CI-06}       & Ejecución local de la API & 1                           \\
+		\hline
+	\end{tabularx}
+\end{center}
