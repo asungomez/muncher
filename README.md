@@ -10,6 +10,8 @@
   - [Qué comprueba](#qué-comprueba)
 - [Memoria](#memoria)
 - [Front-end](#front-end)
+- [API](#api)
+  - [Dependencias](#dependencias)
 - [Despliegue](#despliegue)
   - [Configurar el despliegue en tu propia cuenta](#configurar-el-despliegue-en-tu-propia-cuenta)
   - [Muro de acceso del entorno de desarrollo](#muro-de-acceso-del-entorno-de-desarrollo)
@@ -28,7 +30,7 @@ La aplicación está desarrollada con la siguiente arquitectura tecnológica:
 
 - **Front-end**: Construido con Vite y React, proporcionando una experiencia rápida, interactiva y moderna para los usuarios. La interfaz permite acceder a todas las funcionalidades de la app de manera intuitiva.
 
-- **GraphQL API**: Implementada con FastAPI y Strawberry, ofreciendo una API flexible y eficiente para manejar peticiones y mutaciones desde el front-end. Esta API gestiona la lógica principal de recetas, menús, nutrición y listas de la compra.
+- **API REST**: Implementada con FastAPI, que genera la especificación OpenAPI y la documentación interactiva a partir de las anotaciones de tipo de los propios _endpoints_. Esta API gestiona la lógica principal de recetas, menús, nutrición y listas de la compra.
 
 - **Base de Datos**: Utiliza PostgreSQL como base de datos relacional para almacenar recetas, ingredientes, información nutricional, menús y usuarios.
 
@@ -52,8 +54,9 @@ make            # lista los objetivos disponibles
 
 | Objetivo | Descripción |
 | --- | --- |
-| `make up` | Arranca el entorno local en primer plano. |
+| `make up` | Arranca el entorno local completo en primer plano. |
 | `make front-end-up` | Arranca únicamente el servicio del front-end. |
+| `make api-up` | Arranca únicamente el servicio de la API. |
 | `make down` | Detiene el entorno local y elimina sus contenedores. |
 | `make logs` | Muestra los logs del entorno en ejecución. |
 | `make checks` | Ejecuta todos los controles sobre el repositorio completo. |
@@ -61,6 +64,10 @@ make            # lista los objetivos disponibles
 | `make front-end-lint` | Analiza el front-end con ESLint. |
 | `make front-end-format` | Formatea el front-end con Prettier. |
 | `make front-end-build` | Genera los artefactos desplegables del front-end. |
+| `make api-install-dep` | Añade una dependencia a la API (`DEP=paquete==versión`). |
+| `make api-remove-dep` | Elimina una dependencia de la API (`DEP=paquete`). |
+| `make api-lock` | Vuelve a resolver `api/uv.lock` a partir de `api/pyproject.toml`. |
+| `make api-shell` | Abre una shell en el contenedor de la API. |
 | `make memoria-lint` | Formatea las fuentes de la memoria con `latexindent`. |
 | `make memoria-build` | Genera el PDF de la memoria en `memoria/generated`. |
 | `make memoria-watch` | Regenera la memoria cada vez que cambian sus fuentes. |
@@ -111,7 +118,50 @@ Para publicar el servidor en otro puerto, define `MUNCHER_FRONT_END_PORT`:
 MUNCHER_FRONT_END_PORT=5200 make up
 ```
 
-Los servicios del entorno local se declaran en `compose.yaml` y comparten una misma red, a la que se incorporarán la API y la base de datos.
+Los servicios del entorno local se declaran en `compose.yaml` y comparten una misma red, a la que se incorporará la base de datos.
+
+## API
+
+No hace falta instalar Python ni ninguna herramienta de Python: el intérprete y las dependencias viven en la imagen definida en `docker/api.Dockerfile`.
+
+```
+make up
+```
+
+Con el entorno en marcha, la API responde en `http://localhost:9100`:
+
+| Dirección | Contenido |
+| --- | --- |
+| [`/recipes`](http://localhost:9100/recipes) | La colección de recetas. Por ahora está fijada en el código. |
+| [`/docs`](http://localhost:9100/docs) | La documentación interactiva, donde se pueden probar los _endpoints_. |
+| [`/openapi.json`](http://localhost:9100/openapi.json) | La especificación OpenAPI, que FastAPI genera a partir de las anotaciones de tipo. |
+
+El código fuente permanece en la máquina local y se monta en el contenedor, de modo que el servidor se reinicia solo en cuanto se guarda un archivo.
+
+Para publicar el servidor en otro puerto, define `MUNCHER_API_PORT`:
+
+```
+MUNCHER_API_PORT=9200 make up
+```
+
+Para arrancar la API sin el front-end:
+
+```
+make api-up
+```
+
+### Dependencias
+
+Las versiones exactas de todo el árbol de dependencias —directas y transitivas— están fijadas en `api/uv.lock`, que es lo que la imagen instala. No se instala nada a mano: las dependencias se gestionan con `make`, que actualiza a la vez `api/pyproject.toml` y el archivo de bloqueo.
+
+```
+make api-install-dep DEP=httpx==0.28.1
+make api-remove-dep DEP=httpx
+```
+
+Si se omite la versión, se instala la más reciente y se fija esa. Después de cambiar las dependencias, el siguiente `make up` reconstruye la imagen con ellas.
+
+`make api-lock` vuelve a resolver el archivo de bloqueo a partir del manifiesto, lo que hace falta si se edita `api/pyproject.toml` a mano.
 
 ## Despliegue
 

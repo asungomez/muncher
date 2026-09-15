@@ -1,12 +1,14 @@
 #!/bin/bash
 # Starts the local stack in the foreground.
 #
-# Invoke it through `make up`. Node.js and Yarn live in the image built from
-# docker/front-end.Dockerfile, not on the developer's machine; the sources are
-# bind mounted from the host, so edits reload as usual.
+# Invoke it through `make up`, or through `make front-end-up` / `make api-up`
+# for a single service. Every toolchain lives in the images built from docker/,
+# not on the developer's machine; the sources are bind mounted from the host, so
+# edits reload as usual.
 #
-# Stop it with Ctrl-C. Set MUNCHER_FRONT_END_PORT to publish on another port.
-# Any extra arguments are passed through to `docker compose up`.
+# Stop it with Ctrl-C. Set MUNCHER_FRONT_END_PORT or MUNCHER_API_PORT to publish
+# on another port. Any extra arguments — the names of the services to start,
+# among others — are passed through to `docker compose up`.
 set -euo pipefail
 
 REPO_ROOT="$(git rev-parse --show-toplevel)"

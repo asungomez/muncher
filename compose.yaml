@@ -4,11 +4,11 @@
 # is never baked in, but bind mounted from the host so that edits take effect
 # immediately. See agents/local-development/containerized-development.md.
 #
-# Start it with `make up`, or directly:
-#   docker compose up --build
+# Start it with `make up`, which brings up every service; `make front-end-up`
+# and `make api-up` start one of them on its own.
 #
-# The API and the database will join this same network as they are built, so
-# they can reach each other by service name.
+# The database will join this same network as it is built, so the services can
+# reach each other by name.
 
 name: muncher
 
@@ -24,8 +24,23 @@ services:
       - ./front-end:/workspace/front-end
       # node_modules is installed into the image, so it must not be covered by
       # the bind mount above. This volume is seeded from the image;
-      # scripts/front-end-dev.sh renews it when yarn.lock changes.
+      # scripts/local-env-up.sh renews it when yarn.lock changes.
       - front-end-node-modules:/workspace/front-end/node_modules
+    networks:
+      - muncher
+
+  api:
+    build:
+      context: .
+      dockerfile: docker/api.Dockerfile
+    ports:
+      - "${MUNCHER_API_PORT:-9100}:9100"
+    volumes:
+      # The sources live on the host. Unlike the front-end, nothing has to be
+      # kept out of this mount: the virtual environment is installed to
+      # /opt/venv, outside /workspace, so a dependency change is picked up by
+      # rebuilding the image rather than by renewing a volume.
+      - ./api:/workspace/api
     networks:
       - muncher
 

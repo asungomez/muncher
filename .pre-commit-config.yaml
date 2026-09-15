@@ -8,6 +8,7 @@
 
 exclude: |
   (?x)^(
+    api/uv\.lock|
     front-end/node_modules/.*|
     front-end/\.yarn/.*|
     front-end/yarn\.lock|
