@@ -43,6 +43,11 @@ no Perl modules — is ever a prerequisite for working on this project.
 - Source code is mounted into the container rather than copied into it for
   development, so editing on the host takes effect immediately and generated
   output lands in the working tree where the developer expects it.
+- **Configuration reaches the container through the environment, forwarded by
+  prefix rather than by an explicit list of names.** A list has to be extended
+  whenever a setting is added, and forgetting does not fail: the variable is
+  absent inside the container and whatever it controlled is skipped without a
+  word. Prefix forwarding makes a new setting work by existing.
 - The pre-commit hook runs its checks inside the container too. The hook itself
   is the only shell that runs on the host, and it must do nothing more than
   delegate.
