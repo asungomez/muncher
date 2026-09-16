@@ -19,7 +19,10 @@ believed. The goal is code that does not need one: see
   comment above it no longer holds, it is part of the change.
 - **No commented-out code, and no `TODO`.** Git remembers the deleted version,
   and work that is worth doing belongs in an issue, not in a comment nobody
-  reads again. In `api/` both are errors — `ERA001` and `FIX002`.
+  reads again. `TODO`, `FIXME`, `XXX` and `HACK` are errors on both sides —
+  Ruff's `FIX001`-`FIX004` in `api/`, `no-warning-comments` in `front-end/`.
+  Commented-out code is caught by `ERA001`, which has no ESLint equivalent, so
+  on the front-end that one rests on review.
 
 ## What does deserve a comment
 

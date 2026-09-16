@@ -28,6 +28,13 @@ export default tseslint.config([
       "no-eval": "error",
       "no-console": "error",
 
+      // Mirrors Ruff's FIX001-FIX004 on the API: work worth doing belongs in an
+      // issue. Matches the term at the start of the comment, as Ruff does.
+      "no-warning-comments": [
+        "error",
+        { terms: ["todo", "fixme", "xxx", "hack"], location: "start" },
+      ],
+
       // Enforces agents/front-end/docstrings.md. The plugin's own recommended
       // preset is not extended: it demands the @param and @returns that our
       // convention forbids, TypeScript already carrying the types.
