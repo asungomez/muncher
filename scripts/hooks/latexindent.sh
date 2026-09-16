@@ -1,9 +1,6 @@
 #!/bin/bash
-# latexindent hook. Runs inside the CI image; never on the host.
-#
-# The image installs latexindent's Perl dependencies, so unlike the previous
-# host-based hook this one does not need to degrade gracefully when they are
-# missing: if latexindent fails here, it is a real failure.
+# latexindent hook. The image carries its Perl dependencies, so a failure here
+# is a real one and never a missing tool.
 set -euo pipefail
 
 for file in "$@"; do

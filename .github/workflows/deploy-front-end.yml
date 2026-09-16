@@ -19,9 +19,8 @@ on:
           - prod
         default: dev
 
-# One upload at a time per environment: two concurrent syncs with --delete could
-# remove each other's files. The newest is the one worth keeping, so a superseded
-# run is cancelled.
+# One upload at a time: concurrent syncs with --delete would remove each other's
+# files. The newest is the one worth keeping.
 concurrency:
   group: deploy-front-end-${{ inputs.environment }}
   cancel-in-progress: true
@@ -47,8 +46,7 @@ jobs:
           role-to-assume: ${{ vars.AWS_DEPLOYMENT_ROLE_ARN }}
           aws-region: ${{ vars.AWS_REGION }}
 
-      # Builds and uploads: the target depends on front-end-build, so the
-      # artifacts cannot be stale.
+      # The target depends on front-end-build, so the artifacts cannot be stale.
       - name: Build and deploy the front-end
         run: make front-end-deploy ENVIRONMENT=${{ inputs.environment }}
 

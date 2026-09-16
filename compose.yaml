@@ -1,14 +1,5 @@
-# Local development stack.
-#
-# Every service is a snapshot of a runtime and its dependencies; the source code
-# is never baked in, but bind mounted from the host so that edits take effect
-# immediately. See agents/local-development/containerized-development.md.
-#
-# Start it with `make up`, which brings up every service; `make front-end-up`
-# and `make api-up` start one of them on its own.
-#
-# The database will join this same network as it is built, so the services can
-# reach each other by name.
+# Local development stack, started with `make up`.
+# See agents/local-development/containerized-development.md.
 
 name: muncher
 
@@ -20,11 +11,9 @@ services:
     ports:
       - "${MUNCHER_FRONT_END_PORT:-5173}:5173"
     volumes:
-      # The sources live on the host.
       - ./front-end:/workspace/front-end
-      # node_modules is installed into the image, so it must not be covered by
-      # the bind mount above. This volume is seeded from the image;
-      # scripts/local-env-up.sh renews it when yarn.lock changes.
+      # node_modules is installed into the image, so the mount above must not
+      # cover it. scripts/local-env-up.sh renews this when yarn.lock changes.
       - front-end-node-modules:/workspace/front-end/node_modules
     networks:
       - muncher
@@ -36,10 +25,8 @@ services:
     ports:
       - "${MUNCHER_API_PORT:-9100}:9100"
     volumes:
-      # The sources live on the host. Unlike the front-end, nothing has to be
-      # kept out of this mount: the virtual environment is installed to
-      # /opt/venv, outside /workspace, so a dependency change is picked up by
-      # rebuilding the image rather than by renewing a volume.
+      # Nothing to keep out of this mount: the virtual environment is in
+      # /opt/venv, so a dependency change is a rebuild, not a renewed volume.
       - ./api:/workspace/api
     networks:
       - muncher

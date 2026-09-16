@@ -1,14 +1,6 @@
-# Entry point for every task in this repository.
-#
-# Targets are grouped by subsystem in makefiles/, and named after the subsystem
-# they act on: front-end-*, memoria-*. Everything they run happens inside a
-# container, so the only tools required on your machine are git and Docker.
+# Entry point for every task. Run `make help` to list the targets.
 # See agents/local-development/containerized-development.md.
-#
-# Run `make` or `make help` to list the available targets.
 
-# Runs a command inside one of the project's images. Defined here so that every
-# included fragment can use it.
 RUN := ./scripts/run-in-container.sh
 
 .DEFAULT_GOAL := help

@@ -1,8 +1,5 @@
 #!/bin/bash
-# Builds the memoria into memoria/generated/.
-#
-# Runs inside the image built from docker/memoria.Dockerfile. Invoke it through
-# `make memoria-build`, which takes care of the container.
+# Builds the memoria into memoria/generated/; invoke through `make memoria-build`.
 set -euo pipefail
 
 if [ -z "${MUNCHER_IN_CONTAINER:-}" ]; then
@@ -10,8 +7,7 @@ if [ -z "${MUNCHER_IN_CONTAINER:-}" ]; then
 	exit 1
 fi
 
-# Derived from the script's own location: the memoria image carries TeX Live, not
-# git, so the repository root cannot be asked for.
+# From the script's location: the memoria image carries TeX Live, not git.
 cd "$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/memoria"
 
 mkdir -p generated

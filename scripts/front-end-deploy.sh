@@ -1,9 +1,6 @@
 #!/bin/bash
 # Uploads the compiled front-end to an environment and invalidates its cache.
-#
-# Runs inside the image built from docker/infra.Dockerfile. Invoke it through
-# `make front-end-deploy ENVIRONMENT=dev`, which builds the application first
-# and takes care of the container.
+# Invoke through `make front-end-deploy ENVIRONMENT=dev`, which builds it first.
 set -euo pipefail
 
 if [ -z "${MUNCHER_IN_CONTAINER:-}" ]; then
@@ -40,21 +37,18 @@ fi
 
 echo "📦 Uploading to ${BUCKET}..."
 
-# Everything except index.html carries a content hash in its name, so a given
-# URL never changes contents and can be cached indefinitely. --delete removes
-# files left over from previous builds.
+# Every other file carries a content hash, so its URL never changes contents.
 aws s3 sync front-end/dist "s3://${BUCKET}" \
 	--delete \
 	--exclude index.html \
 	--cache-control "public, max-age=31536000, immutable"
 
-# index.html is the one file whose URL is stable while its contents change, so it
-# must never be cached: it is what points at the hashed assets.
+# The one stable URL with changing contents, pointing at the hashed assets.
 aws s3 cp front-end/dist/index.html "s3://${BUCKET}/index.html" \
 	--cache-control "no-cache, must-revalidate"
 
-# Only index.html needs invalidating — the hashed assets are new paths, and the
-# first 1,000 paths per month are free, so this stays within the free tier.
+# Only index.html: the hashed assets are new paths, and 1,000 paths a month are
+# free, so this stays within the free tier.
 echo "♻️  Invalidating /index.html on ${DISTRIBUTION}..."
 aws cloudfront create-invalidation \
 	--distribution-id "$DISTRIBUTION" \

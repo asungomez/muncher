@@ -1,11 +1,4 @@
-# Infrastructure.
-#
-# Templates live in infra/ and are deployed with the image built from
-# docker/infra.Dockerfile, which carries the AWS CLI. One stack per environment:
-# the environment name is the only parameter the template takes.
-
-# Which environment to act on. Overridden on the command line:
-#   make infra-deploy ENVIRONMENT=prod
+# One stack per environment. Override with `make infra-deploy ENVIRONMENT=prod`.
 ENVIRONMENT ?= dev
 
 .PHONY: infra-lint

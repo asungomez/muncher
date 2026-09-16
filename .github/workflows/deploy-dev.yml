@@ -7,17 +7,13 @@ on:
   # Deploys everything, regardless of what changed.
   workflow_dispatch:
 
-# Decides what changed and in what order the pieces deploy. The stack is
-# deployed by the composite action in .github/actions/deploy-infra, and the
-# front-end by deploy-front-end.yml, which can also be run on their own from the
-# Actions tab.
+# Decides what changed and in what order the pieces deploy.
 jobs:
   changes:
     runs-on: ubuntu-latest
     outputs:
       infra: ${{ steps.filter.outputs.infra }}
-      # Named without a hyphen: '-' is also the subtraction operator in
-      # expressions, and dot access to a hyphenated property is not documented.
+      # No hyphen: '-' is also subtraction in expressions.
       frontend: ${{ steps.filter.outputs.frontend }}
     steps:
       - uses: actions/checkout@v4
@@ -42,8 +38,8 @@ jobs:
       needs.changes.outputs.infra == 'true' ||
       github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
-    # An ordinary job rather than a call to a reusable workflow, because only a
-    # job that declares an environment can read that environment's secrets.
+    # Not a reusable workflow: only a job declaring an environment reads its
+    # secrets.
     environment: dev
     permissions:
       # Required for the OIDC token that the role assumption exchanges.
@@ -57,12 +53,9 @@ jobs:
           environment: dev
           role-to-assume: ${{ vars.AWS_DEPLOYMENT_ROLE_ARN }}
           aws-region: ${{ vars.AWS_REGION }}
-          # The development environment is not allowed to be publicly reachable,
-          # so a deployment without these credentials fails rather than quietly
-          # exposing it.
+          # Dev may not be public, so missing credentials fail the deployment.
           require-login-wall: true
-          # Empty until the domain is registered, which serves dev from its
-          # CloudFront name.
+          # Empty until the domain is registered; dev uses its CloudFront name.
           domain-name: ${{ vars.MUNCHER_DOMAIN_NAME }}
           use-environment-subdomain: "true"
           # Resolved from the secrets of the dev environment declared above.
@@ -71,13 +64,8 @@ jobs:
 
   front-end:
     needs: [changes, infra]
-    # Runs when the infrastructure job succeeded *or* was skipped, which is what
-    # makes the ordering work: a skipped dependency would otherwise skip this job
-    # too. It does not run if the infrastructure deployment failed, since the
-    # bucket it uploads to may not exist.
-    #
-    # The front-end is deployed when its own files changed, and also when the
-    # infrastructure was redeployed, because a replaced bucket starts empty.
+    # Runs when infra succeeded *or* was skipped — a skipped dependency would
+    # otherwise skip this too. Also runs after a redeploy: a new bucket is empty.
     if: >-
       !cancelled() &&
       (needs.infra.result == 'success' || needs.infra.result == 'skipped') &&

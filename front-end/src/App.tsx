@@ -1,6 +1,7 @@
 import I18nProvider from "./i18n/I18nProvider/I18nProvider";
 import Routes from "./routes/Routes";
 
+/** The application root: the global providers wrapped around the router. */
 function App() {
   return (
     <I18nProvider>

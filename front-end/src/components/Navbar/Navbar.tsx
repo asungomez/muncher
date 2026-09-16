@@ -2,6 +2,7 @@ import { NavLink } from "react-router";
 import LogInButton from "../LogInButton/LogInButton";
 import { useI18n } from "../../i18n/I18nProvider/context";
 
+/** The site header: the logo, linking home, and the sign-in action. */
 function Navbar() {
   const { t } = useI18n();
   return (

@@ -1,10 +1,5 @@
-# Every check in this repository runs through pre-commit, and pre-commit runs
-# inside the image built from docker/ci.Dockerfile. Nothing here is expected to
-# work against tools installed on the host.
-#
-# Language-specific hooks are declared as `local` + `language: system`: the
-# tools they invoke are already in the image, so pre-commit must not try to
-# provision environments for them.
+# Runs inside the image built from docker/ci.Dockerfile, never against host
+# tools. `local` + `language: system` hooks use what that image already carries.
 
 exclude: |
   (?x)^(
@@ -17,9 +12,7 @@ exclude: |
   )$
 
 repos:
-  # ---------------------------------------------------------------------------
-  # General fixes, applied to every file regardless of language
-  # ---------------------------------------------------------------------------
+  # Applied to every file, regardless of language.
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v6.0.0
     hooks:
@@ -28,27 +21,21 @@ repos:
       - id: end-of-file-fixer
       - id: mixed-line-ending
         args: [--fix=lf]
-      # The CloudFormation templates are excluded: their short-form intrinsics
-      # (!Ref, !GetAtt, !Sub) are custom tags that a plain YAML parser cannot
-      # construct. The cfn-lint hook below validates them instead, and it
-      # understands the tags.
+      # infra/ uses short-form intrinsics (!Ref, !Sub), which a plain YAML
+      # parser cannot construct. cfn-lint below validates those instead.
       - id: check-yaml
         exclude: ^infra/
-      # The tsconfig files are JSONC: TypeScript allows the comments they carry,
-      # a strict JSON parser does not. Prettier still formats them.
+      # The tsconfig files are JSONC, which a strict JSON parser rejects.
       - id: check-json
         exclude: ^front-end/tsconfig.*\.json$
       - id: check-merge-conflict
       - id: check-case-conflict
       - id: detect-private-key
-      # Raised from the 500 kB default: the repository legitimately tracks
-      # screenshots and hero images.
+      # Raised from 500 kB: the repository tracks screenshots and hero images.
       - id: check-added-large-files
         args: [--maxkb=8000]
 
-  # ---------------------------------------------------------------------------
-  # Language-specific fixes
-  # ---------------------------------------------------------------------------
+  # Language-specific fixes.
   - repo: local
     hooks:
       - id: eslint
@@ -62,6 +49,38 @@ repos:
         entry: scripts/hooks/prettier.sh
         language: system
         files: ^front-end/.*\.(js|jsx|ts|tsx|mjs|cjs|json|css|scss|md|html|yml|yaml)$
+
+      # Ruff exits 0 once it has fixed everything, but pre-commit still fails
+      # the hook on a modified file, so no rewrite is committed unreviewed.
+      - id: ruff
+        name: ruff (api)
+        entry: ruff check --fix
+        language: system
+        files: ^api/.*\.py$
+
+      # After the linter, whose fixes can leave code that needs reformatting.
+      - id: ruff-format
+        name: ruff format (api)
+        entry: ruff format
+        language: system
+        files: ^api/.*\.py$
+
+      # Checks the whole project rather than the staged files: an edit to one
+      # module surfaces as a type error in another that imports it.
+      - id: ty
+        name: ty (api)
+        entry: ty check --project api --error all
+        language: system
+        files: ^api/.*\.py$
+        pass_filenames: false
+
+      # ty only rejects the blanket form, but agents/coding/types.md forbids
+      # silencing the checker at all: fix the code or change the type.
+      - id: no-type-suppressions
+        name: no type suppressions (api)
+        entry: '#\s*(ty|type|mypy|pyright):\s*ignore'
+        language: pygrep
+        files: ^api/.*\.py$
 
       - id: latexindent
         name: latexindent (memoria)

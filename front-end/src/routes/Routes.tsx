@@ -3,6 +3,7 @@ import Home from "../pages/Home/Home";
 import Navbar from "../components/Navbar/Navbar";
 import Footer from "../components/Footer/Footer";
 
+/** The shell every page renders inside: papered background, navbar and footer. */
 function Layout() {
   return (
     <div
@@ -35,6 +36,7 @@ const router = createBrowserRouter([
   },
 ]);
 
+/** The application's router. */
 function Routes() {
   return <RouterProvider router={router} />;
 }

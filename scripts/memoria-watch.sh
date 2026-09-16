@@ -1,8 +1,6 @@
 #!/bin/bash
-# Rebuilds the memoria whenever anything under memoria/src changes.
-#
-# Runs inside the image built from docker/memoria.Dockerfile. Invoke it through
-# `make memoria-watch`, which takes care of the container. Stop it with Ctrl-C.
+# Rebuilds the memoria whenever anything under memoria/src changes. Invoke
+# through `make memoria-watch`.
 set -uo pipefail
 
 if [ -z "${MUNCHER_IN_CONTAINER:-}" ]; then
@@ -10,8 +8,7 @@ if [ -z "${MUNCHER_IN_CONTAINER:-}" ]; then
 	exit 1
 fi
 
-# Derived from the script's own location: the memoria image carries TeX Live, not
-# git, so the repository root cannot be asked for.
+# From the script's location: the memoria image carries TeX Live, not git.
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$REPO_ROOT/memoria"
 
@@ -40,10 +37,8 @@ build() {
 	fi
 }
 
-# Changes are made on the host and reach the container through a bind mount,
-# which does not deliver inotify events reliably. Watching by polling the
-# modification times is therefore the only dependable option here, and it is
-# cheap enough for a source tree of this size.
+# Bind mounts do not deliver inotify events reliably, so polling modification
+# times is the only dependable option.
 compute_signature() {
 	find src -type f -printf '%T@ %p\n' | sort | md5sum | cut -d' ' -f1
 }

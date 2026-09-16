@@ -1,14 +1,7 @@
 name: Deploy infra
 
-# Deploys on demand, whether or not anything changed — for recreating an
-# environment that was torn down, or reapplying after a manual change. The
-# automatic path lives in deploy-dev.yml and deploy-prod.yml, which run the same
-# composite action.
-#
-# This is no longer a reusable workflow: a workflow called with `workflow_call`
-# cannot read the secrets of the environment it declares, so the deployment steps
-# live in .github/actions/deploy-infra and run inside a job that declares the
-# environment.
+# Not a reusable workflow: one called with `workflow_call` cannot read the
+# secrets of the environment it declares.
 on:
   workflow_dispatch:
     inputs:
@@ -20,9 +13,8 @@ on:
           - prod
         default: dev
 
-# CloudFormation refuses concurrent operations on the same stack, so runs queue
-# instead of racing. In-progress runs are not cancelled: interrupting a
-# deployment mid-flight is worse than waiting for it.
+# CloudFormation refuses concurrent operations on a stack, so runs queue. They
+# are not cancelled: interrupting a deployment is worse than waiting.
 concurrency:
   group: deploy-infra-${{ inputs.environment }}
   cancel-in-progress: false
@@ -31,13 +23,11 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
 
-    # Declared on the job itself, which is what gives its steps access to this
-    # environment's secrets.
+    # On the job itself, which is what gives its steps the environment's secrets.
     environment: ${{ inputs.environment }}
 
     permissions:
-      # Required for the OIDC token that the role assumption exchanges. Without
-      # it no token is issued and the deployment fails at the credentials step.
+      # Required for the OIDC token that the role assumption exchanges.
       id-token: write
       contents: read
 
@@ -54,7 +44,6 @@ jobs:
           domain-name: ${{ vars.MUNCHER_DOMAIN_NAME }}
           # Only development is served from a subdomain named after itself.
           use-environment-subdomain: ${{ inputs.environment == 'dev' }}
-          # Resolved from the secrets of the environment above. An environment
-          # that does not define them deploys with no login wall.
+          # From the environment's secrets; undefined means no login wall.
           login-user: ${{ secrets.FRONTEND_LOGIN_USER }}
           login-password: ${{ secrets.FRONTEND_LOGIN_PASSWORD }}

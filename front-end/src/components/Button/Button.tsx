@@ -24,6 +24,7 @@ const variantStyles: Record<ButtonVariant, string> = {
   ),
 };
 
+/** The project's action button: offset shadow, and presses flat on click. */
 function Button({
   children,
   icon,

@@ -1,5 +1,6 @@
 import { useI18n } from "../../i18n/I18nProvider/context";
 
+/** The site footer: the brand, a contact address and the copyright line. */
 function Footer() {
   const { t } = useI18n();
   return (

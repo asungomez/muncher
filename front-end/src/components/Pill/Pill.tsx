@@ -13,6 +13,7 @@ const colorClasses: Record<PillColor, string> = {
   rose: "bg-rose-500 text-white",
 };
 
+/** The background and text classes for a pill colour. */
 const getPillColorClass = (color: PillColor) => {
   return colorClasses[color];
 };
@@ -22,6 +23,7 @@ interface PillProps {
   color?: PillColor;
 }
 
+/** A coloured tag classifying a recipe. */
 function Pill({ content, color = "pink" }: PillProps) {
   const colorClass = getPillColorClass(color);
   return (

@@ -52,6 +52,9 @@ Use the make targets, never the underlying tool
 | `make checks-staged` | every check, over the staged files only |
 | `make front-end-lint` | ESLint |
 | `make front-end-format` | Prettier |
+| `make api-lint` | Ruff, as a linter |
+| `make api-format` | Ruff, as a formatter |
+| `make api-types` | ty |
 | `make memoria-lint` | latexindent |
 | `make front-end-build` | the front-end build |
 | `make memoria-build` | the memoria build |
