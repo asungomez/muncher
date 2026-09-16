@@ -65,6 +65,23 @@ repos:
         language: system
         files: ^api/.*\.py$
 
+      # Checks the whole project rather than the staged files: an edit to one
+      # module surfaces as a type error in another that imports it.
+      - id: ty
+        name: ty (api)
+        entry: ty check --project api --error all
+        language: system
+        files: ^api/.*\.py$
+        pass_filenames: false
+
+      # ty only rejects the blanket form, but agents/coding/types.md forbids
+      # silencing the checker at all: fix the code or change the type.
+      - id: no-type-suppressions
+        name: no type suppressions (api)
+        entry: '#\s*(ty|type|mypy|pyright):\s*ignore'
+        language: pygrep
+        files: ^api/.*\.py$
+
       - id: latexindent
         name: latexindent (memoria)
         entry: scripts/hooks/latexindent.sh

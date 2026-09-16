@@ -35,14 +35,16 @@ RUN ln -s ../lib/node_modules/npm/bin/npm-cli.js /usr/local/bin/npm \
 	&& ln -s ../lib/node_modules/corepack/dist/corepack.js /usr/local/bin/corepack \
 	&& corepack enable
 
-# Versions come from api/uv.lock. The groups are named so only the tooling
-# lands here, and the environment sits in /opt, which no bind mount hides.
+# Versions come from api/uv.lock, and the environment sits in /opt, which no
+# bind mount hides. The API's own dependencies are installed alongside the
+# tooling because ty resolves the imports through them, and the interpreter is
+# pinned to the one the server runs: checking against 3.14 would prove nothing.
 COPY --from=ghcr.io/astral-sh/uv:0.11.23 /uv /usr/local/bin/uv
 ENV UV_PROJECT_ENVIRONMENT=/opt/checks-venv
 ENV PATH="/opt/checks-venv/bin:$PATH"
 WORKDIR /workspace
 COPY api/pyproject.toml api/uv.lock ./api/
-RUN cd api && uv sync --frozen --only-group checks --only-group lint
+RUN cd api && uv sync --frozen --python 3.13 --group checks --group lint
 
 # Baked in so a check never downloads anything, and outside the bind mount.
 ENV PRE_COMMIT_HOME=/opt/pre-commit-cache

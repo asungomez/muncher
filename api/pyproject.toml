@@ -20,12 +20,18 @@ checks = [
 ]
 lint = [
     "ruff==0.16.7",
+    "ty==0.0.81",
 ]
 
 # The sources are imported from the bind mounted working tree, so an installed
 # copy would be a second, stale one.
 [tool.uv]
 package = false
+
+# Stated so an editor or a bare `ty check` targets the version the server runs,
+# not whatever interpreter happens to be newest.
+[tool.ty.environment]
+python-version = "3.13"
 
 [tool.ruff]
 line-length = 88

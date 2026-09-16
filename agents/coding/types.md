@@ -25,6 +25,9 @@ do not support, and the fix is to make the assumption true or to stop making it 
 not to assert it away. `unknown` plus a narrowing check is the answer to "I do
 not know what this is"; `any` never is.
 
+In `api/` this is enforced rather than asked for: a `no-type-suppressions` hook
+rejects `# ty: ignore` and `# type: ignore` in any form, targeted ones included.
+
 If a third-party package is genuinely untyped, the fix is a typed wrapper at the
 boundary, so exactly one small module knows about the gap and everything past it
 is typed. Raise it before writing one.

@@ -11,8 +11,18 @@ Python here.
 obvious from its value.** A function with no annotations is invisible to the type
 checker, which is worse than one with a wrong annotation: nothing reports it.
 
-This is enforced, not merely asked for: Ruff's `ANN` rules fail on a missing
-annotation, and `ANN401` rejects `Any` wherever it appears.
+This is enforced, not merely asked for, by two tools with different jobs:
+
+- **Ruff's `ANN` rules** fail on a missing annotation, and `ANN401` rejects `Any`.
+  Ruff is what makes sure a signature is annotated at all.
+- **ty** then checks that the annotations are true, with every one of its rules
+  raised to error (`--error all`). That promotes 39 rules that ship as warnings
+  or disabled, including `missing-type-argument` — a bare `list` is rejected,
+  `list[Recipe]` is required — which is this document's "prefer the most specific
+  type" made mechanical.
+
+ty runs over the whole project rather than the changed files, because a type
+error is introduced in one module and surfaces in another that imports it.
 
 `api/pyproject.toml` requires Python 3.13, so use the modern spellings and
 nothing else:

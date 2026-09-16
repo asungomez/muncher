@@ -25,6 +25,10 @@ api-lint: ## Analyse the API with Ruff
 api-format: ## Format the API with Ruff
 	$(RUN) pre-commit run ruff-format --all-files
 
+.PHONY: api-types
+api-types: ## Type-check the API with ty
+	$(RUN) pre-commit run ty --all-files
+
 .PHONY: memoria-lint
 memoria-lint: ## Format the memoria sources with latexindent
 	$(RUN) pre-commit run latexindent --all-files
