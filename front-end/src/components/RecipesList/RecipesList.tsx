@@ -6,6 +6,7 @@ interface RecipesListProps {
   recipes: Recipe[];
 }
 
+/** A responsive grid of recipe cards, cycling the card variants by position. */
 function RecipesList({ recipes }: RecipesListProps) {
   return (
     <section className="py-8">

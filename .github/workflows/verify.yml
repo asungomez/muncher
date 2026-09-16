@@ -4,9 +4,8 @@ on:
     branches:
       - main
 
-# CI deliberately installs no toolchain of its own. It runs the same make
-# targets a developer runs, which build and use the same images, so the two
-# cannot drift apart.
+# CI installs no toolchain: it runs the same make targets, in the same images,
+# as a developer does.
 jobs:
   verify:
     runs-on: ubuntu-latest

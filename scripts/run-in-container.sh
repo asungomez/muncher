@@ -1,19 +1,11 @@
 #!/bin/bash
-# Runs a command inside one of the project's images.
-#
-# This is the single place where the host touches a toolchain, and all it needs
-# is git and a container runtime. Everything else lives in the images under
-# docker/.
-#
-#   ./scripts/run-in-container.sh pre-commit run --all-files
-#   ./scripts/run-in-container.sh --image memoria ./make-memoria.sh
-#   ./scripts/run-in-container.sh bash
+# Runs a command inside one of the project's images, the single place where the
+# host touches a toolchain. Usage: [--image <name>] <command>...
 set -euo pipefail
 
 REPO_ROOT="$(git rev-parse --show-toplevel)"
 
-# Which image to run in. "ci" carries the check toolchain, "memoria" carries
-# TeX Live. Each maps to docker/<name>.Dockerfile.
+# Each name maps to docker/<name>.Dockerfile.
 IMAGE_NAME=ci
 if [ "${1:-}" = "--image" ]; then
 	IMAGE_NAME="$2"
@@ -35,9 +27,7 @@ if ! command -v docker >/dev/null 2>&1; then
 	exit 1
 fi
 
-# Built on every invocation: with the layer cache warm this is near-instant, and
-# it means a change to a Dockerfile or to front-end/package.json can never leave
-# a developer running against a stale toolchain.
+# Near-instant with a warm cache, and no one can run against a stale toolchain.
 docker build --quiet -f "$DOCKERFILE" -t "$IMAGE" . >/dev/null
 
 RUN_ARGS=(
@@ -47,42 +37,30 @@ RUN_ARGS=(
 	--env MUNCHER_IN_CONTAINER=1
 )
 
-# Configuration reaches the scripts through the environment: AWS credentials from
-# a local profile or from the role GitHub Actions assumed through OIDC, and the
-# project's own settings. Nothing is stored in the repository or baked into an
-# image.
-#
-# Forwarded by prefix rather than by name on purpose. An explicit list has to be
-# extended every time a setting is added, and forgetting to do so does not fail:
-# the variable is simply absent inside the container and whatever it controlled
-# is silently skipped.
+# By prefix, not by name: an explicit list would have to grow with every new
+# setting, and forgetting one fails silently rather than loudly.
 for name in $(compgen -A variable | grep -E '^(AWS_|MUNCHER_|FRONTEND_LOGIN_)' | sort -u); do
-	# MUNCHER_IN_CONTAINER is set below; forwarding the host's value would be
-	# meaningless.
+	# Set above; the host's value is meaningless here.
 	[ "$name" = "MUNCHER_IN_CONTAINER" ] && continue
 	if [ -n "${!name:-}" ]; then
 		RUN_ARGS+=(--env "${name}=${!name}")
 	fi
 done
 
-# A local profile keeps its credentials in ~/.aws, which the container cannot see
-# unless it is mounted. Read-only: the container has no reason to write there.
+# A local profile keeps credentials in ~/.aws, invisible without this mount.
 if [ -n "${AWS_PROFILE:-}" ] && [ -d "$HOME/.aws" ]; then
 	RUN_ARGS+=(--volume "$HOME/.aws:/root/.aws:ro")
 fi
 
-# node_modules is installed into the CI image, so it cannot live in the bind
-# mount that covers /workspace. A named volume seeded from the image keeps it out
-# of the working tree. Keying the volume on the lockfile means a dependency
-# change gets a fresh one instead of silently reusing stale packages.
+# A named volume keeps node_modules out of the bind mount. Keyed on the lockfile
+# so a dependency change gets a fresh one rather than stale packages.
 NODE_MODULES_VOLUME=""
 VOLUME_LABEL="muncher.role=front-end-node-modules"
 if [ "$IMAGE_NAME" = "ci" ]; then
 	LOCK_HASH="$(git hash-object front-end/yarn.lock | cut -c1-12)"
 	NODE_MODULES_VOLUME="muncher-front-end-node-modules-${LOCK_HASH}"
 
-	# Created explicitly, and labelled, so that the cleanup below can recognise
-	# the volumes this project owns without pattern-matching on their names.
+	# Labelled so the cleanup below finds this project's volumes by label.
 	if ! docker volume inspect "$NODE_MODULES_VOLUME" >/dev/null 2>&1; then
 		docker volume create --label "$VOLUME_LABEL" "$NODE_MODULES_VOLUME" >/dev/null
 	fi
@@ -91,14 +69,8 @@ if [ "$IMAGE_NAME" = "ci" ]; then
 	RUN_ARGS+=(--env "PRE_COMMIT_COLOR=${PRE_COMMIT_COLOR:-always}")
 fi
 
-# Every dependency change strands the volume keyed on the previous lockfile, and
-# every image rebuild strands the untagged image it replaced. Both are discarded
-# here rather than left for a manual prune. Only this project's own resources are
-# touched: the labels filter out everything else on the machine, and a volume
-# still attached to a running container simply refuses to be removed.
-#
-# Set MUNCHER_KEEP_STALE=1 to keep them — useful when switching branches back and
-# forth, where the previous volume is about to be needed again.
+# Discards the volumes and untagged images that rebuilds strand. The labels keep
+# this to the project's own resources. MUNCHER_KEEP_STALE=1 skips it.
 if [ "${MUNCHER_KEEP_STALE:-0}" != "1" ]; then
 	for volume in $(docker volume ls --quiet --filter "label=$VOLUME_LABEL"); do
 		if [ "$volume" != "$NODE_MODULES_VOLUME" ]; then

@@ -1,9 +1,5 @@
-# Checks.
-#
-# Every target here runs pre-commit, which is the single definition of what the
-# checks are. The individual targets select one of its hooks by id, so a target
-# and the corresponding commit-time check can never drift apart — and neither can
-# either of them drift from continuous integration, which runs the same command.
+# Each target selects a hook from .pre-commit-config.yaml by id, so a target
+# and the commit-time check cannot drift apart.
 
 .PHONY: checks
 checks: ## Run every check over the whole repository
@@ -20,6 +16,10 @@ front-end-lint: ## Analyse the front-end with ESLint
 .PHONY: front-end-format
 front-end-format: ## Format the front-end with Prettier
 	$(RUN) pre-commit run prettier --all-files
+
+.PHONY: api-lint
+api-lint: ## Analyse the API with Ruff
+	$(RUN) pre-commit run ruff --all-files
 
 .PHONY: memoria-lint
 memoria-lint: ## Format the memoria sources with latexindent

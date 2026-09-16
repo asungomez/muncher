@@ -15,6 +15,7 @@ const cardVariants: Record<RecipeCardVariant, { bg: string; rotate: string }> =
     quaternary: { bg: "bg-quaternary", rotate: "transform -rotate-2" },
   };
 
+/** A recipe as a tilted card: photograph, name, description and its tags. */
 function RecipeCard({
   recipe: { name, description, imageUrl, pills },
   variant,

@@ -1,11 +1,6 @@
 #!/bin/bash
-# Deploys infra/muncher.yaml as the stack for one environment.
-#
-# Runs inside the image built from docker/infra.Dockerfile. Invoke it through
-# `make infra-deploy ENVIRONMENT=dev`, which takes care of the container.
-#
-# Credentials come from the environment: locally from your AWS profile, in CI
-# from the role assumed through OIDC. Nothing is read from a file in the repo.
+# Deploys infra/muncher.yaml as the stack for one environment. Invoke through
+# `make infra-deploy ENVIRONMENT=dev`. Credentials come from the environment.
 set -euo pipefail
 
 if [ -z "${MUNCHER_IN_CONTAINER:-}" ]; then
@@ -25,10 +20,8 @@ stack_status() {
 		--output text 2>/dev/null || echo "DOES_NOT_EXIST"
 }
 
-# Prints why the deployment failed, so the reason is in this output rather than
-# only in the console. CloudFormation reports the cause on the individual
-# resource, not on the stack, and lists events newest first — the oldest failure
-# is the real one, everything after it is fallout from the rollback.
+# CloudFormation reports the cause on the resource, not the stack, newest first.
+# The oldest failure is the real one; the rest is rollback fallout.
 report_failure() {
 	echo ""
 	echo "::group::CloudFormation failures for ${STACK}"
@@ -38,8 +31,7 @@ report_failure() {
 		--output table 2>/dev/null || echo "(no events could be read)"
 	echo "::endgroup::"
 
-	# The first failure, repeated outside the collapsed group so it is visible
-	# without expanding anything, and added to the run summary.
+	# Repeated outside the collapsed group, so it is visible unexpanded.
 	local reason
 	reason="$(aws cloudformation describe-stack-events \
 		--stack-name "$STACK" \
@@ -63,33 +55,20 @@ report_failure() {
 
 STATUS="$(stack_status)"
 
-# A stack whose creation failed holds no resources and cannot be updated, so it
-# has to be removed before another attempt. Deleting it is safe precisely
-# because nothing was ever provisioned.
+# A stack whose creation failed holds no resources and cannot be updated, so
+# deleting it before retrying is both necessary and safe.
 if [ "$STATUS" = "ROLLBACK_COMPLETE" ] || [ "$STATUS" = "REVIEW_IN_PROGRESS" ]; then
 	echo "🧹 ${STACK} is in ${STATUS} from a failed creation; deleting it first..."
 	aws cloudformation delete-stack --stack-name "$STACK"
 	aws cloudformation wait stack-delete-complete --stack-name "$STACK"
 fi
 
-# The login wall is enabled by supplying both halves of the credential. In CI
-# they come from the secrets of the environment being deployed, read by the job
-# that declares it; locally they come from your own environment. An environment
-# that supplies neither is deployed without a wall.
-# A certificate used by CloudFront has to live in us-east-1, and CloudFormation
-# cannot create a resource outside its own region, so the certificate is a stack
-# of its own deployed there. Its ARN travels to the main stack as a parameter:
-# exports cannot be imported across regions.
-#
-# Without a domain none of this happens and the site is served from its
-# CloudFront name, exactly as before.
+# A CloudFront certificate must live in us-east-1, which CloudFormation cannot
+# reach from another region, so it gets its own stack and passes its ARN over.
 CERTIFICATE_ARN=""
 if [ -n "${MUNCHER_DOMAIN_NAME:-}" ]; then
-	# The zone is not created here: it belongs to the domain registration, is
-	# shared by every environment, and outlives any single stack.
-	# stderr is kept, not discarded: when this call is refused the reason is the
-	# only thing worth reading, and under `set -e` a failure here would otherwise
-	# end the script with no output at all.
+	# The zone belongs to the domain registration and outlives any stack, so it
+	# is looked up, not created. stderr is kept: it is the only failure output.
 	if ! zone_lookup="$(
 		aws route53 list-hosted-zones-by-name \
 			--dns-name "${MUNCHER_DOMAIN_NAME}." \
@@ -153,15 +132,12 @@ if [ -n "${FRONTEND_LOGIN_USER:-}" ] && [ -n "${FRONTEND_LOGIN_PASSWORD:-}" ]; t
 	)
 	echo "🔒 Login wall enabled for ${ENVIRONMENT}"
 elif [ -n "${FRONTEND_LOGIN_USER:-}" ] || [ -n "${FRONTEND_LOGIN_PASSWORD:-}" ]; then
-	# Half a credential is a misconfiguration, not a request for a public site:
-	# saying so is better than silently deploying without a wall.
+	# Half a credential is a misconfiguration, not a request for a public site.
 	echo "❌ FRONTEND_LOGIN_USER and FRONTEND_LOGIN_PASSWORD must be set together" >&2
 	exit 1
 elif [ -n "${MUNCHER_REQUIRE_LOGIN_WALL:-}" ]; then
-	# This environment is not allowed to be publicly reachable, so missing
-	# credentials are a failure rather than a decision to serve it openly.
-	# Reaching here means the secrets are not visible to the deployment: check
-	# that they are defined on the environment being deployed.
+	# This environment may not be public, so missing credentials are a failure
+	# rather than a decision to serve it openly.
 	echo "❌ ${ENVIRONMENT} requires the login wall, but FRONTEND_LOGIN_USER and" >&2
 	echo "   FRONTEND_LOGIN_PASSWORD are empty. In CI they come from the secrets of" >&2
 	echo "   the ${ENVIRONMENT} environment; see docs/deployment.md." >&2
@@ -171,9 +147,8 @@ else
 fi
 
 echo "🚀 Deploying ${STACK}..."
-# CAPABILITY_NAMED_IAM because the template names the role it creates.
-# --no-fail-on-empty-changeset so that redeploying an unchanged template
-# succeeds instead of failing the build.
+# CAPABILITY_NAMED_IAM because the template names the role it creates, and an
+# empty changeset must not fail a redeploy of an unchanged template.
 if ! aws cloudformation deploy \
 	--template-file infra/muncher.yaml \
 	--stack-name "$STACK" \

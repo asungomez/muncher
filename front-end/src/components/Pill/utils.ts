@@ -1,3 +1,4 @@
+/** The colours a pill can be painted with. Mirrors `PillColor` in the API. */
 export const PILL_COLORS = [
   "green",
   "blue",

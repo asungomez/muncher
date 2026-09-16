@@ -126,7 +126,7 @@ proyecto.
 
 \us[
 	identificador=US-CI-04,
-	titulo={Corrección automática del código},
+	titulo={Corrección automática del código de front-end},
 	como={Desarrollador},
 	quiero={Tener correctores automáticos que modifican mi código para adaptarse a los estándares establecidos},
 	requerimientos={\reqref{RNF-CA-02}},
@@ -216,6 +216,37 @@ proyecto.
 				\item Configuración del entorno local.
 				\item Creación del \textit{endpoint} \texttt{/recipes}.
 				\item Actualización de la documentación del repositorio.
+			\end{itemize}
+		}
+]
+
+\us[
+	identificador=US-CI-07,
+	titulo={Corrección automática del código de back-end},
+	como={Desarrollador},
+	quiero={Tener correctores automáticos que modifican mi código para adaptarse a los estándares establecidos},
+	requerimientos={\reqref{RNF-CA-01}},
+	puntos={1},
+	criterios={
+			\begin{itemize}
+				\item Existe una comprobación del estilo de código mediante un \textit{linter} en el pre-commit hook.
+				\item Existe una comprobación del formato del código mediante un \textit{formatter} en el pre-commit hook.
+				\item Existe una verificación estática de tipos mediante un \textit{type checker} en el pre-commit hook.
+				\item El pre-commit hook sólo se ejecuta sobre los archivos que han sido modificados en el commit.
+				\item El pre-commit hook corrige automáticamente los errores de formato y buenas prácticas de código.
+				\item El pre-commit hook muestra un informe del resultado de su ejecución.
+				\item Existe documentación clara sobre el uso del pre-commit hook.
+				\item El CI ejecuta el \textit{linter}, el \textit{formatter} y el \textit{type checker} sobre el código fuente.
+			\end{itemize}
+		},
+	tareas={
+			\begin{itemize}
+				\item Configuración de un \textit{linter} para el back-end.
+				\item Configuración de un \textit{formatter} para el back-end.
+				\item Configuración de un \textit{type checker} para el back-end.
+				\item Configuración del pre-commit hook para que ejecute el \textit{linter}, el \textit{formatter} y el \textit{type checker}.
+				\item Asegurarse de que el pre-commit hook sólo se ejecuta sobre los archivos que han sido modificados en el commit.
+				\item Configuración del CI para que ejecute el \textit{linter}, el \textit{formatter} y el \textit{type checker} sobre el código fuente.
 			\end{itemize}
 		}
 ]

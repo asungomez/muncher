@@ -1,20 +1,14 @@
 name: Deploy prod
 
-# Manual only, and deliberately so: production is never deployed as a
-# side effect of pushing. There is no path filtering either — a manual run
-# deploys the stack and the front-end, in that order.
-#
-# The gate on who may run this belongs to the `prod` environment in the
-# repository settings: adding required reviewers there makes every production
-# deployment wait for an approval.
+# Manual only: production is never deployed as a side effect of pushing. Who may
+# run it is gated by required reviewers on the `prod` environment.
 on:
   workflow_dispatch:
 
 jobs:
   infra:
     runs-on: ubuntu-latest
-    # Production defines no login wall credentials, so none are found and the
-    # site is served openly — which is the intent for production.
+    # No login wall credentials are defined, so the site is served openly.
     environment: prod
     permissions:
       # Required for the OIDC token that the role assumption exchanges.
@@ -32,8 +26,7 @@ jobs:
           # Production is served from the domain itself, without a subdomain.
           use-environment-subdomain: "false"
 
-  # Waits for the stack: the bucket it uploads to has to exist first. A failed
-  # infrastructure deployment therefore stops the front-end from being uploaded.
+  # Waits for the stack: the bucket it uploads to has to exist first.
   front-end:
     needs: infra
     permissions:

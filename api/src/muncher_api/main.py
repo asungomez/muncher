@@ -13,7 +13,7 @@ from muncher_api import recipes
 app = FastAPI(
     title="Muncher API",
     version="0.1.0",
-    summary="Gestión integral de recetas de cocina.",
+    summary="End-to-end management of cooking recipes.",
 )
 
 app.include_router(recipes.router)

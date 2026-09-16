@@ -3,6 +3,7 @@ import RecipesList from "../../components/RecipesList/RecipesList";
 import { useI18n } from "../../i18n/I18nProvider/context";
 import type { Recipe } from "../../services/recipes/types";
 
+/** Placeholder data, standing in until the page fetches `GET /recipes`. */
 const recipes: Recipe[] = [
   {
     id: "1",
@@ -57,6 +58,7 @@ const recipes: Recipe[] = [
   },
 ];
 
+/** The landing page: the hero, laid out differently per breakpoint, and the recipe grid. */
 function Home() {
   const { t } = useI18n();
   return (

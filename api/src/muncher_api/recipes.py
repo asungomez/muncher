@@ -44,14 +44,14 @@ class Model(BaseModel):
 
 
 class Pill(Model):
-    """Una etiqueta con la que se clasifica una receta."""
+    """A tag classifying a recipe."""
 
     name: str
     color: PillColor
 
 
 class Recipe(Model):
-    """Una receta de cocina."""
+    """A cooking recipe."""
 
     id: str
     name: str
@@ -130,7 +130,7 @@ RECIPES = [
 ]
 
 
-@router.get("", summary="Listar las recetas")
+@router.get("", summary="List the recipes")
 def list_recipes() -> list[Recipe]:
-    """Devuelve la colección completa de recetas."""
+    """Return the full collection of recipes."""
     return RECIPES

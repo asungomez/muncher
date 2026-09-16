@@ -1,14 +1,6 @@
 #!/bin/bash
-# Starts the local stack in the foreground.
-#
-# Invoke it through `make up`, or through `make front-end-up` / `make api-up`
-# for a single service. Every toolchain lives in the images built from docker/,
-# not on the developer's machine; the sources are bind mounted from the host, so
-# edits reload as usual.
-#
-# Stop it with Ctrl-C. Set MUNCHER_FRONT_END_PORT or MUNCHER_API_PORT to publish
-# on another port. Any extra arguments — the names of the services to start,
-# among others — are passed through to `docker compose up`.
+# Starts the local stack in the foreground; invoke through `make up`. Extra
+# arguments are passed through to `docker compose up`.
 set -euo pipefail
 
 REPO_ROOT="$(git rev-parse --show-toplevel)"
@@ -19,10 +11,8 @@ if ! command -v docker >/dev/null 2>&1; then
 	exit 1
 fi
 
-# node_modules lives in a named volume seeded from the image, which means a
-# dependency change would otherwise keep serving the packages installed when the
-# volume was first created. The lockfile hash is recorded outside the working
-# tree, and the volume is renewed whenever it moves.
+# The node_modules volume would otherwise keep serving the packages it was
+# seeded with, so it is renewed whenever the lockfile hash moves.
 STAMP=".git/muncher-front-end-lock"
 LOCK_HASH="$(git hash-object front-end/yarn.lock)"
 RENEW_ARGS=()
@@ -35,6 +25,6 @@ fi
 # Written before starting: the server runs in the foreground until interrupted.
 printf '%s' "$LOCK_HASH" > "$STAMP"
 
-# The array is expanded defensively: under `set -u`, bash 3.2 — still the default
-# on macOS — treats an empty array expansion as an unbound variable.
+# Expanded defensively: under `set -u`, bash 3.2 (macOS's default) treats an
+# empty array expansion as an unbound variable.
 exec docker compose up --build ${RENEW_ARGS[@]+"${RENEW_ARGS[@]}"} "$@"

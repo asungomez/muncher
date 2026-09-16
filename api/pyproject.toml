@@ -1,19 +1,5 @@
-# Manifest of the REST API.
-#
-# Dependencies are installed into the image built from docker/api.Dockerfile,
-# never onto the developer's machine. The exact versions of the whole tree —
-# direct and transitive — are pinned in uv.lock, which the image installs with
-# `uv sync --frozen`, so the environment cannot drift between machines.
-#
-# Add one with `make api-install-dep DEP=package==version`, which edits the list
-# below and the lockfile together. Never install anything by hand.
-#
-# What the current ones are for:
-#
-# - fastapi derives the OpenAPI specification and the /docs page from the type
-#   annotations of the endpoints.
-# - uvicorn is the ASGI server that runs the application. Its "standard" extra
-#   carries the file watcher the development server reloads with.
+# Add and remove dependencies with `make api-install-dep` / `make api-remove-dep`,
+# which edit this file and uv.lock together. Never install by hand.
 
 [project]
 name = "muncher-api"
@@ -25,8 +11,56 @@ dependencies = [
     "uvicorn[standard]>=0.53.0",
 ]
 
-# The sources live in src/ and are imported from there rather than installed:
-# the working tree is bind mounted into the container, so an installed copy
-# would be a second, stale one. See docker/api.Dockerfile.
+# Not named "dev": uv installs that group on a bare `uv sync`, which would put
+# the toolchain in the image that runs the server. Installed by ci.Dockerfile.
+[dependency-groups]
+checks = [
+    "cfn-lint==1.56.1",
+    "pre-commit==4.4.0",
+]
+lint = [
+    "ruff==0.16.7",
+]
+
+# The sources are imported from the bind mounted working tree, so an installed
+# copy would be a second, stale one.
 [tool.uv]
 package = false
+
+[tool.ruff]
+line-length = 88
+
+[tool.ruff.lint]
+# Everything, minus what is listed below. A rule is opted out of deliberately,
+# with a reason, rather than opted into.
+select = ["ALL"]
+
+ignore = [
+    # Not a rule we want: this repository carries no per-file copyright header.
+    "CPY001",
+    # Conflicts with `ruff format`, which owns layout, quotes and trailing
+    # commas. Enabling these would make the two tools fight.
+    "W191",
+    "E111",
+    "E114",
+    "E117",
+    "D206",
+    "D300",
+    "Q000",
+    "Q001",
+    "Q002",
+    "Q003",
+    "COM812",
+    "COM819",
+    "ISC002",
+]
+
+[tool.ruff.lint.flake8-type-checking]
+# Pydantic reads annotations at runtime, so moving these imports into a
+# TYPE_CHECKING block — which the TC rules would otherwise do — breaks the models.
+runtime-evaluated-base-classes = ["pydantic.BaseModel"]
+
+[tool.ruff.lint.pydocstyle]
+# Resolves the pydocstyle rules that contradict each other, which would
+# otherwise leave the code unfixable.
+convention = "google"

@@ -1,8 +1,4 @@
-# Local environment: the running application.
-#
-# Services are declared in compose.yaml and share a network, so they can reach
-# each other by name. The front-end and the API are the ones for now; the
-# database joins the same stack as it is built.
+# The services themselves are declared in compose.yaml.
 
 .PHONY: up
 up: ## Start the local stack in the foreground (Ctrl-C to stop)
@@ -16,6 +12,18 @@ front-end-up: ## Start only the front-end service
 front-end-build: ## Build the front-end deployable artifacts
 	$(RUN) bash -c 'cd front-end && yarn build'
 
+# DEP is a variable, not a bare argument: make reads any argument containing
+# '=' as an assignment. DEV=1 adds it as a development dependency.
+.PHONY: front-end-install-dep
+front-end-install-dep: ## Add a dependency to the front-end (DEP=package@version, DEV=1)
+	@test -n "$(DEP)" || { echo "❌ usage: make front-end-install-dep DEP=package@version [DEV=1]" >&2; exit 1; }
+	$(RUN) bash -c "cd front-end && yarn add $(if $(DEV),--dev) '$(DEP)'"
+
+.PHONY: front-end-remove-dep
+front-end-remove-dep: ## Remove a dependency from the front-end (DEP=package)
+	@test -n "$(DEP)" || { echo "❌ usage: make front-end-remove-dep DEP=package" >&2; exit 1; }
+	$(RUN) bash -c "cd front-end && yarn remove '$(DEP)'"
+
 .PHONY: api-up
 api-up: ## Start only the API service
 	./scripts/local-env-up.sh api
@@ -24,19 +32,17 @@ api-up: ## Start only the API service
 api-shell: ## Open a shell in the API container
 	$(RUN) --image api bash
 
-# Pinned by the caller, as in `make api-install-dep DEP=httpx==0.28.1`. A bare
-# name installs the newest version and pins that. The package cannot be given
-# as a bare word — make reads any command-line argument containing '=' as a
-# variable assignment, and a version specifier is full of them.
+# DEP is a variable, not a bare argument: make reads any argument containing
+# '=' as an assignment. GROUP picks a dependency group over a runtime one.
 .PHONY: api-install-dep
-api-install-dep: ## Add a dependency to the API (DEP=package==version)
-	@test -n "$(DEP)" || { echo "❌ usage: make api-install-dep DEP=package==version" >&2; exit 1; }
-	./scripts/api-deps.sh add '$(DEP)' --no-sync
+api-install-dep: ## Add a dependency to the API (DEP=package==version, GROUP=group)
+	@test -n "$(DEP)" || { echo "❌ usage: make api-install-dep DEP=package==version [GROUP=group]" >&2; exit 1; }
+	./scripts/api-deps.sh add $(if $(GROUP),--group '$(GROUP)') '$(DEP)' --no-sync
 
 .PHONY: api-remove-dep
-api-remove-dep: ## Remove a dependency from the API (DEP=package)
-	@test -n "$(DEP)" || { echo "❌ usage: make api-remove-dep DEP=package" >&2; exit 1; }
-	./scripts/api-deps.sh remove '$(DEP)' --no-sync
+api-remove-dep: ## Remove a dependency from the API (DEP=package, GROUP=group)
+	@test -n "$(DEP)" || { echo "❌ usage: make api-remove-dep DEP=package [GROUP=group]" >&2; exit 1; }
+	./scripts/api-deps.sh remove $(if $(GROUP),--group '$(GROUP)') '$(DEP)' --no-sync
 
 .PHONY: api-lock
 api-lock: ## Re-resolve api/uv.lock from api/pyproject.toml
