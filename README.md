@@ -67,6 +67,7 @@ make            # lista los objetivos disponibles
 | `make front-end-install-dep` | Añade una dependencia al front-end (`DEP=paquete@versión`; `DEV=1` para desarrollo). |
 | `make front-end-remove-dep` | Elimina una dependencia del front-end (`DEP=paquete`). |
 | `make api-lint` | Analiza la API con Ruff. |
+| `make api-format` | Formatea la API con Ruff. |
 | `make api-install-dep` | Añade una dependencia a la API (`DEP=paquete==versión`; `GROUP=grupo` para una herramienta). |
 | `make api-remove-dep` | Elimina una dependencia de la API (`DEP=paquete`; `GROUP=grupo`). |
 | `make api-lock` | Vuelve a resolver `api/uv.lock` a partir de `api/pyproject.toml`. |
@@ -86,13 +87,13 @@ Los controles se gestionan con [pre-commit](https://pre-commit.com/) desde la ra
 
 El hook de `pre-commit` se ejecuta automáticamente en cada commit sobre los archivos añadidos al índice. Cuando un control corrige un archivo, el commit se detiene para que revises los cambios y los añadas al índice antes de volver a intentarlo.
 
-Los objetivos `make front-end-lint`, `make front-end-format`, `make api-lint` y `make memoria-lint` seleccionan un control concreto de esa misma configuración, de modo que no pueden desviarse de lo que se comprueba al hacer commit.
+Los objetivos `make front-end-lint`, `make front-end-format`, `make api-lint`, `make api-format` y `make memoria-lint` seleccionan un control concreto de esa misma configuración, de modo que no pueden desviarse de lo que se comprueba al hacer commit.
 
 ### Qué comprueba
 
 - **Todos los archivos**: espacios al final de línea, salto de línea final, finales de línea, sintaxis de YAML y JSON, marcas de conflictos de fusión, claves privadas y archivos de tamaño excesivo.
 - **Front-end**: ESLint y Prettier.
-- **API**: Ruff, que corrige por sí mismo la mayoría de lo que detecta. Se ejecuta con todas sus reglas activadas (`select = ["ALL"]`): las excepciones se declaran una a una, con su motivo, en `api/pyproject.toml`.
+- **API**: Ruff, como *linter* y como *formatter*. El *linter* se ejecuta con todas sus reglas activadas (`select = ["ALL"]`): las excepciones se declaran una a una, con su motivo, en `api/pyproject.toml`. El *formatter* se ejecuta después, porque las correcciones del *linter* pueden dejar código sin formatear.
 - **Memoria**: formateo de los archivos `.tex` con `latexindent`.
 
 La configuración completa está en `.pre-commit-config.yaml`.

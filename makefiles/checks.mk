@@ -21,6 +21,10 @@ front-end-format: ## Format the front-end with Prettier
 api-lint: ## Analyse the API with Ruff
 	$(RUN) pre-commit run ruff --all-files
 
+.PHONY: api-format
+api-format: ## Format the API with Ruff
+	$(RUN) pre-commit run ruff-format --all-files
+
 .PHONY: memoria-lint
 memoria-lint: ## Format the memoria sources with latexindent
 	$(RUN) pre-commit run latexindent --all-files

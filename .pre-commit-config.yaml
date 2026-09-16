@@ -58,6 +58,13 @@ repos:
         language: system
         files: ^api/.*\.py$
 
+      # After the linter, whose fixes can leave code that needs reformatting.
+      - id: ruff-format
+        name: ruff format (api)
+        entry: ruff format
+        language: system
+        files: ^api/.*\.py$
+
       - id: latexindent
         name: latexindent (memoria)
         entry: scripts/hooks/latexindent.sh

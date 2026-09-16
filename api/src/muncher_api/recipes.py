@@ -117,8 +117,7 @@ RECIPES = [
         id="4",
         name="Smoothie Verde Energizante",
         description=(
-            "Un smoothie refrescante y rico en antioxidantes para comenzar tu"
-            " día."
+            "Un smoothie refrescante y rico en antioxidantes para comenzar tu día."
         ),
         image_url="https://www.hazteveg.com/img/recipes/full/201612/R03-65246.jpg",
         pills=[
