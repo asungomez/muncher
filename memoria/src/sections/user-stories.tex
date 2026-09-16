@@ -189,27 +189,33 @@ proyecto.
 
 \us[
 	identificador=US-CI-06,
-	titulo={Base de datos local},
+	titulo={Ejecución local de la API},
 	como={Desarrollador},
-	quiero={Tener una base de datos local para poder desarrollar y probar la aplicación sin necesidad de desplegarla en la nube},
+	quiero={Ver mi proyecto en funcionamiento para poder verificar que los cambios que realizo tienen el efecto deseado},
 	requerimientos={\reqref{RNF-DE-04}},
-	puntos={8},
+	puntos={1},
 	criterios={
 			\begin{itemize}
-				\item Existen instrucciones claras para configurar una base de datos local con el
-				      esquema necesario para el desarrollo de la aplicación.
-				\item La base de datos local puede ser utilizada para ejecutar la aplicación en
-				      local.
+				\item Existe una aplicación REST construida con FastAPI.
+				\item La aplicación es accesible desde el entorno local.
+				\item La aplicación expone un \textit{endpoint} \texttt{/docs} con su
+				      documentación.
+				\item La aplicación genera automáticamente su especificación OpenAPI.
+				\item La aplicación expone un \textit{endpoint} \texttt{/recipes} que
+				      devuelve datos fijados en el código.
+				\item El servidor se reinicia automáticamente ante cambios en el código
+				      fuente.
+				\item Existe documentación sobre cómo lanzar el servidor en los ficheros de
+				      documentación del repositorio.
 			\end{itemize}
 		},
 	tareas={
 			\begin{itemize}
-				\item Seleccionar un sistema de gestión de bases de datos.
-				\item Diseñar el esquema de la base de datos.
-				\item Seleccionar una herramienta para gestionar el ciclo de vida de la base de
-				      datos.
-				\item Configurar la herramienta de gestión del ciclo de vida de la base de datos.
-				\item Documentar las instrucciones para configurar la base de datos local.
+				\item Creación de la API en el entorno local.
+				\item Configuración de OpenAPI y del \textit{endpoint} \texttt{/docs}.
+				\item Configuración del entorno local.
+				\item Creación del \textit{endpoint} \texttt{/recipes}.
+				\item Actualización de la documentación del repositorio.
 			\end{itemize}
 		}
 ]
@@ -271,32 +277,6 @@ proyecto.
 				      desarrollo.
 				\item Configuración de despliegue automático para producción.
 				\item Configuración del dominio personalizado para el entorno de producción.
-			\end{itemize}
-		}
-]
-
-\us[
-	identificador=US-DE-03,
-	titulo={Despliegue en la nube de la base de datos},
-	como={Desarrollador},
-	quiero={Sincronizar los cambios en el esquema de la base de datos entre entornos},
-	requerimientos={\reqref{RNF-DE-01}, \reqref{RNF-DE-02}, \reqref{RNF-DE-03}},
-	puntos={2},
-	criterios={
-			\begin{itemize}
-				\item Existe una base de datos en cada entorno de nube.
-				\item El despliegue en desarrollo de los cambios en el esquema se realiza
-				      automáticamente con cada cambio en la rama principal.
-				\item El despliegue en producción de los cambios en el esquema se realiza
-				      manualmente, sin automatización.
-			\end{itemize}
-		},
-	tareas={
-			\begin{itemize}
-				\item Creación de la infraestructura de desarrollo y producción para la base de
-				      datos.
-				\item Configuración de despliegue automático para desarrollo.
-				\item Configuración de despliegue manual para producción.
 			\end{itemize}
 		}
 ]

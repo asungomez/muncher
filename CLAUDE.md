@@ -8,6 +8,7 @@ report that documents the project.
 Layout:
 
 - `front-end/` — Vite + React client.
+- `api/` — FastAPI REST API. Sources in `api/src/muncher_api/`.
 - `memoria/` — LaTeX sources of the project report; the PDF is built into
   `memoria/generated/`.
 - `infra/` — CloudFormation templates. One stack per environment.

@@ -1,0 +1,32 @@
+# Manifest of the REST API.
+#
+# Dependencies are installed into the image built from docker/api.Dockerfile,
+# never onto the developer's machine. The exact versions of the whole tree —
+# direct and transitive — are pinned in uv.lock, which the image installs with
+# `uv sync --frozen`, so the environment cannot drift between machines.
+#
+# Add one with `make api-install-dep DEP=package==version`, which edits the list
+# below and the lockfile together. Never install anything by hand.
+#
+# What the current ones are for:
+#
+# - fastapi derives the OpenAPI specification and the /docs page from the type
+#   annotations of the endpoints.
+# - uvicorn is the ASGI server that runs the application. Its "standard" extra
+#   carries the file watcher the development server reloads with.
+
+[project]
+name = "muncher-api"
+version = "0.1.0"
+description = "REST API of the muncher application"
+requires-python = ">=3.13"
+dependencies = [
+    "fastapi>=0.141.1",
+    "uvicorn[standard]>=0.53.0",
+]
+
+# The sources live in src/ and are imported from there rather than installed:
+# the working tree is bind mounted into the container, so an installed copy
+# would be a second, stale one. See docker/api.Dockerfile.
+[tool.uv]
+package = false
