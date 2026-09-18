@@ -39,10 +39,12 @@ that are legal and reject the rest.
 
 - `PillColor` over `string`, `list[Recipe]` over `list[object]`,
   `Literal["draft", "published"]` over `str`.
-- **Derive, do not restate.** The front-end declares `PILL_COLORS` with
-  `as const` and takes `PillColor` from it, so the values and the type cannot
-  disagree. The API declares the same set as a `Literal`, which also narrows the
-  generated OpenAPI schema.
+- **Derive, do not restate.** The API declares the pill colours once, as a
+  `Literal`, which narrows its OpenAPI schema; the front-end takes `PillColor`
+  from the types generated off that schema. One declaration, and nothing to keep
+  in step by hand. Where a set has no owner outside the front-end, the same
+  reasoning applies locally: declare the values `as const` and take the type
+  from them, as `RECIPE_CARD_VARIANTS` does.
 - **A union of known cases beats a catch-all**, and it makes the checker prove
   every case is handled.
 - **Make illegal states unrepresentable** where the language allows it: a

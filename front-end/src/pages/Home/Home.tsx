@@ -1,62 +1,6 @@
 import Button from "../../components/Button/Button";
-import RecipesList from "../../components/RecipesList/RecipesList";
+import RecipesSection from "../../components/RecipesSection/RecipesSection";
 import { useI18n } from "../../i18n/I18nProvider/context";
-import type { Recipe } from "../../services/recipes/types";
-
-/** Placeholder data, standing in until the page fetches `GET /recipes`. */
-const recipes: Recipe[] = [
-  {
-    id: "1",
-    name: "Bol de verduras frescas",
-    description:
-      "Un bol colorido lleno de verduras frescas, granos y una deliciosa vinagreta.",
-    imageUrl:
-      "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=880&q=80",
-    pills: [
-      { name: "Vegetariano", color: "green" },
-      { name: "Sano", color: "blue" },
-      { name: "Rápido", color: "yellow" },
-    ],
-  },
-  {
-    id: "2",
-    name: "Pasta Picante con Pollo",
-    description:
-      "Una pasta cremosa y picante con pollo que satisfará tus antojos.",
-    imageUrl:
-      "https://www.zizzi.co.uk/propeller/uploads/2022/07/casareccia-pollo-piccante-e1667309010824.jpg",
-    pills: [
-      { name: "Pasta", color: "green" },
-      { name: "Picante", color: "red" },
-      { name: "Pollo", color: "amber" },
-    ],
-  },
-  {
-    id: "3",
-    name: "Mousse de Chocolate con Aguacate",
-    description:
-      "Un postre decadente y saludable hecho con aguacate cremoso y chocolate rico, perfecto para satisfacer tu antojo de dulce sin culpa.",
-    imageUrl:
-      "https://www.trops.es/wp-content/uploads/2020/03/mousse-aguacate-chocolate-1024x683.jpg",
-    pills: [
-      { name: "Postre", color: "pink" },
-      { name: "Sano", color: "blue" },
-      { name: "Vegano", color: "green" },
-    ],
-  },
-  {
-    id: "4",
-    name: "Smoothie Verde Energizante",
-    description:
-      "Un smoothie refrescante y rico en antioxidantes para comenzar tu día.",
-    imageUrl: "https://www.hazteveg.com/img/recipes/full/201612/R03-65246.jpg",
-    pills: [
-      { name: "Desayuno", color: "green" },
-      { name: "Rápido", color: "yellow" },
-      { name: "Frutas", color: "lime" },
-    ],
-  },
-];
 
 /** The landing page: the hero, laid out differently per breakpoint, and the recipe grid. */
 function Home() {
@@ -114,7 +58,7 @@ function Home() {
           </div>
         </div>
       </section>
-      <RecipesList recipes={recipes} />
+      <RecipesSection />
     </>
   );
 }

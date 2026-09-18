@@ -18,6 +18,7 @@ Read the file that matches the task before starting work.
 | Read | When |
 | --- | --- |
 | [directory-structure.md](directory-structure.md) | Adding a file, or wondering where something belongs. |
+| [components.md](components.md) | Adding a component, or adding anything to a file that has one. |
 | [styles.md](styles.md) | Writing any styling, or deciding how something should look. |
 | [i18n.md](i18n.md) | Writing any text a user will read, or adding a translation. |
 | [types.md](types.md) | Writing TypeScript: props, a service's types, anything annotated. |

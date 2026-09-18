@@ -13,5 +13,16 @@
   "home": {
     "call-to-action": "Empezar",
     "home": "Inicio"
+  },
+  "recipes": {
+    "empty": "Todavía no hay recetas que mostrar.",
+    "error": {
+      "offline": "No hemos podido conectar con el servidor.",
+      "server": "No hemos podido cargar las recetas.",
+      "timeout": "El servidor ha tardado demasiado en responder."
+    },
+    "loading": "Cargando recetas...",
+    "retry": "Volver a intentarlo",
+    "slow": "Está tardando más de lo habitual, seguimos esperando."
   }
 }

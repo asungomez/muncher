@@ -24,6 +24,10 @@ front-end-remove-dep: ## Remove a dependency from the front-end (DEP=package)
 	@test -n "$(DEP)" || { echo "❌ usage: make front-end-remove-dep DEP=package" >&2; exit 1; }
 	$(RUN) bash -c "cd front-end && yarn remove '$(DEP)'"
 
+.PHONY: front-end-lock
+front-end-lock: ## Re-resolve front-end/yarn.lock from front-end/package.json
+	./scripts/front-end-lock.sh
+
 .PHONY: api-up
 api-up: ## Start only the API service
 	./scripts/local-env-up.sh api

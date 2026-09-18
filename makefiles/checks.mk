@@ -17,6 +17,10 @@ front-end-lint: ## Analyse the front-end with ESLint
 front-end-format: ## Format the front-end with Prettier
 	$(RUN) pre-commit run prettier --all-files
 
+.PHONY: front-end-types
+front-end-types: ## Regenerate the front-end types from the API's OpenAPI schema
+	$(RUN) pre-commit run openapi-types --all-files
+
 .PHONY: api-lint
 api-lint: ## Analyse the API with Ruff
 	$(RUN) pre-commit run ruff --all-files

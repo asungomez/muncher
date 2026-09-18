@@ -1,28 +1,6 @@
-import { createBrowserRouter, RouterProvider, Outlet } from "react-router";
+import { createBrowserRouter, RouterProvider } from "react-router";
 import Home from "../pages/Home/Home";
-import Navbar from "../components/Navbar/Navbar";
-import Footer from "../components/Footer/Footer";
-
-/** The shell every page renders inside: papered background, navbar and footer. */
-function Layout() {
-  return (
-    <div
-      className="min-h-screen bg-paper-stock"
-      style={{
-        backgroundImage: "url('/page_background.png')",
-        backgroundRepeat: "repeat",
-        backgroundSize: "650px auto",
-        backgroundPosition: "center",
-      }}
-    >
-      <Navbar />
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <Outlet />
-      </main>
-      <Footer />
-    </div>
-  );
-}
+import Layout from "./Layout";
 
 const router = createBrowserRouter([
   {
