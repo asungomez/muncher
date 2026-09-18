@@ -64,8 +64,10 @@ make            # lista los objetivos disponibles
 | `make front-end-lint` | Analiza el front-end con ESLint. |
 | `make front-end-format` | Formatea el front-end con Prettier. |
 | `make front-end-build` | Genera los artefactos desplegables del front-end. |
+| `make front-end-types` | Regenera los tipos del front-end a partir del esquema OpenAPI de la API. |
 | `make front-end-install-dep` | Añade una dependencia al front-end (`DEP=paquete@versión`; `DEV=1` para desarrollo). |
 | `make front-end-remove-dep` | Elimina una dependencia del front-end (`DEP=paquete`). |
+| `make front-end-lock` | Vuelve a resolver `front-end/yarn.lock` a partir de `front-end/package.json`. |
 | `make api-lint` | Analiza la API con Ruff. |
 | `make api-format` | Formatea la API con Ruff. |
 | `make api-types` | Verifica los tipos de la API con ty. |
@@ -88,7 +90,7 @@ Los controles se gestionan con [pre-commit](https://pre-commit.com/) desde la ra
 
 El hook de `pre-commit` se ejecuta automáticamente en cada commit sobre los archivos añadidos al índice. Cuando un control corrige un archivo, el commit se detiene para que revises los cambios y los añadas al índice antes de volver a intentarlo.
 
-Los objetivos `make front-end-lint`, `make front-end-format`, `make api-lint`, `make api-format`, `make api-types` y `make memoria-lint` seleccionan un control concreto de esa misma configuración, de modo que no pueden desviarse de lo que se comprueba al hacer commit.
+Los objetivos `make front-end-lint`, `make front-end-format`, `make front-end-types`, `make api-lint`, `make api-format`, `make api-types` y `make memoria-lint` seleccionan un control concreto de esa misma configuración, de modo que no pueden desviarse de lo que se comprueba al hacer commit.
 
 ### Qué comprueba
 
@@ -126,6 +128,15 @@ Para publicar el servidor en otro puerto, define `MUNCHER_FRONT_END_PORT`:
 ```
 MUNCHER_FRONT_END_PORT=5200 make up
 ```
+
+Las dependencias se gestionan con `make`, que actualiza a la vez `front-end/package.json` y `front-end/yarn.lock`:
+
+```
+make front-end-install-dep DEP=swr@2.5.1
+make front-end-remove-dep DEP=swr
+```
+
+Si se omite la versión, se instala la más reciente y se fija esa; `DEV=1` la añade como dependencia de desarrollo. La imagen instala exactamente lo que fija el archivo de bloqueo, así que un `package.json` editado a mano deja de cuadrar con él y ninguna tarea vuelve a construir la imagen hasta que se arregle. `make front-end-lock` vuelve a resolver el archivo de bloqueo a partir del manifiesto, que es la salida de ese bloqueo.
 
 Los servicios del entorno local se declaran en `compose.yaml` y comparten una misma red, a la que se incorporará la base de datos.
 

@@ -9,7 +9,9 @@ import jsdoc from "eslint-plugin-jsdoc";
 import * as jsonParser from "jsonc-eslint-parser";
 
 export default tseslint.config([
-  globalIgnores(["dist"]),
+  // schema.d.ts is generated from the API's OpenAPI schema by
+  // `make front-end-types`, and the jsdoc rules would rewrite it.
+  globalIgnores(["dist", "src/services/api/schema.d.ts"]),
   {
     files: ["**/*.{ts,tsx}"],
     extends: [

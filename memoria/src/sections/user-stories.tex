@@ -251,6 +251,32 @@ proyecto.
 		}
 ]
 
+\us[
+	identificador=US-CI-08,
+	titulo={Conexión del front-end con el back-end},
+	como={Usuario},
+	quiero={Acceder a la información de la aplicación desde el front-end de forma rápida, segura y efectiva},
+	requerimientos={\reqref{RNF-RE-01}, \reqref{RNF-RE-02}},
+	puntos={2},
+	criterios={
+			\begin{itemize}
+				\item El front-end puede acceder a la información de la aplicación a través de la API.
+				\item El front-end tiene un sistema de caché para almacenar la información obtenida de la API y evitar peticiones innecesarias.
+				\item El front-end tiene un sistema de control de errores para manejar los errores que puedan ocurrir al acceder a la API.
+				\item El front-end gestiona los tiempos de espera y las respuestas lentas de la API de forma adecuada.
+			\end{itemize}
+		},
+	tareas={
+			\begin{itemize}
+				\item Creación de un servicio cliente para la API en el front-end.
+				\item Sincronización automática de tipos entre el front-end y la API.
+				\item Implementación de un sistema de caché en el front-end.
+				\item Implementación de un sistema de control de errores en el front-end.
+				\item Implementación de un sistema de gestión de tiempos de espera y respuestas lentas de la API en el front-end.
+			\end{itemize}
+		}
+]
+
 \subsection*{Despliegue en la nube}
 \addcontentsline{toc}{subsection}{Despliegue en la nube}
 

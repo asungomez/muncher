@@ -43,12 +43,26 @@ repos:
         entry: scripts/hooks/eslint.sh
         language: system
         files: ^front-end/.*\.(js|jsx|ts|tsx|mjs|cjs)$
+        # Generated, and the jsdoc rules rewrite the annotations
+        # openapi-typescript emits, which the openapi-types hook then restores.
+        exclude: ^front-end/src/services/api/schema\.d\.ts$
 
       - id: prettier
         name: prettier (front-end)
         entry: scripts/hooks/prettier.sh
         language: system
         files: ^front-end/.*\.(js|jsx|ts|tsx|mjs|cjs|json|css|scss|md|html|yml|yaml)$
+
+      # Writes front-end/src/services/api/schema.d.ts from the API's own
+      # annotations. Like the formatters below, it always rewrites the file and
+      # relies on pre-commit failing a modified one, so types that no longer
+      # match the endpoints cannot be committed.
+      - id: openapi-types
+        name: openapi types (front-end)
+        entry: scripts/front-end-types.sh
+        language: system
+        files: ^(api/src/.*\.py|front-end/src/services/api/schema\.d\.ts|scripts/front-end-types\.sh)$
+        pass_filenames: false
 
       # Ruff exits 0 once it has fixed everything, but pre-commit still fails
       # the hook on a modified file, so no rewrite is committed unreviewed.

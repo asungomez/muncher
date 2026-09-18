@@ -52,6 +52,7 @@ Use the make targets, never the underlying tool
 | `make checks-staged` | every check, over the staged files only |
 | `make front-end-lint` | ESLint |
 | `make front-end-format` | Prettier |
+| `make front-end-types` | the OpenAPI type generation, failing if the committed types are stale |
 | `make api-lint` | Ruff, as a linter |
 | `make api-format` | Ruff, as a formatter |
 | `make api-types` | ty |

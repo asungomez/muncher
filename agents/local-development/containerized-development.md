@@ -51,6 +51,13 @@ no Perl modules — is ever a prerequisite for working on this project.
 - The pre-commit hook runs its checks inside the container too. The hook itself
   is the only shell that runs on the host, and it must do nothing more than
   delegate.
+- **An image whose build installs from a lockfile gets a stage that stops just
+  before that install**, and one script that runs the stage to re-resolve the
+  lockfile: `docker/api.Dockerfile`'s `uv` stage behind `make api-lock`, and
+  `docker/front-end.Dockerfile`'s `yarn` stage behind `make front-end-lock`.
+  Without it a stale lockfile is unfixable through the containers — the frozen
+  install fails, so the image that would repair it cannot be built, and every
+  task fails until someone installs the toolchain on their machine.
 - Tool versions are pinned in the image definitions. An image that resolves
   "latest" at build time reintroduces exactly the drift this principle exists to
   remove.

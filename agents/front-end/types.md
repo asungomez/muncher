@@ -16,11 +16,11 @@ front-end-build`, so a type error fails the build, not just the editor.
 ## Derive types from values
 
 **Where a set of values already exists at runtime, declare the values and take
-the type from them.** `Pill/utils.ts` is the pattern:
+the type from them.** `RecipeCard/utils.ts` is the pattern:
 
 ```ts
-export const PILL_COLORS = ["green", "blue", "yellow"] as const;
-export type PillColor = (typeof PILL_COLORS)[number];
+export const RECIPE_CARD_VARIANTS = ["primary", "secondary"] as const;
+export type RecipeCardVariant = (typeof RECIPE_CARD_VARIANTS)[number];
 ```
 
 The alternative — a `const` array plus a hand-written union — is two things that
@@ -28,6 +28,18 @@ can disagree. `as const` is what makes the literal types survive.
 
 Use the same reasoning for object shapes: `keyof typeof variantStyles` rather
 than restating the variant names.
+
+**Where the set belongs to the API, derive it from the API instead.**
+`Pill/utils.ts` used to declare its own colour list; the colours are the API's
+to decide, so it now takes the type from the generated schema and the runtime
+list is gone:
+
+```ts
+export type PillColor = Pill["color"];
+```
+
+`Record<PillColor, string>` on the style map is what makes this pay: a colour
+added to the API's `Literal` fails the build until it has styling.
 
 ## Props
 
@@ -54,12 +66,35 @@ import { cn } from "../../utils/cn";
 
 ## Data crossing the network
 
-**The API is the source of truth for its own shapes.** Types describing what an
-endpoint returns live in `src/services/<resource>/types.ts` and must match the
-models in `api/src/muncher_api/`, field for field, in camelCase — the API
-serialises that way on purpose (see `Model` in `recipes.py`).
+**The API is the source of truth for its own shapes, and the types are
+generated, not mirrored.** `make front-end-types` reads the schema FastAPI
+derives from the endpoint annotations and writes
+`src/services/api/schema.d.ts`; a pre-commit hook regenerates it, so a Pydantic
+model cannot change without the front-end's types following in the same commit.
+Nothing about a request is written twice — not the path, not its parameters, not
+the response.
 
-A response is **not** trusted into the type system for free: `fetch` returns
-`any` in effect, so parse or validate at the boundary and keep the raw value out
-of the rest of the app. Nothing downstream of a service module should have to
-wonder whether a field is really there.
+**So a service's `types.ts` names a generated type rather than restating it:**
+
+```ts
+export type Recipe = components["schemas"]["Recipe"];
+```
+
+Hand-writing that shape again, even correctly, is the thing this replaced. If
+the field you need is missing, the fix is in `api/`.
+
+**What the generation does not do is check at runtime.** The types describe what
+the API promises; they are not evidence that this response kept the promise. So:
+
+- **A request's failure is `unknown` and gets narrowed**, never assumed.
+  `useApiQuery`'s error is deliberately `unknown` — a timeout and a broken
+  connection are failures the schema does not describe — and
+  `services/api/errors.ts` narrows it to the cases the interface handles.
+- **Absence is handled where the data is read**, because a 200 with an
+  unexpected body is a bug in the API rather than something to model everywhere.
+  `useRecipes` returns `recipes` as possibly `undefined`, and the caller renders
+  the empty case.
+- **If an endpoint ever needs more than that** — a payload we do not control, or
+  one where a wrong shape would corrupt something — validate it in that service
+  module, so exactly one place knows and everything past it is typed. Raise it
+  before adding a validation library.

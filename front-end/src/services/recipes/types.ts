@@ -1,16 +1,7 @@
-import type { PillColor } from "../../components/Pill/utils";
+import type { components } from "../api/schema";
 
-/** A tag classifying a recipe, as served by the API. */
-export type Pill = {
-  name: string;
-  color: PillColor;
-};
+/** A recipe as served by `GET /recipes`. */
+export type Recipe = components["schemas"]["Recipe"];
 
-/** A recipe as served by `GET /recipes`, mirroring the API model in camelCase. */
-export type Recipe = {
-  id: string;
-  imageUrl: string;
-  name: string;
-  description: string;
-  pills: Pill[];
-};
+/** A tag classifying a recipe. */
+export type Pill = components["schemas"]["Pill"];
