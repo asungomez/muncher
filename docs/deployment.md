@@ -225,6 +225,13 @@ Esta es la política que necesita el rol:
         "lambda:UpdateFunctionCode",
         "lambda:UpdateFunctionConfiguration",
         "lambda:InvokeFunction",
+        "lambda:CreateFunctionUrlConfig",
+        "lambda:UpdateFunctionUrlConfig",
+        "lambda:DeleteFunctionUrlConfig",
+        "lambda:GetFunctionUrlConfig",
+        "lambda:AddPermission",
+        "lambda:RemovePermission",
+        "lambda:GetPolicy",
         "lambda:TagResource",
         "lambda:ListTags"
       ],
@@ -312,12 +319,18 @@ Dos decisiones de esta política son deliberadas:
 La política contiene exactamente lo que necesita la plantilla actual, y nada
 más.
 
-Los permisos de IAM, Lambda y CloudWatch Logs corresponden a la función que
-vacía el bucket del front-end antes de que CloudFormation lo elimine, sin la
-cual un bucket con contenido impediría destruir el _stack_. `iam:CreateRole` es
-la entrada de mayor alcance, y está restringida al prefijo `muncher-*`
-precisamente para que el rol no pueda concederse a sí mismo más permisos de los
-que tiene.
+Los permisos de IAM, Lambda y CloudWatch Logs corresponden a las dos funciones
+de la plantilla: la que vacía el bucket del front-end antes de que
+CloudFormation lo elimine —sin la cual un bucket con contenido impediría
+destruir el _stack_— y la que sirve la API. `iam:CreateRole` es la entrada de
+mayor alcance, y está restringida al prefijo `muncher-*` precisamente para que
+el rol no pueda concederse a sí mismo más permisos de los que tiene.
+
+Las acciones sobre la URL de función y sobre su política de permisos
+(`lambda:CreateFunctionUrlConfig` y siguientes, `lambda:AddPermission`) son las
+que necesita la API: su URL se crea con autenticación `AWS_IAM`, y la política
+de la función es la que autoriza a CloudFront —y solo a la distribución de su
+entorno— a invocarla.
 
 ### 4. Muro de acceso del entorno de desarrollo
 

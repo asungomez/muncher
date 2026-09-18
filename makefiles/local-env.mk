@@ -52,6 +52,11 @@ api-remove-dep: ## Remove a dependency from the API (DEP=package, GROUP=group)
 api-lock: ## Re-resolve api/uv.lock from api/pyproject.toml
 	./scripts/api-deps.sh lock
 
+# In the api image, which carries uv; the upload runs in the infra one.
+.PHONY: api-build
+api-build: ## Build the API deployment package for Lambda
+	$(RUN) --image api /workspace/scripts/api-build.sh
+
 .PHONY: down
 down: ## Stop the local stack and remove its containers
 	docker compose down

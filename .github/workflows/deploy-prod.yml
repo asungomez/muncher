@@ -35,3 +35,14 @@ jobs:
     uses: ./.github/workflows/deploy-front-end.yml
     with:
       environment: prod
+
+  # Waits for the stack for the same reason: the function it uploads to has to
+  # exist first.
+  api:
+    needs: infra
+    permissions:
+      id-token: write
+      contents: read
+    uses: ./.github/workflows/deploy-api.yml
+    with:
+      environment: prod

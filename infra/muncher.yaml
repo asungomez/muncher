@@ -291,6 +291,15 @@ Resources:
             # instead of the legacy origin access identity.
             S3OriginConfig:
               OriginAccessIdentity: ""
+          - Id: api-function
+            # An origin is a host, so the scheme and the trailing slash of the
+            # function URL come off.
+            DomainName: !Select [2, !Split ["/", !GetAtt ApiFunctionUrl.FunctionUrl]]
+            OriginAccessControlId: !GetAtt ApiOriginAccessControl.Id
+            CustomOriginConfig:
+              OriginProtocolPolicy: https-only
+              OriginSSLProtocols:
+                - TLSv1.2
         DefaultCacheBehavior:
           TargetOriginId: front-end-bucket
           ViewerProtocolPolicy: redirect-to-https
@@ -311,12 +320,50 @@ Resources:
             - - EventType: viewer-request
                 FunctionARN: !GetAtt FrontEndLoginWall.FunctionARN
             - !Ref AWS::NoValue
+        # The API answers on this same distribution, under /api, which is what
+        # makes every request from the front-end same-origin and CORS headers
+        # unnecessary. Its own function URL is unreachable: origin access
+        # control signs these requests, and nothing else may invoke it.
+        CacheBehaviors:
+          - PathPattern: /api/*
+            TargetOriginId: api-function
+            ViewerProtocolPolicy: redirect-to-https
+            Compress: true
+            # Every method reaches the function, which answers 405 to the ones
+            # it does not implement. Deciding that here would hide a routing
+            # question behind a CloudFront error.
+            AllowedMethods:
+              - GET
+              - HEAD
+              - OPTIONS
+              - PUT
+              - POST
+              - PATCH
+              - DELETE
+            CachedMethods:
+              - GET
+              - HEAD
+            # Managed CachingDisabled: the responses are data, and an edge cache
+            # would serve a stale collection after a write.
+            CachePolicyId: 4135ea2d-6df8-44a3-9df3-4b5a84be39ad
+            # Managed AllViewerExceptHostHeader, which AWS documents for
+            # function URL origins: the host has to be the function's own for
+            # the signature origin access control adds to validate.
+            OriginRequestPolicyId: b689b0a8-53d0-40ab-baf2-68738e2966ac
+            # The wall covers the API too, so a development environment is not
+            # readable through it. CloudFront replaces this Authorization
+            # header with its own signature before the request leaves.
+            FunctionAssociations: !If
+              - LoginWallEnabled
+              - - EventType: viewer-request
+                  FunctionARN: !GetAtt FrontEndLoginWall.FunctionARN
+              - !Ref AWS::NoValue
+        # Deep links: the bucket policy grants no s3:ListBucket, so S3 answers
+        # 403 rather than 404 for a path that is a route rather than a file.
+        # Only 403, because mapping 404 here would turn every API 404 into the
+        # front-end's index.html with a 200.
         CustomErrorResponses:
           - ErrorCode: 403
-            ResponseCode: 200
-            ResponsePagePath: /index.html
-            ErrorCachingMinTTL: 0
-          - ErrorCode: 404
             ResponseCode: 200
             ResponsePagePath: /index.html
             ErrorCachingMinTTL: 0
@@ -391,6 +438,97 @@ Resources:
               StringEquals:
                 AWS:SourceArn: !Sub arn:${AWS::Partition}:cloudfront::${AWS::AccountId}:distribution/${FrontEndDistribution}
 
+  ApiLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      # Named after the function so that Lambda writes here instead of creating
+      # a log group of its own, which would outlive the stack.
+      LogGroupName: !Sub /aws/lambda/muncher-api-${Environment}
+      RetentionInDays: 7
+
+  ApiRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub muncher-api-${Environment}
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: write-api-logs
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: !GetAtt ApiLogGroup.Arn
+
+  ApiFunction:
+    Type: AWS::Lambda::Function
+    # Without this the function may be created before the log group exists, and
+    # Lambda would create an unmanaged one on first invocation.
+    DependsOn: ApiLogGroup
+    Properties:
+      FunctionName: !Sub muncher-api-${Environment}
+      Description: !Sub REST API of the ${Environment} environment
+      Runtime: python3.13
+      # Cheaper per GB-second than x86, and the package is built for it; see
+      # scripts/api-build.sh.
+      Architectures:
+        - arm64
+      Handler: muncher_api.aws_lambda.handler
+      Role: !GetAtt ApiRole.Arn
+      Timeout: 10
+      # Memory is also CPU, and the cold start is dominated by importing
+      # FastAPI. Every invocation stays inside the free tier either way.
+      MemorySize: 512
+      Code:
+        # A placeholder, replaced by `make api-deploy`: CloudFormation cannot
+        # upload a package it does not have, so the template creates the
+        # function and the deployment fills it, exactly as it creates the
+        # front-end bucket empty. The handler above belongs to that package,
+        # which is why it does not name this module.
+        ZipFile: |
+          def handler(event, context):
+              raise RuntimeError("The API package has not been deployed yet")
+
+  ApiFunctionUrl:
+    Type: AWS::Lambda::Url
+    Properties:
+      TargetFunctionArn: !GetAtt ApiFunction.Arn
+      AuthType: AWS_IAM
+
+  ApiOriginAccessControl:
+    Type: AWS::CloudFront::OriginAccessControl
+    Properties:
+      OriginAccessControlConfig:
+        Name: !Sub muncher-api-${Environment}
+        OriginAccessControlOriginType: lambda
+        SigningBehavior: always
+        SigningProtocol: sigv4
+
+  ApiFunctionUrlPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !GetAtt ApiFunction.Arn
+      Action: lambda:InvokeFunctionUrl
+      Principal: cloudfront.amazonaws.com
+      FunctionUrlAuthType: AWS_IAM
+      SourceArn: !Sub arn:${AWS::Partition}:cloudfront::${AWS::AccountId}:distribution/${FrontEndDistribution}
+
+  ApiFunctionPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !GetAtt ApiFunction.Arn
+      Action: lambda:InvokeFunction
+      Principal: cloudfront.amazonaws.com
+      SourceArn: !Sub arn:${AWS::Partition}:cloudfront::${AWS::AccountId}:distribution/${FrontEndDistribution}
+
 Outputs:
   FrontEndBucketName:
     Description: Bucket the compiled front-end is uploaded to
@@ -399,6 +537,25 @@ Outputs:
   FrontEndDistributionId:
     Description: Distribution to invalidate after an upload
     Value: !Ref FrontEndDistribution
+
+  ApiFunctionName:
+    Description: Function the API package is uploaded to
+    Value: !Ref ApiFunction
+
+  # The same name the front-end is served from, since the API is a path on it.
+  # The expression is repeated below rather than shared because one output
+  # cannot reference another.
+  ApiUrl:
+    Description: Public URL of the API
+    Value: !Sub
+      - ${FrontEndUrl}/api
+      - FrontEndUrl: !If
+          - HasDomain
+          - !If
+            - UseSubdomain
+            - !Sub https://${Environment}.${DomainName}
+            - !Sub https://${DomainName}
+          - !Sub https://${FrontEndDistribution.DomainName}
 
   FrontEndUrl:
     Description: Public URL of the front-end
