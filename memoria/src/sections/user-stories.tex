@@ -282,7 +282,7 @@ proyecto.
 
 \us[
 	identificador=US-DE-01,
-	titulo={Despliegue en la nube del entorno de desarollo},
+	titulo={Despliegue en la nube del front-end en el entorno de desarollo},
 	como={Desarrollador},
 	quiero={Poder acceder a la aplicación desde cualquier dispositivo con acceso a internet},
 	requerimientos={\reqref{RNF-DE-01}, \reqref{RNF-DE-02}, \reqref{RNF-DE-05}, \reqref{RNF-SE-03}, \reqref{RNF-SE-05}},
@@ -313,7 +313,7 @@ proyecto.
 
 \us[
 	identificador=US-DE-02,
-	titulo={Despliegue en la nube del entorno de producción},
+	titulo={Despliegue en la nube del front-end en el entorno de producción},
 	como={Usuario},
 	quiero={Poder acceder a la aplicación desde cualquier dispositivo con acceso a internet},
 	requerimientos={\reqref{RNF-CO-01}, \reqref{RNF-DE-01}, \reqref{RNF-DE-02}, \reqref{RNF-DE-03}, \reqref{RNF-DE-05}, \reqref{RNF-RE-04}},
@@ -334,6 +334,34 @@ proyecto.
 				      desarrollo.
 				\item Configuración de despliegue automático para producción.
 				\item Configuración del dominio personalizado para el entorno de producción.
+			\end{itemize}
+		}
+]
+
+\us[
+	identificador=US-DE-03,
+	titulo={Despliegue en la nube de la API},
+	como={Desarrollador},
+	quiero={Poder acceder a los datos almacenados desde cualquiera de los entornos de la aplicación},
+	requerimientos={\reqref{RNF-CO-01}, \reqref{RNF-DE-01}, \reqref{RNF-DE-02}, \reqref{RNF-DE-03}, \reqref{RNF-DE-05}, \reqref{RNF-SE-06}},
+	puntos={5},
+	criterios={
+			\begin{itemize}
+				\item Existe infraestructura en la nube para la API.
+				\item Cada nuevo commit a la rama main se despliega automáticamente a la nube.
+				\item La API es accesible a través de una URL de Internet.
+				\item La API sólo admite peticiones desde el front-end de su propio entorno.
+			\end{itemize}
+		},
+	tareas={
+			\begin{itemize}
+				\item Diseño de la infraestructura en la nube necesaria para la API.
+				\item Configuración de la infraestructura como código.
+				\item Creación de la infraestructura en el ciclo de CD (Continuous Deployment).
+				\item Despliegue del código fuente de la API a la nube.
+				\item Restricción del acceso a la API mediante el control de acceso al origen de
+				      CloudFront, que la hace alcanzable únicamente a través del front-end de su
+				      propio entorno.
 			\end{itemize}
 		}
 ]

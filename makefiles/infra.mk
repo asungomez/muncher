@@ -12,3 +12,7 @@ infra-deploy: ## Deploy the stack for ENVIRONMENT (default dev)
 .PHONY: front-end-deploy
 front-end-deploy: front-end-build ## Build and upload the front-end to ENVIRONMENT (default dev)
 	$(RUN) --image infra scripts/front-end-deploy.sh $(ENVIRONMENT)
+
+.PHONY: api-deploy
+api-deploy: api-build ## Build and upload the API to ENVIRONMENT (default dev)
+	$(RUN) --image infra scripts/api-deploy.sh $(ENVIRONMENT)

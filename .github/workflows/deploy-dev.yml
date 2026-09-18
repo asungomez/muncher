@@ -15,6 +15,7 @@ jobs:
       infra: ${{ steps.filter.outputs.infra }}
       # No hyphen: '-' is also subtraction in expressions.
       frontend: ${{ steps.filter.outputs.frontend }}
+      api: ${{ steps.filter.outputs.api }}
     steps:
       - uses: actions/checkout@v4
       - id: filter
@@ -30,6 +31,12 @@ jobs:
               - 'front-end/**'
               - 'scripts/front-end-deploy.sh'
               - '.github/workflows/deploy-front-end.yml'
+            api:
+              - 'api/**'
+              - 'scripts/api-build.sh'
+              - 'scripts/api-deploy.sh'
+              - 'docker/api.Dockerfile'
+              - '.github/workflows/deploy-api.yml'
 
   infra:
     needs: changes
@@ -76,5 +83,22 @@ jobs:
       id-token: write
       contents: read
     uses: ./.github/workflows/deploy-front-end.yml
+    with:
+      environment: dev
+
+  api:
+    needs: [changes, infra]
+    # Same reasoning as the front-end above, and for the same reason after a
+    # redeploy: a new function holds only the template's placeholder.
+    if: >-
+      !cancelled() &&
+      (needs.infra.result == 'success' || needs.infra.result == 'skipped') &&
+      (needs.changes.outputs.api == 'true' ||
+       needs.infra.result == 'success' ||
+       github.event_name == 'workflow_dispatch')
+    permissions:
+      id-token: write
+      contents: read
+    uses: ./.github/workflows/deploy-api.yml
     with:
       environment: dev

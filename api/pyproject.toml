@@ -8,6 +8,7 @@ description = "REST API of the muncher application"
 requires-python = ">=3.13"
 dependencies = [
     "fastapi>=0.141.1",
+    "mangum==0.22.0",
     "uvicorn[standard]>=0.53.0",
 ]
 
