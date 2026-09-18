@@ -484,7 +484,111 @@ directamente.
 		\hline
 		\usref{US-CI-08}       & Conexión del front-end con el back-end       & 2                           \\
 		\hline
-		\usref{US-DE-02}       & Despliegue en la nube de la API.             & 5                           \\
+		\usref{US-DE-03}       & Despliegue en la nube de la API              & 5                           \\
 		\hline
 	\end{tabularx}
 \end{center}
+
+\subsubsection*{Retrospectiva}
+
+El cuarto sprint concluyó con la API en funcionamiento tanto en el entorno local
+como en los dos entornos desplegados, y con el front-end obteniendo de ella los
+datos que hasta entonces llevaba escritos en su propio código. El sistema pasó
+así a tener la forma que conservará en adelante: una interfaz que no conoce más
+origen de información que la API, y una API que es el único componente con
+acceso a los datos.
+
+La primera decisión fue el estilo de la API, entre una interfaz REST y una
+alternativa basada en GraphQL. Se optó por \textbf{REST} atendiendo a la
+naturaleza del consumidor: el front-end es el único cliente previsto y las
+operaciones del sistema se corresponden con colecciones de recursos bien
+delimitadas —recetas, menús, listas de la compra—, de modo que la capacidad de
+GraphQL para que cada cliente componga su propia consulta no resuelve ningún
+problema real del proyecto y sí añade una capa de resolución que habría que
+construir y mantener. A ello se suma que REST aprovecha directamente la
+semántica de HTTP, lo que permite delegar en la infraestructura decisiones como
+el tratamiento de la caché en lugar de resolverlas en el código.
+
+Para la implementación se seleccionó \textbf{FastAPI} sobre Python. El factor
+determinante no fue el rendimiento del framework, sino que deriva la
+especificación OpenAPI de las propias anotaciones de tipos de los
+\textit{endpoints}: los modelos que describen las respuestas son a la vez la
+validación en ejecución, la documentación publicada y el contrato que consume el
+cliente. Esta propiedad se convirtió en el eje de la conexión entre las dos
+partes del sistema, que se resolvió generando los tipos de TypeScript a partir
+del esquema en lugar de escribirlos a mano. La especificación se trata como un
+artefacto intermedio y no se versiona; lo que se guarda en el repositorio es
+únicamente el TypeScript resultante, de manera que no puedan existir dos
+descripciones divergentes de la misma API. El efecto práctico es que un cambio
+en un modelo del back-end que el front-end no haya acompañado deja de compilar,
+en vez de manifestarse como un error en ejecución.
+
+El consumo de los datos se apoyó en \textbf{SWR}, que gestiona la petición, su
+estado y su revalidación, unido a un cliente tipado construido sobre el esquema
+generado. Este cambio obligó a revisar la interfaz de la pantalla de inicio: una
+lista de recetas incrustada en el código está siempre disponible, mientras que
+una obtenida por red puede tardar, agotar su plazo, no llegar o fallar en el
+servidor. Se añadió por ello una clasificación explícita de los modos de fallo
+—petición agotada, ausencia de conexión y error del servidor— y estados
+diferenciados de carga, lentitud y error, con la posibilidad de reintentar. La
+lección es que conectar una interfaz ya maquetada a una fuente remota no es una
+sustitución del origen de los datos, sino la incorporación de estados que antes
+no existían.
+
+En paralelo se extendieron al back-end los controles de calidad que el front-end
+ya tenía. Se incorporaron \textbf{ruff} como formateador y analizador estático y
+\textbf{ty} como verificador de tipos, configurados según el mismo criterio
+adoptado en el resto del proyecto: se activa el conjunto completo de reglas y
+cada exclusión queda escrita junto al motivo que la justifica, de modo que una
+regla se desactiva de forma deliberada y no por omisión. Las herramientas se
+añadieron a la imagen de contenedor de los controles y se asociaron en
+\texttt{pre-commit} a las rutas de la API, aprovechando el encaminamiento por
+patrones descrito en el primer sprint, con lo que el \textit{monorepo} admitió
+una segunda cadena de herramientas sin que ninguna se aplique a los archivos que
+no le corresponden. Durante este sprint se fijó además por escrito la política de
+dependencias del proyecto —versión estable más reciente, mantenimiento activo
+comprobado y tipos propios—, cuya necesidad se hizo evidente al tener que
+resolver en pocos días la elección de varios paquetes en dos ecosistemas
+distintos.
+
+El despliegue se abordó buscando el menor coste de operación compatible con los
+requerimientos. Se descartó mantener un servidor en ejecución permanente, cuyo
+gasto es constante aunque no reciba tráfico, y la API se desplegó como una
+\textbf{función Lambda} a la que se accede a través de una URL de función. La
+aplicación no se modificó para ello: un punto de entrada específico emplea
+\textbf{Mangum} para adaptar los eventos de la función a la interfaz ASGI que el
+servidor local invoca, por lo que el código de la API no conoce el entorno en el
+que se ejecuta.
+
+La relación entre la plantilla de infraestructura y el código sigue el mismo
+patrón ya empleado con el front-end: CloudFormation crea la función con un
+paquete de sustitución, porque no puede subir un artefacto que no posee, y el
+flujo de despliegue reemplaza después su código, igual que crea el \textit{bucket}
+vacío y sube a continuación la aplicación compilada. Esta separación mantiene una
+única definición de la infraestructura para ambos entornos y deja el despliegue
+del código como un paso independiente y repetible.
+
+La publicación bajo el mismo dominio que el front-end, prevista en los objetivos,
+se materializó como un comportamiento adicional de la distribución de CloudFront
+que dirige la ruta \texttt{/api} hacia la función. Esta disposición resolvió a la
+vez las dos cuestiones que la motivaban: ninguna petición del front-end es de
+origen distinto, por lo que no hay configuración de CORS que mantener, y la URL
+de la función queda inalcanzable de forma directa, ya que exige autenticación y
+solo la distribución del entorno correspondiente está autorizada a firmar sus
+peticiones, lo que satisface \reqref{RNF-SE-06}. Como consecuencia añadida, el
+muro de autenticación del entorno de desarrollo cubre también la API, de modo que
+sus datos no son legibles a través de ella.
+
+Esta misma disposición reveló la dificultad técnica más ilustrativa del sprint.
+Servir la API como una ruta del front-end implica que el prefijo \texttt{/api}
+forma parte de la dirección pública pero no de las rutas que la aplicación
+declara, y cada entorno lo retira en un lugar distinto: en la nube lo absorbe el
+adaptador del punto de entrada, mientras que en local es el servidor de
+desarrollo el que lo elimina al reenviar la petición al contenedor de la API.
+
+El sprint dejó, en resumen, el sistema completo en su estructura aunque todavía
+mínimo en funcionalidad: la colección de recetas que la API devuelve sigue fijada
+en el código, sin persistencia detrás. Esa es precisamente la tarea que los
+sprints siguientes abordan, y el trabajo realizado aquí la delimita, porque el
+contrato entre las dos partes y la vía de despliegue ya están establecidos y
+añadir una base de datos no obliga a revisarlos.

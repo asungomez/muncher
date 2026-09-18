@@ -1,0 +1,26 @@
+flowchart TB
+    subgraph internet["Internet"]
+        usuario(["Usuario<br/>(navegador)"])
+    end
+
+    subgraph aws["Cuenta de AWS"]
+        direction TB
+        cdn@{ icon: "logos:aws-cloudfront", form: "square", label: "Amazon CloudFront", pos: "b", h: 60 }
+        muro["Función de CloudFront<br/>Muro de acceso · dev"]
+        s3@{ icon: "logos:aws-s3", form: "square", label: "Amazon S3", pos: "b", h: 60 }
+        url["URL de función<br/>AuthType AWS_IAM"]
+        api@{ icon: "logos:aws-lambda", form: "square", label: "AWS Lambda", pos: "b", h: 60 }
+        logs@{ icon: "logos:aws-cloudwatch", form: "square", label: "CloudWatch Logs", pos: "b", h: 60 }
+    end
+
+    usuario -->|"1. GET /api/recipes"| cdn
+    muro -.->|"viewer-request"| cdn
+    cdn -->|"Comportamiento por defecto"| s3
+    cdn -->|"2. Comportamiento /api/*"| url
+    url -->|"3. Petición firmada por OAC (SigV4)"| api
+    api -->|"4. Respuesta JSON, sin caché"| cdn
+    cdn -->|"5. Respuesta al navegador"| usuario
+    api -.->|"Registro de ejecución"| logs
+
+    style internet fill:#fafafa,stroke:#a1a1aa,stroke-width:1px,stroke-dasharray:6 4,color:#3f3f46
+    style aws fill:#ffffff,stroke:#232f3e,stroke-width:1px,stroke-dasharray:6 4,color:#232f3e
