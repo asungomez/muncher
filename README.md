@@ -78,6 +78,7 @@ make            # lista los objetivos disponibles
 | `make api-build` | Genera el paquete de despliegue de la API para Lambda. |
 | `make memoria-lint` | Formatea las fuentes de la memoria con `latexindent`. |
 | `make memoria-build` | Genera el PDF de la memoria en `memoria/generated`. |
+| `make memoria-diagrams` | Renderiza los diagramas de la memoria cuyo fuente Mermaid ha cambiado. |
 | `make memoria-watch` | Regenera la memoria cada vez que cambian sus fuentes. |
 | `make infra-lint` | Valida las plantillas de CloudFormation. |
 | `make infra-deploy` | Despliega el stack del entorno indicado (`ENVIRONMENT`, por defecto `dev`). |
@@ -113,6 +114,12 @@ Las fuentes de la memoria se encuentran en la carpeta `memoria` y el PDF se gene
 ```
 make memoria-build
 make memoria-watch
+```
+
+Los diagramas viven en `memoria/src/diagrams`, cada uno como un fuente Mermaid (`.mmd`) junto al PDF que las figuras incluyen. `make memoria-build` los renderiza antes de compilar el documento, pero sólo aquellos cuyo fuente es más reciente que su PDF, de modo que la imagen que los genera —`docker/diagrams.Dockerfile`, con el renderizador y los iconos de AWS— no se construye mientras no cambie ningún diagrama. Como el bucle de `make memoria-watch` se ejecuta dentro del contenedor de la memoria, que no lleva renderizador, un diagrama editado durante la vigilancia necesita ejecutar el objetivo de nuevo:
+
+```
+make memoria-diagrams
 ```
 
 ## Front-end

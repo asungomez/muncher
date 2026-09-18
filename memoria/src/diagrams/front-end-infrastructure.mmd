@@ -1,0 +1,24 @@
+flowchart TB
+    subgraph internet["Internet"]
+        usuario(["Usuario<br/>(navegador)"])
+    end
+
+    subgraph aws["Cuenta de AWS"]
+        direction TB
+        dns@{ icon: "logos:aws-route53", form: "square", label: "Amazon Route 53", pos: "b", h: 60 }
+        cdn@{ icon: "logos:aws-cloudfront", form: "square", label: "Amazon CloudFront", pos: "b", h: 60 }
+        acm@{ icon: "logos:aws-certificate-manager", form: "square", label: "Certificate Manager", pos: "b", h: 60 }
+        muro["Función de CloudFront<br/>Muro de acceso · dev"]
+        s3@{ icon: "logos:aws-s3", form: "square", label: "Amazon S3", pos: "b", h: 60 }
+    end
+
+    usuario -->|"1. Resolución del nombre"| dns
+    dns -->|"2. Alias a la distribución"| cdn
+    acm -.->|"Certificado TLS"| cdn
+    muro -.->|"viewer-request"| cdn
+    cdn -->|"3. Petición firmada (OAC, SigV4)"| s3
+    s3 -->|"4. index.html y recursos con hash"| cdn
+    cdn -->|"5. Respuesta cacheada en el edge"| usuario
+
+    style internet fill:#fafafa,stroke:#a1a1aa,stroke-width:1px,stroke-dasharray:6 4,color:#3f3f46
+    style aws fill:#ffffff,stroke:#232f3e,stroke-width:1px,stroke-dasharray:6 4,color:#232f3e
