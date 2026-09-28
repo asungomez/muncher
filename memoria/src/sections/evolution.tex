@@ -592,3 +592,63 @@ en el código, sin persistencia detrás. Esa es precisamente la tarea que los
 sprints siguientes abordan, y el trabajo realizado aquí la delimita, porque el
 contrato entre las dos partes y la vía de despliegue ya están establecidos y
 añadir una base de datos no obliga a revisarlos.
+
+\subsection*{Sprint 5: Monitorización y métricas}
+\addcontentsline{toc}{subsection}{Sprint 5: Monitorización y métricas}
+
+El quinto sprint aborda la \textbf{monitorización} del sistema, esto es, la
+capacidad de observar desde fuera qué está haciendo \textbf{Muncher} mientras
+se ejecuta. Hasta el sprint anterior la aplicación se limitaba a una interfaz
+servida como contenido estático, cuyo comportamiento se agota en el navegador
+de quien la visita y puede comprobarse abriéndola. La incorporación de la API
+ha cambiado esa situación: el sistema realiza ahora procesamiento en el lado
+del servidor, ejecuta código en un entorno al que nadie asiste y lo hace a
+través de varios componentes de nube que deben entenderse entre sí. Lo que
+ocurre en esas ejecuciones no es observable salvo que el propio sistema lo
+registre, de modo que la monitorización deja de ser una mejora deseable para
+convertirse en la única vía de saber cómo se comporta el sistema.
+
+Igual que ocurrió con los controles de calidad del primer sprint y con la
+internacionalización del tercero, esta tarea se aborda en una fase temprana de
+manera deliberada. Introducir la monitorización cuando el sistema es todavía
+pequeño permite que cada funcionalidad nueva nazca ya instrumentada, en lugar
+de tener que recorrer más adelante un código extenso para añadir la
+instrumentación que se omitió. Además, los problemas que la monitorización
+saca a la luz —tiempos de respuesta que se degradan, llamadas entre servicios
+que fallan de forma intermitente, permisos mal ajustados entre componentes de
+la nube— resultan mucho más baratos de corregir cuanto menos código y menos
+infraestructura dependen de la parte afectada.
+
+Anticipar esta tarea tiene un segundo efecto sobre la naturaleza de los errores
+que el proyecto puede detectar. Un fallo de rendimiento o una interconexión
+defectuosa entre servicios de la nube no se manifiestan necesariamente como una
+excepción: el sistema sigue respondiendo, pero lo hace con lentitud, con
+reintentos o de forma inconsistente. Sin datos de ejecución, esta clase de
+comportamiento solo se descubre cuando alguien lo padece y sabe describirlo, lo
+que en las etapas siguientes del proyecto —con la persistencia de datos y el
+procesamiento de recetas todavía por incorporar— supondría depurar a ciegas
+sobre una superficie cada vez mayor.
+
+El propósito último del sprint es, por tanto, disponer de una visión clara del
+comportamiento del sistema: saber qué peticiones recibe la API, cuánto tarda en
+atenderlas, con qué frecuencia falla y en qué punto se produce el fallo. Esa
+visión sirve tanto para diagnosticar incidencias concretas como para
+fundamentar en datos las decisiones técnicas de los sprints posteriores, que
+hasta ahora se han apoyado en el análisis previo y no en medidas tomadas sobre
+el sistema en funcionamiento.
+
+\subsubsection*{Objetivos iniciales}
+
+\begin{itemize}
+	\item Diseñar el sistema de monitorización, definiendo tanto los datos a recoger
+	      como el stack de tecnologías que los procesará y almacenará.
+	\item Implementar la instrumentación de la API para registrar las métricas definidas.
+	\item Configurar la infraestructura de monitorización en la nube, incluyendo la
+	      creación de los recursos necesarios para almacenar y visualizar las métricas.
+	\item Desplegar la infraestructura de monitorización y la API instrumentada en el entorno
+	      de desarrollo.
+	\item Verificar que las métricas se recogen correctamente y que los paneles de
+	      visualización muestran la información esperada.
+	\item Desplegar la infraestructura de monitorización y la API instrumentada en el entorno de
+	      producción.
+\end{itemize}
