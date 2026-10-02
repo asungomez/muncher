@@ -393,6 +393,35 @@ proyecto.
 		}
 ]
 
+\us[
+	identificador=US-DE-05,
+	titulo={Instrumentación de la API},
+	como={Desarrollador},
+	quiero={Saber en qué operación de la API se invierte el tiempo de cada petición y en cuál se produce un fallo, más allá de la duración total de la invocación},
+	requerimientos={\reqref{RNF-MO-03}, \reqref{RNF-MO-01}},
+	puntos={3},
+	criterios={
+			\begin{itemize}
+				\item Las trazas de X-Ray de la función de la API incluyen un \textit{span} por petición, con el nombre de la ruta que la atiende.
+				\item Cada petición se desglosa en la resolución de dependencias, la ejecución de la operación y la serialización de la respuesta.
+				\item Una excepción no controlada queda registrada en el \textit{span} de la operación en la que se produce.
+				\item La instrumentación sigue la decisión de muestreo de Lambda y no incrementa el número de trazas registradas.
+				\item La aplicación se ejecuta en local sin cambios y sin enviar telemetría.
+				\item Existe documentación sobre la configuración de la instrumentación y su coste.
+			\end{itemize}
+		},
+	tareas={
+			\begin{itemize}
+				\item Evaluación del SDK de X-Ray frente a OpenTelemetry, a la vista del fin de soporte del primero.
+				\item Actualización de FastAPI a la versión que emite \textit{spans} de OpenTelemetry de forma nativa.
+				\item Incorporación del \textit{layer} de OpenTelemetry de AWS a la función de la API en la plantilla de CloudFormation, con las variables de entorno que lo configuran.
+				\item Exclusión de \texttt{opentelemetry-api} del paquete de despliegue, para que la versión que se ejecute sea la del \textit{layer}.
+				\item Ampliación de los permisos del rol de despliegue para asociar el \textit{layer} a la función.
+				\item Documentación de la instrumentación, de su funcionamiento y de su efecto sobre el arranque en frío.
+			\end{itemize}
+		}
+]
+
 \subsection*{Maquetación del front-end}
 \addcontentsline{toc}{subsection}{Maquetación del front-end}
 
