@@ -93,7 +93,7 @@ Keys (all required, declared in this order):
 | `tareas` | Tasks as an `itemize`. |
 
 Existing groups (`XX`): `CI` configuración inicial · `DE` despliegue en la nube ·
-`MF` maquetación del front-end.
+`MF` maquetación del front-end · `BD` base de datos.
 
 Same numbering rule as requirements: sequential within the group, append only,
 never renumber. Every story must trace to at least one requirement via

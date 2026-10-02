@@ -142,3 +142,83 @@
 			\end{itemize}
 		}
 ]
+
+\us[
+	identificador=US-DE-06,
+	titulo={Base de datos en la nube},
+	como={Desarrollador},
+	quiero={Que la API de cada entorno de la nube disponga de su propia base de datos, creada y conectada sin intervención manual y sin exponer sus credenciales},
+	requerimientos={\reqref{RNF-DE-01}, \reqref{RNF-DE-03}, \reqref{RNF-SE-03}},
+	puntos={3},
+	criterios={
+			\begin{itemize}
+				\item Existe una base de datos relacional en cada uno de los entornos de la nube.
+				\item La base de datos se declara como infraestructura como código, en la misma plantilla que el resto del entorno.
+				\item La contraseña de la base de datos se genera automáticamente y se almacena en un secreto, sin aparecer en el código fuente ni en la plantilla.
+				\item Los datos de acceso a la base de datos se inyectan en las variables de entorno de la API de su entorno.
+				\item La base de datos sólo es accesible desde la API de su propio entorno.
+			\end{itemize}
+		},
+	tareas={
+			\begin{itemize}
+				\item Selección del servicio de base de datos gestionado de la nube.
+				\item Diseño de la infraestructura en la nube necesaria para la base de datos.
+				\item Generación de la contraseña de la base de datos en un secreto.
+				\item Configuración de la base de datos como infraestructura como código.
+				\item Inyección de los datos de acceso en las variables de entorno de la API.
+				\item Restricción del acceso a la base de datos a la API de su propio entorno.
+			\end{itemize}
+		}
+]
+
+\us[
+	identificador=US-DE-07,
+	titulo={Migraciones en el despliegue continuo},
+	como={Desarrollador},
+	quiero={Que el esquema de la base de datos de cada entorno se actualice automáticamente al desplegar, para que corresponda siempre con el código que se ejecuta en él},
+	requerimientos={\reqref{RNF-DE-02}, \reqref{RNF-DE-03}},
+	puntos={2},
+	criterios={
+			\begin{itemize}
+				\item El ciclo de CD (Continuous Deployment) ejecuta las migraciones pendientes sobre la base de datos del entorno que despliega.
+				\item Las migraciones se aplican antes de que la nueva versión de la API empiece a atender peticiones.
+				\item Un fallo al aplicar las migraciones detiene el despliegue.
+				\item El procedimiento es el mismo en el entorno de desarrollo y en el de producción.
+			\end{itemize}
+		},
+	tareas={
+			\begin{itemize}
+				\item Diseño del mecanismo que ejecuta las migraciones desde el ciclo de CD.
+				\item Concesión de los permisos necesarios para acceder a la base de datos durante el despliegue.
+				\item Incorporación de la ejecución de las migraciones al ciclo de CD.
+				\item Actualización de la documentación del repositorio.
+			\end{itemize}
+		}
+]
+
+\us[
+	identificador=US-DE-08,
+	titulo={Monitorización de la base de datos},
+	como={Desarrollador},
+	quiero={Conocer el estado de la base de datos y el tiempo que la API dedica a consultarla, para detectar los problemas de rendimiento y los errores que se originen en ella},
+	requerimientos={\reqref{RNF-MO-01}, \reqref{RNF-MO-03}},
+	puntos={3},
+	criterios={
+			\begin{itemize}
+				\item El panel de CloudWatch del entorno de producción incluye las métricas de la base de datos.
+				\item Las consultas que la API realiza a la base de datos aparecen en las trazas como operaciones propias.
+				\item Los logs de la base de datos se recogen en CloudWatch con un periodo de retención definido.
+				\item Los recursos de monitorización de la base de datos se declaran como infraestructura como código.
+				\item Existe documentación sobre las métricas recogidas y su coste.
+			\end{itemize}
+		},
+	tareas={
+			\begin{itemize}
+				\item Selección de las métricas que describen el estado de la base de datos.
+				\item Incorporación de las métricas de la base de datos al panel de CloudWatch.
+				\item Instrumentación de las consultas de la API a la base de datos.
+				\item Configuración de la recogida y la retención de los logs de la base de datos.
+				\item Documentación de las métricas recogidas y de su coste.
+			\end{itemize}
+		}
+]

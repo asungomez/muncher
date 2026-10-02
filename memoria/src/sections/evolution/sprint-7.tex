@@ -1,0 +1,70 @@
+\subsection*{Sprint 7: Persistencia en la nube}
+\addcontentsline{toc}{subsection}{Sprint 7: Persistencia en la nube}
+
+El séptimo sprint completa la \textbf{persistencia de datos} de
+\textbf{Muncher} llevando a la nube los mecanismos establecidos en el sprint
+anterior. Al inicio del sprint, la API dispone en local de una base de datos
+relacional, obtiene sus datos de acceso de variables de entorno y cuenta con
+un gestor de migraciones que las pruebas de extremo a extremo ya ejercitan en
+cada ejecución. Los entornos de desarrollo y de producción, en cambio, siguen
+sin base de datos, de modo que ninguna funcionalidad que dependa de ella podría
+desplegarse todavía.
+
+El primer objetivo es desplegar una \textbf{base de datos relacional} en cada
+entorno de la nube, declarada en la misma plantilla que el resto de la
+infraestructura para que se cree, se actualice y se destruya junto con el
+entorno al que pertenece. La contraseña de la base de datos se generará
+automáticamente y se almacenará en un \textbf{secreto}, de forma que no
+aparezca ni en el código ni en la plantilla, tal como exige
+\reqref{RNF-SE-03}. Los datos de acceso se inyectarán en las variables de
+entorno de la API, que es exactamente el mecanismo por el que la API se conecta
+ya en local: la base de datos de la nube no exige, por tanto, ningún cambio en
+el código de la aplicación.
+
+El segundo objetivo es que las migraciones se ejecuten como parte del
+\textbf{despliegue continuo}. Si el esquema de un entorno se actualizara de
+forma manual, nada garantizaría que corresponda con la versión de la API que se
+ejecuta en él, y una migración olvidada se manifestaría como un fallo en
+producción. Al incorporarlas al ciclo de despliegue, cada versión del código
+llega al entorno acompañada del esquema que necesita, y un fallo al aplicarlas
+detiene el despliegue antes de que la nueva versión atienda peticiones.
+
+Por último, la monitorización establecida en el quinto sprint se extenderá a
+la base de datos. Igual que entonces, el propósito es que cada componente nuevo
+nazca ya instrumentado: la base de datos es el primer componente del sistema
+que conserva estado, y los problemas que pueden originarse en ella —consultas
+lentas, conexiones agotadas o falta de espacio— no se manifiestan
+necesariamente como errores de la API, sino como respuestas que se degradan.
+Observarla desde el principio permite distinguir el tiempo que la API dedica a
+la base de datos del que dedica a su propio procesamiento.
+
+\subsubsection*{Objetivos iniciales}
+
+\begin{itemize}
+	\item Seleccionar el servicio de base de datos gestionado de la nube.
+	\item Declarar la base de datos en la plantilla de infraestructura, generando
+	      su contraseña en un secreto e inyectando los datos de acceso en las
+	      variables de entorno de la API.
+	\item Ejecutar las migraciones como parte del ciclo de despliegue continuo.
+	\item Extender la monitorización para que observe también la base de datos.
+	\item Desplegar la base de datos y la API conectada a ella en el entorno de
+	      desarrollo.
+	\item Desplegar la base de datos y la API conectada a ella en el entorno de
+	      producción.
+\end{itemize}
+
+\subsubsection*{Historias de usuario completadas}
+
+\begin{center}
+	\begin{tabularx}{\textwidth}{|l|X|c|}
+		\hline
+		\textbf{Identificador} & \textbf{Nombre}                       & \textbf{Puntos de historia} \\
+		\hline
+		\usref{US-DE-06}       & Base de datos en la nube              & 3                           \\
+		\hline
+		\usref{US-DE-07}       & Migraciones en el despliegue continuo & 2                           \\
+		\hline
+		\usref{US-DE-08}       & Monitorización de la base de datos    & 3                           \\
+		\hline
+	\end{tabularx}
+\end{center}
