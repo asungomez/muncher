@@ -366,6 +366,33 @@ proyecto.
 		}
 ]
 
+\us[
+	identificador=US-DE-04,
+	titulo={Monitorización de la infraestructura en la nube},
+	como={Desarrollador},
+	quiero={Conocer desde fuera qué hace el sistema desplegado: qué peticiones atiende la API, cuánto tarda en atenderlas y qué errores se producen mientras se ejecuta},
+	requerimientos={\reqref{RNF-MO-01}, \reqref{RNF-MO-03}, \reqref{RNF-MO-04}, \reqref{RNF-DE-03}},
+	puntos={5},
+	criterios={
+			\begin{itemize}
+				\item Los logs de las funciones Lambda se recogen en CloudWatch con un periodo de retención definido, en los dos entornos.
+				\item La función de la API se ejecuta con el rastreo de X-Ray activo, de modo que sus trazas distinguen la inicialización del entorno de ejecución del tiempo consumido por el código.
+				\item El entorno de producción cuenta con un panel de CloudWatch que reúne las invocaciones, los errores y la latencia de la función Lambda junto con las peticiones y las respuestas de error de la distribución de CloudFront.
+				\item Los recursos de monitorización se declaran como infraestructura como código, y el entorno que dispone de panel se determina mediante un parámetro de la plantilla.
+				\item Existe documentación sobre el acceso al panel, a los logs y a las trazas.
+			\end{itemize}
+		},
+	tareas={
+			\begin{itemize}
+				\item Definición del periodo de retención de los grupos de logs existentes.
+				\item Selección de las métricas que describen el estado de la API y de la distribución.
+				\item Activación del rastreo de X-Ray en la función de la API, con los permisos que su envío de segmentos requiere.
+				\item Creación del panel de CloudWatch en la plantilla de CloudFormation.
+				\item Documentación del acceso al panel, a los logs y a las trazas.
+			\end{itemize}
+		}
+]
+
 \subsection*{Maquetación del front-end}
 \addcontentsline{toc}{subsection}{Maquetación del front-end}
 

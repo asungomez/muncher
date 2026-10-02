@@ -25,6 +25,8 @@ jobs:
           domain-name: ${{ vars.MUNCHER_DOMAIN_NAME }}
           # Production is served from the domain itself, without a subdomain.
           use-environment-subdomain: "false"
+          # Production is the only environment worth watching.
+          monitoring-dashboard: "true"
 
   # Waits for the stack: the bucket it uploads to has to exist first.
   front-end:

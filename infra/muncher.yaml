@@ -62,6 +62,17 @@ Parameters:
       is not deployed there.
     Default: ""
 
+  CreateMonitoringDashboard:
+    Type: String
+    Description: >-
+      Whether this environment gets a CloudWatch dashboard. Only production is
+      worth watching, and the free tier covers three dashboards per account, so
+      the default leaves the cheaper environment without one.
+    AllowedValues:
+      - "true"
+      - "false"
+    Default: "false"
+
 Conditions:
   # The wall exists only when both halves of the credential are supplied, so an
   # environment deployed without them — production — has no wall at all.
@@ -78,6 +89,8 @@ Conditions:
   LoginWallEnabled: !And
     - !Not [!Equals [!Ref FrontEndLoginUser, ""]]
     - !Not [!Equals [!Ref FrontEndLoginPassword, ""]]
+
+  DashboardEnabled: !Equals [!Ref CreateMonitoringDashboard, "true"]
 
 Resources:
   # Holds the compiled front-end. Never public: CloudFront is the only reader,
@@ -458,7 +471,7 @@ Resources:
               Service: lambda.amazonaws.com
             Action: sts:AssumeRole
       Policies:
-        - PolicyName: write-api-logs
+        - PolicyName: write-api-telemetry
           PolicyDocument:
             Version: "2012-10-17"
             Statement:
@@ -467,6 +480,13 @@ Resources:
                   - logs:CreateLogStream
                   - logs:PutLogEvents
                 Resource: !GetAtt ApiLogGroup.Arn
+              # X-Ray admits no resource-level permission for these: a segment
+              # has no ARN to scope to until it has been sent.
+              - Effect: Allow
+                Action:
+                  - xray:PutTraceSegments
+                  - xray:PutTelemetryRecords
+                Resource: "*"
 
   ApiFunction:
     Type: AWS::Lambda::Function
@@ -487,6 +507,10 @@ Resources:
       # Memory is also CPU, and the cold start is dominated by importing
       # FastAPI. Every invocation stays inside the free tier either way.
       MemorySize: 512
+      # Lambda samples rather than tracing every invocation, so this stays far
+      # below the 100,000 traces a month that X-Ray records for free.
+      TracingConfig:
+        Mode: Active
       Code:
         # A placeholder, replaced by `make api-deploy`: CloudFormation cannot
         # upload a package it does not have, so the template creates the
@@ -529,6 +553,91 @@ Resources:
       Principal: cloudfront.amazonaws.com
       SourceArn: !Sub arn:${AWS::Partition}:cloudfront::${AWS::AccountId}:distribution/${FrontEndDistribution}
 
+  # The distribution widgets name us-east-1 explicitly because CloudFront
+  # publishes its metrics only there, whatever region the distribution serves
+  # from. A dashboard may combine regions, so both sources sit side by side.
+  MonitoringDashboard:
+    Type: AWS::CloudWatch::Dashboard
+    Condition: DashboardEnabled
+    Properties:
+      DashboardName: !Sub muncher-${Environment}
+      DashboardBody: !Sub |
+        {
+          "widgets": [
+            {
+              "type": "metric",
+              "x": 0, "y": 0, "width": 12, "height": 6,
+              "properties": {
+                "title": "API invocations and errors",
+                "region": "${AWS::Region}",
+                "view": "timeSeries",
+                "stat": "Sum",
+                "period": 300,
+                "metrics": [
+                  ["AWS/Lambda", "Invocations", "FunctionName", "${ApiFunction}"],
+                  ["AWS/Lambda", "Errors", "FunctionName", "${ApiFunction}"],
+                  ["AWS/Lambda", "Throttles", "FunctionName", "${ApiFunction}"]
+                ]
+              }
+            },
+            {
+              "type": "metric",
+              "x": 12, "y": 0, "width": 12, "height": 6,
+              "properties": {
+                "title": "API duration (ms)",
+                "region": "${AWS::Region}",
+                "view": "timeSeries",
+                "period": 300,
+                "metrics": [
+                  ["AWS/Lambda", "Duration", "FunctionName", "${ApiFunction}", {"stat": "Average", "label": "Average"}],
+                  ["AWS/Lambda", "Duration", "FunctionName", "${ApiFunction}", {"stat": "p95", "label": "p95"}],
+                  ["AWS/Lambda", "Duration", "FunctionName", "${ApiFunction}", {"stat": "Maximum", "label": "Maximum"}]
+                ]
+              }
+            },
+            {
+              "type": "metric",
+              "x": 0, "y": 6, "width": 12, "height": 6,
+              "properties": {
+                "title": "Distribution requests",
+                "region": "us-east-1",
+                "view": "timeSeries",
+                "stat": "Sum",
+                "period": 300,
+                "metrics": [
+                  ["AWS/CloudFront", "Requests", "DistributionId", "${FrontEndDistribution}", "Region", "Global"]
+                ]
+              }
+            },
+            {
+              "type": "metric",
+              "x": 12, "y": 6, "width": 12, "height": 6,
+              "properties": {
+                "title": "Distribution error responses (%)",
+                "region": "us-east-1",
+                "view": "timeSeries",
+                "stat": "Average",
+                "period": 300,
+                "yAxis": {"left": {"min": 0}},
+                "metrics": [
+                  ["AWS/CloudFront", "4xxErrorRate", "DistributionId", "${FrontEndDistribution}", "Region", "Global"],
+                  ["AWS/CloudFront", "5xxErrorRate", "DistributionId", "${FrontEndDistribution}", "Region", "Global"]
+                ]
+              }
+            },
+            {
+              "type": "log",
+              "x": 0, "y": 12, "width": 24, "height": 6,
+              "properties": {
+                "title": "Latest API errors",
+                "region": "${AWS::Region}",
+                "view": "table",
+                "query": "SOURCE '${ApiLogGroup}' | fields @timestamp, @message | filter @message like /(?i)(error|exception|traceback)/ | sort @timestamp desc | limit 50"
+              }
+            }
+          ]
+        }
+
 Outputs:
   FrontEndBucketName:
     Description: Bucket the compiled front-end is uploaded to
@@ -541,6 +650,11 @@ Outputs:
   ApiFunctionName:
     Description: Function the API package is uploaded to
     Value: !Ref ApiFunction
+
+  DashboardUrl:
+    Condition: DashboardEnabled
+    Description: CloudWatch dashboard with the metrics of this environment
+    Value: !Sub https://${AWS::Region}.console.aws.amazon.com/cloudwatch/home?region=${AWS::Region}#dashboards/dashboard/${MonitoringDashboard}
 
   # The same name the front-end is served from, since the API is a path on it.
   # The expression is repeated below rather than shared because one output

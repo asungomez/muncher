@@ -1,0 +1,26 @@
+flowchart TB
+    subgraph internet["Internet"]
+        usuario(["Usuario<br/>(navegador)"])
+        dev(["Desarrollador"])
+    end
+
+    subgraph aws["Cuenta de AWS"]
+        direction TB
+        cdn@{ icon: "logos:aws-cloudfront", form: "square", label: "Amazon CloudFront", pos: "b", h: 60 }
+        api@{ icon: "logos:aws-lambda", form: "square", label: "AWS Lambda", pos: "b", h: 60 }
+        logs@{ icon: "logos:aws-cloudwatch", form: "square", label: "CloudWatch Logs", pos: "b", h: 60 }
+        metricas@{ icon: "logos:aws-cloudwatch", form: "square", label: "CloudWatch Metrics", pos: "b", h: 60 }
+        xray["AWS X-Ray<br/>Trazas de la petición"]
+    end
+
+    usuario -.->|"Tramo no instrumentado"| cdn
+    cdn -.-> api
+    api -->|"1. Registro de ejecución"| logs
+    api -->|"2. Segmentos de traza"| xray
+    api -->|"3. Invocaciones, errores y duración"| metricas
+    logs -.->|"4. Consulta manual"| dev
+    xray -.-> dev
+    metricas -.-> dev
+
+    style internet fill:#fafafa,stroke:#a1a1aa,stroke-width:1px,stroke-dasharray:6 4,color:#3f3f46
+    style aws fill:#ffffff,stroke:#232f3e,stroke-width:1px,stroke-dasharray:6 4,color:#232f3e

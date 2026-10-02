@@ -44,6 +44,8 @@ jobs:
           domain-name: ${{ vars.MUNCHER_DOMAIN_NAME }}
           # Only development is served from a subdomain named after itself.
           use-environment-subdomain: ${{ inputs.environment == 'dev' }}
+          # Only production is watched.
+          monitoring-dashboard: ${{ inputs.environment == 'prod' }}
           # From the environment's secrets; undefined means no login wall.
           login-user: ${{ secrets.FRONTEND_LOGIN_USER }}
           login-password: ${{ secrets.FRONTEND_LOGIN_PASSWORD }}

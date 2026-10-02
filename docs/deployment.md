@@ -10,6 +10,11 @@
   - [5. Configurar GitHub](#5-configurar-github)
 - [Dominio propio](#dominio-propio)
   - [Cómo se reparte entre stacks](#cómo-se-reparte-entre-stacks)
+- [Monitorización](#monitorización)
+  - [Panel de métricas](#panel-de-métricas)
+  - [Logs](#logs)
+  - [Trazas](#trazas)
+  - [Sin alertas](#sin-alertas)
 - [Mantener la política al día](#mantener-la-política-al-día)
 - [Destruir un entorno](#destruir-un-entorno)
 
@@ -291,6 +296,16 @@ Esta es la política que necesita el rol:
       "Effect": "Allow",
       "Action": "logs:DescribeLogGroups",
       "Resource": "*"
+    },
+    {
+      "Sid": "MonitoringDashboards",
+      "Effect": "Allow",
+      "Action": [
+        "cloudwatch:PutDashboard",
+        "cloudwatch:GetDashboard",
+        "cloudwatch:DeleteDashboards"
+      ],
+      "Resource": "arn:aws:cloudwatch::<ACCOUNT_ID>:dashboard/muncher-*"
     }
   ]
 }
@@ -311,6 +326,10 @@ Dos decisiones de esta política son deliberadas:
   alojadas de la cuenta.
 - **CloudFormation aparece con dos regiones** porque el certificado se despliega
   en `us-east-1` aunque el resto del sistema no.
+- **El ARN del panel de CloudWatch no lleva región** (`arn:aws:cloudwatch::…`):
+  los paneles son recursos globales de la cuenta, aunque las métricas que
+  muestran pertenezcan a una región
+  ([referencia de autorización](https://docs.aws.amazon.com/service-authorization/latest/reference/list_amazoncloudwatch.html)).
 - **`logs:DescribeLogGroups` va en su propia sentencia con `"Resource": "*"`**
   porque tampoco admite restricción por recurso: es una limitación del servicio,
   no un descuido. CloudFormation la invoca para leer el ARN del grupo de logs, de
@@ -325,6 +344,13 @@ CloudFormation lo elimine —sin la cual un bucket con contenido impediría
 destruir el _stack_— y la que sirve la API. `iam:CreateRole` es la entrada de
 mayor alcance, y está restringida al prefijo `muncher-*` precisamente para que
 el rol no pueda concederse a sí mismo más permisos de los que tiene.
+
+El rastreo con X-Ray no aparece en esta política: los permisos que necesita
+(`xray:PutTraceSegments` y `xray:PutTelemetryRecords`) los usa la función en
+tiempo de ejecución, no el rol de despliegue, y por eso viven en el rol que la
+plantilla crea para ella. Activar el rastreo forma parte de la configuración de
+la función, que `lambda:CreateFunction` y `lambda:UpdateFunctionConfiguration`
+ya cubren.
 
 Las acciones sobre la URL de función y sobre su política de permisos
 (`lambda:CreateFunctionUrlConfig` y siguientes, `lambda:AddPermission`) son las
@@ -448,6 +474,114 @@ está permitido— y cuyas consultas no se facturan.
 La emisión del certificado es automática pero no inmediata: ACM escribe el
 registro de validación y el stack espera hasta que se emite, lo que puede tardar
 unos minutos en el primer despliegue.
+
+## Monitorización
+
+### Panel de métricas
+
+**Solo producción tiene panel.** Se declara en `infra/muncher.yaml` con el
+nombre `muncher-prod` y lo crea el mismo despliegue que el resto de la
+infraestructura, gobernado por el parámetro `CreateMonitoringDashboard`. Su
+valor por defecto es `false`, de modo que un entorno desplegado sin indicar
+nada —`dev`, o cualquier stack que se cree a mano para probar— no lo crea; el
+workflow de producción es el que lo pone a `true`. Los logs, en cambio, se
+recogen en todos los entornos.
+
+El despliegue imprime la dirección del panel como la salida `DashboardUrl`;
+también se obtiene en cualquier momento con:
+
+```
+aws cloudformation describe-stacks \
+  --stack-name muncher-prod \
+  --query "Stacks[0].Outputs[?OutputKey=='DashboardUrl'].OutputValue" \
+  --output text
+```
+
+Para crearlo puntualmente en otro entorno desde un despliegue local, define
+`MUNCHER_MONITORING_DASHBOARD=true` en tu propio entorno antes de
+`make infra-deploy`.
+
+En la consola está en **CloudWatch** → **Dashboards**. Reúne cinco vistas:
+
+| Vista | Qué muestra |
+| --- | --- |
+| API invocations and errors | Invocaciones, errores y estrangulamientos de la función Lambda |
+| API duration | Latencia de la función: media, percentil 95 y máximo |
+| Distribution requests | Peticiones atendidas por la distribución de CloudFront |
+| Distribution error responses | Porcentaje de respuestas 4xx y 5xx de la distribución |
+| Latest API errors | Últimas líneas del log de la API que mencionan un error |
+
+Los dos widgets de CloudFront indican `us-east-1` de forma explícita porque
+CloudFront publica sus métricas únicamente en esa región, sea cual sea la
+región desde la que se sirva la distribución. Un panel de CloudWatch sí puede
+combinar métricas de varias regiones, de modo que ambas fuentes conviven en el
+mismo sitio.
+
+El panel no cuesta nada: la capa gratuita permanente de CloudWatch cubre tres
+paneles personalizados de hasta 50 métricas cada uno, y este proyecto crea uno
+([precios oficiales](https://aws.amazon.com/cloudwatch/pricing/)). Las métricas
+que muestra son las que Lambda y CloudFront publican por sí solos, sin métricas
+personalizadas ni monitorización detallada, que sí se facturarían.
+
+### Logs
+
+Los grupos de logs de las funciones Lambda —`/aws/lambda/muncher-api-<entorno>`
+y `/aws/lambda/muncher-front-end-emptier-<entorno>`— se declaran en la plantilla
+con **7 días de retención**. Declararlos, en lugar de dejar que Lambda los cree
+en la primera invocación, es lo que permite fijar ese periodo y lo que hace que
+se eliminen junto con el _stack_; sin ello quedarían en la cuenta con retención
+indefinida, acumulando almacenamiento facturable.
+
+Siete días bastan para diagnosticar un fallo del que alguien se entera el mismo
+día, que es el modo de operación de este proyecto, y mantienen el volumen
+almacenado muy por debajo de los 5 GB que cubre la capa gratuita.
+
+Los **logs de acceso de la distribución de CloudFront no se recogen**, y es una
+decisión deliberada. Recogerlos exigiría las dos cosas que la infraestructura
+del proyecto evita: los recursos de entrega (`AWS::Logs::DeliverySource`,
+`DeliveryDestination` y `Delivery`) solo pueden crearse en `us-east-1`, lo que
+obligaría a un tercer _stack_, y su entrega a CloudWatch Logs se factura a
+0,50 USD por GB desde el primer byte, sin capa gratuita que la cubra
+([precios oficiales](https://aws.amazon.com/cloudwatch/pricing/), apartado
+_Vended Logs_). Las métricas de la distribución, que sí son gratuitas, ya
+responden en el panel a las preguntas para las que se habrían consultado esos
+logs: cuánto tráfico recibe y qué proporción de él termina en error.
+
+### Trazas
+
+La función de la API se despliega con el **rastreo activo de AWS X-Ray**
+(`TracingConfig: Active` en la plantilla), y su rol incluye los permisos
+`xray:PutTraceSegments` y `xray:PutTelemetryRecords` que necesita para enviar
+los segmentos. Ninguno de los dos admite restricción por recurso: un segmento no
+tiene ARN al que apuntar hasta que se ha enviado.
+
+Las trazas se consultan en la consola, en **CloudWatch** → **X-Ray traces**, y
+muestran el tiempo consumido por cada invocación separando la inicialización del
+entorno —el arranque en frío— del tiempo de ejecución del código.
+
+Lambda no traza todas las invocaciones, sino que aplica la regla de muestreo por
+defecto, de modo que el volumen se mantiene muy por debajo de las 100.000 trazas
+mensuales que X-Ray registra sin coste; la capa gratuita es permanente y no
+caduca a los doce meses
+([precios oficiales](https://aws.amazon.com/cloudwatch/pricing/)).
+
+> El rastreo activo mide la invocación completa, pero no la reparte entre las
+> operaciones internas de la API. Para obtener subsegmentos por operación hace
+> falta instrumentar el código de `api/` con el SDK de X-Ray, que es trabajo del
+> subsistema de la API y no de esta plantilla.
+
+### Sin alertas
+
+**No hay alarmas ni notificaciones automáticas**, y es una decisión deliberada
+documentada en la memoria: el requerimiento RNF-MO-02 queda sin satisfacer porque nada
+acota por sí solo el número de avisos que un sistema de alertas emite, y
+mantenerlo dentro de la capa gratuita exigiría añadir mecanismos de contención
+que son a su vez infraestructura capaz de fallar. Al ser una prioridad *Should
+Have*, la decisión es reversible y se revisará cuando el sistema reciba tráfico
+real.
+
+En la práctica esto significa que el estado del sistema se conoce mirando el
+panel y las trazas, no esperando un correo.
 
 ## Mantener la política al día
 
