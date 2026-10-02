@@ -243,6 +243,12 @@ Esta es la política que necesita el rol:
       "Resource": "arn:aws:lambda:<REGION>:<ACCOUNT_ID>:function:muncher-*"
     },
     {
+      "Sid": "ObservabilityLayer",
+      "Effect": "Allow",
+      "Action": "lambda:GetLayerVersion",
+      "Resource": "arn:aws:lambda:<REGION>:*:layer:AWSOpenTelemetryDistroPython:*"
+    },
+    {
       "Sid": "StackLogGroups",
       "Effect": "Allow",
       "Action": [
@@ -311,7 +317,7 @@ Esta es la política que necesita el rol:
 }
 ```
 
-Dos decisiones de esta política son deliberadas:
+Varias decisiones de esta política son deliberadas:
 
 - **Todo está limitado al prefijo `muncher-*`**, de manera que el rol no puede
   actuar sobre ningún otro recurso de la cuenta. Los recursos de las plantillas
@@ -334,6 +340,12 @@ Dos decisiones de esta política son deliberadas:
   porque tampoco admite restricción por recurso: es una limitación del servicio,
   no un descuido. CloudFormation la invoca para leer el ARN del grupo de logs, de
   modo que sin ella el despliegue falla al crear el rol que lo referencia.
+- **El _layer_ de OpenTelemetry es la única entrada fuera de `muncher-*`**,
+  porque no pertenece a la cuenta: lo publica AWS, y Lambda exige
+  `lambda:GetLayerVersion` sobre él para asociarlo a la función
+  ([documentación](https://docs.aws.amazon.com/lambda/latest/dg/adding-layers.html)).
+  Se limita a su nombre, `AWSOpenTelemetryDistroPython`, con la cuenta como
+  comodín porque AWS lo publica desde una cuenta distinta según la región.
 
 La política contiene exactamente lo que necesita la plantilla actual, y nada
 más.
@@ -348,9 +360,10 @@ el rol no pueda concederse a sí mismo más permisos de los que tiene.
 El rastreo con X-Ray no aparece en esta política: los permisos que necesita
 (`xray:PutTraceSegments` y `xray:PutTelemetryRecords`) los usa la función en
 tiempo de ejecución, no el rol de despliegue, y por eso viven en el rol que la
-plantilla crea para ella. Activar el rastreo forma parte de la configuración de
-la función, que `lambda:CreateFunction` y `lambda:UpdateFunctionConfiguration`
-ya cubren.
+plantilla crea para ella. Activar el rastreo y fijar sus variables de entorno
+forma parte de la configuración de la función, que `lambda:CreateFunction` y
+`lambda:UpdateFunctionConfiguration` ya cubren; asociar el _layer_ es lo único
+que requiere además la entrada `ObservabilityLayer`.
 
 Las acciones sobre la URL de función y sobre su política de permisos
 (`lambda:CreateFunctionUrlConfig` y siguientes, `lambda:AddPermission`) son las
@@ -555,20 +568,57 @@ La función de la API se despliega con el **rastreo activo de AWS X-Ray**
 los segmentos. Ninguno de los dos admite restricción por recurso: un segmento no
 tiene ARN al que apuntar hasta que se ha enviado.
 
-Las trazas se consultan en la consola, en **CloudWatch** → **X-Ray traces**, y
-muestran el tiempo consumido por cada invocación separando la inicialización del
-entorno —el arranque en frío— del tiempo de ejecución del código.
+Además, la función se ejecuta con el _layer_ de OpenTelemetry que publica AWS
+(`AWSOpenTelemetryDistroPython`), que aporta el SDK de OpenTelemetry y envía al
+daemon de X-Ray del entorno de Lambda los _spans_ que emite FastAPI. FastAPI los
+genera de forma nativa desde la versión 0.142: uno por petición, con el nombre
+de la ruta que la atiende (`GET /recipes`), y uno por cada fase de la operación
+—resolución de dependencias, ejecución del _endpoint_ y serialización de la
+respuesta—. El código de `api/` no contiene instrumentación propia.
 
-Lambda no traza todas las invocaciones, sino que aplica la regla de muestreo por
-defecto, de modo que el volumen se mantiene muy por debajo de las 100.000 trazas
-mensuales que X-Ray registra sin coste; la capa gratuita es permanente y no
-caduca a los doce meses
+Las trazas se consultan en la consola, en **CloudWatch** → **X-Ray traces**.
+Cada una muestra la inicialización del entorno —el arranque en frío— separada
+de la ejecución, y dentro de esta el tiempo consumido por cada operación.
+
+El ARN del _layer_ depende de la región y se resuelve en la plantilla con el
+mapa `OpenTelemetryLayer`, copiado de la
+[tabla oficial](https://aws-otel.github.io/docs/getting-started/lambda#adot-lambda-layer-arns).
+Para actualizarlo, la versión de `opentelemetry-api` que incluye el nuevo
+_layer_ debe seguir cumpliendo el mínimo que declara FastAPI. Por la misma
+razón, `make api-build` deja `opentelemetry-api` fuera del paquete: en la nube
+la proporciona el _layer_, y una copia más reciente en el paquete impediría que
+su SDK arrancara.
+
+Cuatro variables de entorno de la función configuran el _layer_:
+
+| Variable | Valor | Motivo |
+| --- | --- | --- |
+| `AWS_LAMBDA_EXEC_WRAPPER` | `/opt/otel-instrument` | Carga el SDK antes que la aplicación. |
+| `OTEL_AWS_APPLICATION_SIGNALS_ENABLED` | `false` | Application Signals se factura por señal; las trazas solas entran en la capa gratuita de X-Ray. |
+| `OTEL_PYTHON_DISTRO` | `aws_distro` | Con Application Signals desactivado, el _layer_ no la selecciona y el SDK no arranca. |
+| `OTEL_PYTHON_CONFIGURATOR` | `aws_configurator` | Ídem. |
+
+En local no hay SDK, de modo que FastAPI no registra nada y la aplicación se
+comporta exactamente igual.
+
+**Coste.** X-Ray factura por traza registrada, no por _span_: los _spans_ de
+FastAPI se añaden a la traza de la invocación y siguen su decisión de muestreo,
+así que no aumentan el número de trazas. La regla de muestreo de Lambda —una
+petición por segundo y el 5 % de las restantes— no reduce el volumen a este
+nivel de tráfico, que rara vez supera una petición por segundo: en la práctica
+cada petición es una traza. Las 100.000 trazas mensuales que X-Ray
+registra sin coste equivalen, por tanto, a unas 100.000 peticiones al mes, unas
+3.300 al día; la capa gratuita es permanente y no caduca a los doce meses, y
+superarla cuesta 0,000005 USD por traza
 ([precios oficiales](https://aws.amazon.com/cloudwatch/pricing/)).
 
-> El rastreo activo mide la invocación completa, pero no la reparte entre las
-> operaciones internas de la API. Para obtener subsegmentos por operación hace
-> falta instrumentar el código de `api/` con el SDK de X-Ray, que es trabajo del
-> subsistema de la API y no de esta plantilla.
+El _layer_ alarga el arranque en frío, porque el SDK se importa antes que la
+aplicación. Desde agosto de 2025 Lambda factura la inicialización
+([anuncio](https://aws.amazon.com/blogs/compute/aws-lambda-standardizes-billing-for-init-phase/)),
+pero a 512 MB un segundo adicional por arranque son 0,5 GB-s frente a los
+400.000 mensuales de la capa gratuita
+([precios oficiales](https://aws.amazon.com/lambda/pricing/)): el coste es de
+latencia, no económico, y las propias trazas permiten medirlo.
 
 ### Sin alertas
 

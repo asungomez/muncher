@@ -18,14 +18,20 @@ rm -rf "$STAGING" "$PACKAGE"
 mkdir -p "$STAGING" dist
 
 # Exported from the lockfile rather than resolved again, so the versions that
-# run in the cloud are the ones that were committed.
-uv export --frozen --no-dev --no-emit-project --quiet -o "$STAGING/requirements.txt"
+# run in the cloud are the ones that were committed. The function's
+# OpenTelemetry layer ships the API its SDK was built against; a copy here
+# would shadow it, and the SDK fails to load against a newer one.
+uv export --frozen --no-dev --no-emit-project --no-emit-package opentelemetry-api \
+	--quiet -o "$STAGING/requirements.txt"
 
 # The function's platform, not this container's: pydantic-core and the rest ship
 # compiled wheels, and the ones built for this image would not load on arm64.
+# --no-deps because the export is already the complete set; resolving it again
+# would bring back what it leaves out.
 echo "📦 Installing the locked dependencies for arm64..."
 uv pip install \
 	--quiet \
+	--no-deps \
 	--target "$STAGING" \
 	--python-platform aarch64-manylinux2014 \
 	--python-version 3.13 \
