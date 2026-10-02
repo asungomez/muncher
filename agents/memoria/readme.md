@@ -2,7 +2,9 @@
 
 The memoria is the LaTeX academic report documenting the project. Sources live
 in `memoria/src/`: `index.tex` is the entry point, `macros.tex` holds custom
-commands and `sections/` holds one file per section.
+commands and `sections/` holds the sections. A long section is a folder with an
+`index.tex` — the heading, the introduction and the `\input`s — and one file per
+subsection.
 
 ## Index
 

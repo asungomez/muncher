@@ -1,0 +1,24 @@
+\subsection*{Conceptos básicos de la nube e infraestructura}
+\addcontentsline{toc}{subsection}{Conceptos básicos de la nube e infraestructura}
+
+De acuerdo con la definición propuesta por el Instituto Nacional de Estándares y Tecnología (NIST, Mell y Grance, 2011) \cite{Grance2011}, la computación en la nube es un modelo que permite el acceso ubicuo, cómodo y bajo demanda a un conjunto compartido de recursos de computación configurables —como redes, servidores, almacenamiento, aplicaciones y servicios— que pueden aprovisionarse y liberarse rápidamente con un mínimo esfuerzo de gestión o interacción con el proveedor.
+
+Este modelo se fundamenta en cinco características esenciales:
+
+\begin{itemize}
+	\item \textbf{Autoservicio bajo demanda}: los usuarios pueden obtener capacidades de cómputo, como tiempo de servidor o espacio de almacenamiento, automáticamente y sin intervención humana directa por parte del proveedor.
+
+	\item \textbf{Acceso amplio a la red}: los recursos están disponibles mediante mecanismos estandarizados y pueden ser accedidos desde diversas plataformas cliente, como ordenadores, portátiles, tabletas o teléfonos móviles.
+
+	\item \textbf{Agrupamiento de recursos} (\textit{resource pooling}): los proveedores aplican un modelo multiusuario en el que los recursos físicos y virtuales se asignan dinámicamente según la demanda, ofreciendo independencia respecto de la ubicación física del hardware.
+
+	\item \textbf{Elasticidad rápida}: las capacidades pueden ampliarse o reducirse de manera inmediata —e incluso automática— conforme varía la carga de trabajo, proporcionando al usuario la sensación de contar con un conjunto de recursos prácticamente ilimitado.
+
+	\item \textbf{Servicio medido}: el sistema controla, optimiza y registra el uso de los recursos mediante mecanismos de medición que garantizan transparencia tanto para el proveedor como para el consumidor.
+\end{itemize}
+
+En el contexto de este proyecto, la \textbf{infraestructura en la nube} se define como el conjunto de servicios y recursos proporcionados por el proveedor elegido que, en conjunto, conforman y sostienen el sistema \textbf{Muncher}. Estos elementos incluyen las capacidades de cómputo, almacenamiento, bases de datos, servicios de integración y herramientas de administración necesarias para que el sistema funcione de manera fiable y escalable en un entorno remoto.
+
+A diferencia de una definición genérica, aquí la infraestructura se expresa en términos concretos del proveedor seleccionado. Esto significa que cada componente de la arquitectura se corresponde directamente con un servicio específico disponible en su catálogo. Por ejemplo, en el caso de Microsoft Azure, podrían emplearse \textit{App Services} para alojar aplicaciones web, \textit{Azure Functions} para ejecutar código sin servidor, \textit{Azure Storage} para gestionar datos y ficheros, o \textit{Azure Virtual Networks} para interconectar los servicios de forma segura. Si el proveedor elegido fuera Amazon Web Services (AWS), equivalentes funcionales serían recursos como \textit{AWS Lambda}, \textit{Amazon S3}, \textit{Amazon RDS}, o \textit{VPC}.
+
+Definir la infraestructura con este enfoque permite que la arquitectura del sistema esté claramente alineada con las capacidades del proveedor, facilita la replicación del entorno en diferentes fases del proyecto (desarrollo, pruebas, producción) y asegura que todas las decisiones técnicas estén sustentadas por las herramientas y servicios concretos que la plataforma ofrece.
