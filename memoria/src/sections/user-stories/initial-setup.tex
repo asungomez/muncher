@@ -233,3 +233,100 @@
 			\end{itemize}
 		}
 ]
+
+\us[
+	identificador=US-CI-09,
+	titulo={Base de datos local},
+	como={Desarrollador},
+	quiero={Disponer en mi máquina de una base de datos relacional equivalente a la de la nube, para desarrollar y probar el sistema contra datos persistentes sin depender de ningún entorno remoto},
+	requerimientos={\reqref{RNF-DE-04}},
+	puntos={1},
+	criterios={
+			\begin{itemize}
+				\item La composición de servicios del entorno local incluye una base de datos relacional.
+				\item La base de datos se levanta junto con el resto del entorno local, sin pasos adicionales.
+				\item Los datos de la base de datos se conservan entre reinicios del entorno local.
+				\item Existe documentación sobre cómo acceder a la base de datos local.
+			\end{itemize}
+		},
+	tareas={
+			\begin{itemize}
+				\item Selección del motor de base de datos relacional.
+				\item Incorporación del servicio de base de datos a la composición de servicios del entorno local.
+				\item Configuración de un volumen que conserve los datos entre reinicios.
+				\item Actualización de la documentación del repositorio.
+			\end{itemize}
+		}
+]
+
+\us[
+	identificador=US-CI-10,
+	titulo={Conexión local de la API con la base de datos},
+	como={Desarrollador},
+	quiero={Que la API se conecte a la base de datos local sin que los datos de acceso formen parte del código, de modo que el mismo código sirva para cualquier entorno},
+	requerimientos={\reqref{RNF-DE-04}, \reqref{RNF-SE-03}},
+	puntos={1},
+	criterios={
+			\begin{itemize}
+				\item La API obtiene los datos de acceso a la base de datos a partir de variables de entorno.
+				\item Ningún dato de acceso a la base de datos aparece en el código fuente de la API.
+				\item En el entorno local, la API se conecta a la base de datos local al arrancar.
+				\item La API informa de un error claro cuando falta alguna de las variables de entorno requeridas.
+			\end{itemize}
+		},
+	tareas={
+			\begin{itemize}
+				\item Selección de la librería de acceso a la base de datos para la API.
+				\item Lectura y validación de la configuración de la conexión a partir de variables de entorno.
+				\item Definición de las variables de entorno de la API en la composición de servicios del entorno local.
+				\item Actualización de la documentación del repositorio.
+			\end{itemize}
+		}
+]
+
+\us[
+	identificador=US-CI-11,
+	titulo={Base de datos en las pruebas de extremo a extremo},
+	como={Desarrollador},
+	quiero={Que las pruebas de extremo a extremo se ejecuten contra una base de datos propia, aislada de la que uso para desarrollar, para que sus resultados no dependan del estado en que la haya dejado},
+	requerimientos={\reqref{RNF-CA-03}, \reqref{RNF-DE-04}},
+	puntos={2},
+	criterios={
+			\begin{itemize}
+				\item Las pruebas de extremo a extremo levantan un contenedor de base de datos propio, distinto del de desarrollo.
+				\item Los datos de acceso a ese contenedor se inyectan en la API mediante las mismas variables de entorno que emplea en el resto de entornos.
+				\item El contenedor se destruye al terminar la ejecución de las pruebas.
+				\item Las pruebas se ejecutan de la misma manera en local y en la integración continua.
+			\end{itemize}
+		},
+	tareas={
+			\begin{itemize}
+				\item Definición del contenedor de base de datos para las pruebas de extremo a extremo.
+				\item Inyección de los datos de acceso al contenedor en la API durante las pruebas.
+				\item Eliminación del contenedor al finalizar la ejecución.
+				\item Actualización de la documentación del repositorio.
+			\end{itemize}
+		}
+]
+
+\us[
+	identificador=US-CI-12,
+	titulo={Migraciones en las pruebas de extremo a extremo},
+	como={Desarrollador},
+	quiero={Que cada ejecución de las pruebas de extremo a extremo parta de una base de datos con el esquema completo y sin datos, para que las pruebas comiencen siempre desde un estado conocido},
+	requerimientos={\reqref{RNF-CA-03}},
+	puntos={1},
+	criterios={
+			\begin{itemize}
+				\item Las migraciones se ejecutan sobre la base de datos de las pruebas antes de la primera prueba de cada ejecución.
+				\item Al comenzar las pruebas, las tablas existen y están vacías.
+				\item Un fallo al aplicar las migraciones detiene la ejecución de las pruebas y se notifica como tal.
+			\end{itemize}
+		},
+	tareas={
+			\begin{itemize}
+				\item Ejecución de las migraciones al inicio de las pruebas de extremo a extremo.
+				\item Tratamiento de los fallos de las migraciones como fallos de la ejecución.
+			\end{itemize}
+		}
+]

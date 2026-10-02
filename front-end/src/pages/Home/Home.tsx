@@ -11,7 +11,7 @@ function Home() {
         {/* Mobile layout */}
         <div
           className="md:hidden h-full bg-cover bg-center bg-no-repeat flex flex-col items-center justify-center px-6 relative"
-          style={{ backgroundImage: "url('/hero_section_image.png')" }}
+          style={{ backgroundImage: "url('/hero_section_image.jpeg')" }}
         >
           <div className="absolute inset-0 bg-black/40" />
           <div className="relative z-10 flex flex-col items-center text-center">
@@ -31,7 +31,7 @@ function Home() {
           <div
             className="absolute top-0 left-0 h-full w-full md:w-2/3 bg-no-repeat bg-center lg:bg-left"
             style={{
-              backgroundImage: "url('/hero_section_image.png')",
+              backgroundImage: "url('/hero_section_image.jpeg')",
               backgroundSize: "auto 100%",
             }}
           />

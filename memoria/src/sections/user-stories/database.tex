@@ -1,0 +1,28 @@
+\subsection*{Base de datos}
+\addcontentsline{toc}{subsection}{Base de datos}
+
+\us[
+	identificador=US-BD-01,
+	titulo={Gestor de migraciones},
+	como={Desarrollador},
+	quiero={Modificar el esquema de la base de datos de forma versionada junto al código que lo requiere, para que cualquier entorno pueda reconstruirse aplicando la misma secuencia de cambios},
+	requerimientos={\reqref{RNF-DE-04}},
+	puntos={2},
+	criterios={
+			\begin{itemize}
+				\item El proyecto incluye un gestor de migraciones para la base de datos de la API.
+				\item Las migraciones se almacenan en el repositorio, junto al código de la API.
+				\item Existen comandos para crear una migración nueva y para aplicar las migraciones pendientes sobre la base de datos local.
+				\item El gestor de migraciones obtiene los datos de acceso a la base de datos de las mismas variables de entorno que la API.
+				\item Existe documentación sobre la creación y la aplicación de migraciones.
+			\end{itemize}
+		},
+	tareas={
+			\begin{itemize}
+				\item Selección del gestor de migraciones.
+				\item Instalación y configuración del gestor de migraciones en la API.
+				\item Creación de los comandos para crear y aplicar migraciones en local.
+				\item Actualización de la documentación del repositorio.
+			\end{itemize}
+		}
+]

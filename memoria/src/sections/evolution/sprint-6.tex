@@ -1,0 +1,95 @@
+\subsection*{Sprint 6: Persistencia en el entorno local}
+\addcontentsline{toc}{subsection}{Sprint 6: Persistencia en el entorno local}
+
+El sexto sprint aborda la \textbf{persistencia de datos} de \textbf{Muncher},
+la pieza que separa al sistema actual de uno capaz de conservar la información
+de sus usuarios. Tras los sprints anteriores, la aplicación dispone de un
+front-end desplegado, de una API que lo sirve bajo el mismo dominio y de la
+monitorización necesaria para observar ambos, pero la colección de recetas que
+la API devuelve sigue fijada en el código. Ninguna de las funcionalidades
+previstas —la creación e importación de recetas, la planificación de menús o la
+generación de listas de la compra— puede construirse sin un lugar donde
+guardar lo que el usuario introduce y recuperarlo en sesiones posteriores.
+
+El trabajo necesario para incorporar la persistencia supera la capacidad de un
+único sprint, por lo que se reparte entre dos. Siguiendo el criterio aplicado
+al resto del proyecto de construir primero en local y desplegar después, este
+sprint deja resuelta la persistencia en el entorno local y en las pruebas, y el
+siguiente la lleva a la nube. La división no es únicamente una cuestión de
+capacidad: los mecanismos que se establecen aquí —la forma en que la API recibe
+los datos de acceso a la base de datos y la forma en que se aplican los cambios
+de esquema— son los mismos que emplearán después los entornos desplegados, de
+modo que llegan a la nube ya probados.
+
+El primer objetivo es levantar una \textbf{base de datos relacional} en el
+entorno local y conectar la API a ella. La composición de servicios local
+incorporará su propia base de datos, lo que completa la correspondencia con la
+arquitectura desplegada que describe
+\hyperref[sec:entorno-local]{Entorno local}. La elección de un modelo
+relacional responde a la naturaleza de los datos del dominio: recetas,
+ingredientes, menús y listas de la compra son entidades fuertemente
+relacionadas entre sí, cuyas restricciones de integridad conviene que garantice
+el propio sistema de almacenamiento y no únicamente el código de la
+aplicación. La API obtendrá los datos de acceso a la base de datos a partir de
+\textbf{variables de entorno}, y no del código, por dos motivos: el mismo
+código podrá conectarse sin modificaciones a la base de datos local, a la de
+las pruebas o a la de cualquier entorno de la nube, y ninguna credencial
+quedará registrada en el repositorio, en línea con \reqref{RNF-SE-03}.
+
+Disponer de una base de datos no basta, sin embargo, si su estructura no puede
+evolucionar de forma controlada. El esquema cambiará con cada funcionalidad
+que se incorpore, y esos cambios deberán aplicarse de la misma manera en todos
+los entornos, sin intervenciones manuales que puedan dejarlos en estados
+distintos. Por este motivo, el sprint incluye la adopción de un \textbf{gestor
+	de migraciones}: cada modificación del esquema se expresará como una migración
+versionada junto al código que la requiere, de manera que la estructura de la
+base de datos quede sujeta al mismo control de versiones y a la misma revisión
+que el resto del proyecto, y que cualquier entorno pueda reconstruirse desde
+cero aplicando la secuencia completa. El sprint no crea ninguna tabla: su
+alcance se limita a dejar listos los mecanismos, y el esquema se irá definiendo
+en los sprints siguientes conforme lo requieran las funcionalidades.
+
+Por último, las pruebas de extremo a extremo dispondrán de un contenedor de
+base de datos propio, distinto del que se emplea durante el desarrollo, sobre
+el que se ejecutarán las migraciones al comienzo de cada ejecución, de forma
+que las tablas existan y estén vacías antes de la primera prueba. Partir
+siempre de un estado conocido evita que el resultado de una ejecución dependa
+de los datos que dejó la anterior, y permite además comprobar en cada
+ejecución que la secuencia de migraciones es capaz de construir el esquema
+completo.
+
+\subsubsection*{Objetivos iniciales}
+
+\begin{itemize}
+	\item Seleccionar el motor de base de datos relacional.
+	\item Incorporar una base de datos a la composición de servicios del entorno
+	      local.
+	\item Conectar la API a la base de datos local, obteniendo los datos de acceso
+	      a partir de variables de entorno.
+	\item Adoptar un gestor de migraciones y proporcionar los comandos para
+	      ejecutar las migraciones en local.
+	\item Dotar a las pruebas de extremo a extremo de un contenedor de base de datos
+	      propio, cuyos datos de acceso se inyecten en la API.
+	\item Ejecutar las migraciones al comienzo de cada ejecución de las pruebas de
+	      extremo a extremo, para que las tablas estén creadas y vacías.
+\end{itemize}
+
+\subsubsection*{Historias de usuario completadas}
+
+\begin{center}
+	\begin{tabularx}{\textwidth}{|l|X|c|}
+		\hline
+		\textbf{Identificador} & \textbf{Nombre}                                   & \textbf{Puntos de historia} \\
+		\hline
+		\usref{US-CI-09}       & Base de datos local                               & 1                           \\
+		\hline
+		\usref{US-CI-10}       & Conexión local de la API con la base de datos     & 1                           \\
+		\hline
+		\usref{US-CI-11}       & Base de datos en las pruebas de extremo a extremo & 2                           \\
+		\hline
+		\usref{US-BD-01}       & Gestor de migraciones                             & 2                           \\
+		\hline
+		\usref{US-CI-12}       & Migraciones en las pruebas de extremo a extremo   & 1                           \\
+		\hline
+	\end{tabularx}
+\end{center}
