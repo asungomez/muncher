@@ -666,3 +666,44 @@ el sistema en funcionamiento.
 		\hline
 	\end{tabularx}
 \end{center}
+
+\subsubsection*{Retrospectiva}
+
+El quinto sprint concluyó con el sistema observable en sus dos entornos: los
+\textit{logs} de las funciones Lambda se recogen en CloudWatch, la API genera
+trazas en X-Ray que desglosan cada petición por operación y el entorno de
+producción dispone de un panel que reúne las métricas de la función y de la
+distribución. Todo ello se declaró en la misma plantilla de infraestructura que
+el resto del sistema, de modo que la monitorización se crea, se actualiza y se
+destruye junto con el entorno al que pertenece.
+
+La dificultad principal del sprint residió en el desglose de las trazas por
+operación que exige \reqref{RNF-MO-03}. El rastreo activo de Lambda, configurado
+en primer lugar, registra cada invocación y separa el arranque en frío de la
+ejecución, pero trata esta última como un bloque indivisible. La vía habitual
+para subdividirla, el SDK de X-Ray, había entrado en modo de mantenimiento y
+tiene fecha de fin de soporte, por lo que adoptarlo habría supuesto programar
+una migración a pocos meses vista. Se optó en su lugar por
+\textbf{OpenTelemetry}, a través del \textit{layer} que AWS publica para Lambda.
+La actualización de \textbf{FastAPI} a la versión 0.142, que emite de forma
+nativa un \textit{span} por petición y otro por cada fase de su procesamiento,
+permitió que la API quedara instrumentada sin una sola línea de código propio, y
+que en local, donde no existe el SDK, la aplicación se comporte exactamente
+igual que antes.
+
+En cuanto a los requerimientos, el sprint satisfizo \reqref{RNF-MO-01} y
+\reqref{RNF-MO-03}, y de forma parcial \reqref{RNF-MO-04}, ya que el recuento de
+invocaciones mide peticiones atendidas y no usuarios activos.
+\reqref{RNF-MO-02} quedó sin satisfacer de manera deliberada: ningún mecanismo
+limita por sí solo el número de avisos que un sistema de alertas emite, y
+contenerlo dentro de la capa gratuita habría exigido añadir infraestructura
+capaz de fallar a su vez. Quedan asimismo dos puntos ciegos conocidos, la
+distribución de CloudFront, que no participa en las trazas, y el comportamiento
+del front-end en el navegador, que no se recoge.
+
+El sprint deja, en definitiva, la monitorización establecida antes de que el
+sistema incorpore la persistencia de datos y el procesamiento de recetas. Cada
+\textit{endpoint} que se añada en adelante quedará instrumentado sin trabajo
+adicional, y las decisiones técnicas de los sprints siguientes podrán apoyarse
+en medidas tomadas sobre el sistema en funcionamiento y no únicamente en el
+análisis previo.
