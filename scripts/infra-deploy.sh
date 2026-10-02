@@ -117,7 +117,10 @@ if [ -n "${MUNCHER_DOMAIN_NAME:-}" ]; then
 	)"
 fi
 
-PARAMETERS=("Environment=${ENVIRONMENT}")
+PARAMETERS=(
+	"Environment=${ENVIRONMENT}"
+	"CreateMonitoringDashboard=${MUNCHER_MONITORING_DASHBOARD:-false}"
+)
 if [ -n "${MUNCHER_DOMAIN_NAME:-}" ]; then
 	PARAMETERS+=(
 		"DomainName=${MUNCHER_DOMAIN_NAME}"

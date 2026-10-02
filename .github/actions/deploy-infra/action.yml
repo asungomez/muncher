@@ -34,6 +34,12 @@ inputs:
       rather than from the domain itself (muncher.com).
     required: false
     default: "true"
+  monitoring-dashboard:
+    description: >-
+      Create the CloudWatch dashboard for this environment. Only production is
+      watched, so the rest deploy without one.
+    required: false
+    default: "false"
   login-user:
     description: >-
       User for the front-end login wall. Passed by the caller from the secrets
@@ -64,4 +70,5 @@ runs:
         MUNCHER_REQUIRE_LOGIN_WALL: ${{ inputs.require-login-wall == 'true' && '1' || '' }}
         MUNCHER_DOMAIN_NAME: ${{ inputs.domain-name }}
         MUNCHER_USE_ENVIRONMENT_SUBDOMAIN: ${{ inputs.use-environment-subdomain }}
+        MUNCHER_MONITORING_DASHBOARD: ${{ inputs.monitoring-dashboard }}
       run: make infra-deploy ENVIRONMENT=${{ inputs.environment }}
