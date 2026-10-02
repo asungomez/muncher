@@ -1,0 +1,235 @@
+\subsection*{Configuración inicial}
+\addcontentsline{toc}{subsection}{Configuración inicial}
+
+\us[
+	identificador=US-CI-01,
+	titulo={Creación del repositorio de código},
+	como={Desarrollador},
+	quiero={Controlar las versiones de mi código, compartirlo con otros compañeros y mantener copias de seguridad para mejorar el acceso al mismo},
+	requerimientos={\reqref{RNF-CA-01}, \reqref{RNF-DE-02}},
+	puntos={1},
+	criterios={
+			\begin{itemize}
+				\item El repositorio de código en la nube existe.
+				\item Es accesible por todos los desarrolladores.
+				\item Incluye instrucciones de uso.
+			\end{itemize}
+		},
+	tareas={
+			\begin{itemize}
+				\item Inicialización de Git en un directorio local.
+				\item Creación de un repositorio en Github.
+				\item Configuración de acceso remoto al repositorio de Github desde la máquina local.
+				\item Redacción de las instrucciones de uso en un README.
+			\end{itemize}
+		}
+]
+
+\us[
+	identificador=US-CI-02,
+	titulo={Creación de una SPA usando Vite y React},
+	como={Desarrollador},
+	quiero={Ver mi proyecto en funcionamiento para poder verificar que los cambios que realizo tienen el efecto deseado},
+	requerimientos={\reqref{RNF-CO-01}, \reqref{RNF-DE-04}, \reqref{RNF-RE-01}},
+	puntos={1},
+	criterios={
+			\begin{itemize}
+				\item Existe una aplicación Vite + React.
+				\item La aplicación puede ejecutarse localmente.
+				\item La aplicación puede visitarse en el navegador.
+				\item La aplicación responde de forma automática a los cambios llevados a cabo en el
+				      código fuente.
+			\end{itemize}
+		},
+	tareas={
+			\begin{itemize}
+				\item Creación de un proyecto Vite + React.
+				\item Personalización de la configuración.
+			\end{itemize}
+		}
+]
+
+\us[
+	identificador=US-CI-03,
+	titulo={Controles de calidad con ESLint y Prettier},
+	como={Desarrollador},
+	quiero={Asegurar la calidad del código y mantener un estilo de codificación consistente},
+	requerimientos={\reqref{RNF-CA-01}, \reqref{RNF-CA-02}},
+	puntos={3},
+	criterios={
+			\begin{itemize}
+				\item Existe una Github Action que ejecuta ESLint y Prettier sobre el código fuente.
+				\item El repositorio sólo permite cambios en la rama main mediante Pull Request.
+				\item La Github Action se ejecuta automáticamente cuando se crea un Pull Request.
+				\item La Pull Request no se puede fusionar hasta que la Github Action haya finalizado
+				      correctamente.
+				\item Existen comandos documentados para ejecutar ESLint y Prettier sobre el código
+				      fuente en local.
+			\end{itemize}
+		},
+	tareas={
+			\begin{itemize}
+				\item Instalación de ESLint y Prettier en el proyecto.
+				\item Configuración de ESLint y Prettier.
+				\item Configuración de Github Actions para ejecutar ESLint y Prettier.
+				\item Documentación de los comandos para ejecutar ESLint y Prettier en local.
+				\item Configuración del repositorio de Github para que sólo se permitan cambios en la
+				      rama main mediante Pull Request.
+				\item Configuración del repositorio para hacer la Github Action obligatoria para
+				      fusionar un Pull Request.
+			\end{itemize}
+		}
+]
+
+\us[
+	identificador=US-CI-04,
+	titulo={Corrección automática del código de front-end},
+	como={Desarrollador},
+	quiero={Tener correctores automáticos que modifican mi código para adaptarse a los estándares establecidos},
+	requerimientos={\reqref{RNF-CA-02}},
+	puntos={5},
+	criterios={
+			\begin{itemize}
+				\item Existe un pre-commit hook que ejecuta ESLint y Prettier sobre el código fuente,
+				      modificando el código fuente para que cumpla con los estándares establecidos.
+				\item El pre-commit hook sólo se ejecuta sobre los archivos que han sido modificados
+				      en el commit.
+				\item El pre-commit hook corrige automáticamente los errores de formato y buenas
+				      prácticas de código.
+				\item El pre-commit hook muestra un informe del resultado de su ejecución.
+				\item Existe documentación clara sobre el uso del pre-commit hook.
+			\end{itemize}
+		},
+	tareas={
+			\begin{itemize}
+				\item Encontrar un gestor de pre-commit hooks para el proyecto, teniendo en cuenta
+				      que se trata de un monorepo que tendrá sistemas en diferentes lenguajes de
+				      programación.
+				\item Instalar el gestor de pre-commit hooks elegido.
+				\item Añadir los correctores de ESLint y Prettier.
+				\item Asegurarse de que los correctores sólo se ejecutan sobre ficheros del
+				      front-end.
+				\item Asegurarse de que los correctores sólo se ejecutan sobre los ficheros que han
+				      sido modificados en el commit.
+				\item Asegurarse de que el pre-commit hook corrige automáticamente los errores de
+				      formato y buenas prácticas de código.
+				\item Asegurarse de que el pre-commit hook muestra un informe del resultado de su
+				      ejecución.
+				\item Documentación de los comandos para ejecutar ESLint y Prettier en local.
+			\end{itemize}
+		}
+]
+
+\us[
+	identificador=US-CI-05,
+	titulo={Control de ortografía y gramática},
+	como={Desarrollador},
+	quiero={Tener control de ortografía y gramática en los textos de la aplicación},
+	requerimientos={\reqref{RNF-CA-04}},
+	puntos={5},
+	criterios={
+			\begin{itemize}
+				\item El pre-commit hook ejecuta un análisis de ortografía y gramática sobre los
+				      textos visibles de la aplicación.
+			\end{itemize}
+		},
+	tareas={
+			\begin{itemize}
+				\item Seleccionar un servicio de análisis de ortografía y gramática.
+				\item Configurar el servicio de análisis de ortografía y gramática para que se
+				      ejecute en el pre-commit hook.
+				\item Documentar el uso del servicio de análisis de ortografía y gramática en el
+				      pre-commit hook.
+			\end{itemize}
+		}
+]
+
+\us[
+	identificador=US-CI-06,
+	titulo={Ejecución local de la API},
+	como={Desarrollador},
+	quiero={Ver mi proyecto en funcionamiento para poder verificar que los cambios que realizo tienen el efecto deseado},
+	requerimientos={\reqref{RNF-DE-04}},
+	puntos={1},
+	criterios={
+			\begin{itemize}
+				\item Existe una aplicación REST construida con FastAPI.
+				\item La aplicación es accesible desde el entorno local.
+				\item La aplicación expone un \textit{endpoint} \texttt{/docs} con su
+				      documentación.
+				\item La aplicación genera automáticamente su especificación OpenAPI.
+				\item La aplicación expone un \textit{endpoint} \texttt{/recipes} que
+				      devuelve datos fijados en el código.
+				\item El servidor se reinicia automáticamente ante cambios en el código
+				      fuente.
+				\item Existe documentación sobre cómo lanzar el servidor en los ficheros de
+				      documentación del repositorio.
+			\end{itemize}
+		},
+	tareas={
+			\begin{itemize}
+				\item Creación de la API en el entorno local.
+				\item Configuración de OpenAPI y del \textit{endpoint} \texttt{/docs}.
+				\item Configuración del entorno local.
+				\item Creación del \textit{endpoint} \texttt{/recipes}.
+				\item Actualización de la documentación del repositorio.
+			\end{itemize}
+		}
+]
+
+\us[
+	identificador=US-CI-07,
+	titulo={Corrección automática del código de back-end},
+	como={Desarrollador},
+	quiero={Tener correctores automáticos que modifican mi código para adaptarse a los estándares establecidos},
+	requerimientos={\reqref{RNF-CA-01}},
+	puntos={1},
+	criterios={
+			\begin{itemize}
+				\item Existe una comprobación del estilo de código mediante un \textit{linter} en el pre-commit hook.
+				\item Existe una comprobación del formato del código mediante un \textit{formatter} en el pre-commit hook.
+				\item Existe una verificación estática de tipos mediante un \textit{type checker} en el pre-commit hook.
+				\item El pre-commit hook sólo se ejecuta sobre los archivos que han sido modificados en el commit.
+				\item El pre-commit hook corrige automáticamente los errores de formato y buenas prácticas de código.
+				\item El pre-commit hook muestra un informe del resultado de su ejecución.
+				\item Existe documentación clara sobre el uso del pre-commit hook.
+				\item El CI ejecuta el \textit{linter}, el \textit{formatter} y el \textit{type checker} sobre el código fuente.
+			\end{itemize}
+		},
+	tareas={
+			\begin{itemize}
+				\item Configuración de un \textit{linter} para el back-end.
+				\item Configuración de un \textit{formatter} para el back-end.
+				\item Configuración de un \textit{type checker} para el back-end.
+				\item Configuración del pre-commit hook para que ejecute el \textit{linter}, el \textit{formatter} y el \textit{type checker}.
+				\item Asegurarse de que el pre-commit hook sólo se ejecuta sobre los archivos que han sido modificados en el commit.
+				\item Configuración del CI para que ejecute el \textit{linter}, el \textit{formatter} y el \textit{type checker} sobre el código fuente.
+			\end{itemize}
+		}
+]
+
+\us[
+	identificador=US-CI-08,
+	titulo={Conexión del front-end con el back-end},
+	como={Usuario},
+	quiero={Acceder a la información de la aplicación desde el front-end de forma rápida, segura y efectiva},
+	requerimientos={\reqref{RNF-RE-01}, \reqref{RNF-RE-02}},
+	puntos={2},
+	criterios={
+			\begin{itemize}
+				\item El front-end puede acceder a la información de la aplicación a través de la API.
+				\item El front-end tiene un sistema de caché para almacenar la información obtenida de la API y evitar peticiones innecesarias.
+				\item El front-end tiene un sistema de control de errores para manejar los errores que puedan ocurrir al acceder a la API.
+				\item El front-end gestiona los tiempos de espera y las respuestas lentas de la API de forma adecuada.
+			\end{itemize}
+		},
+	tareas={
+			\begin{itemize}
+				\item Creación de un servicio cliente para la API en el front-end.
+				\item Sincronización automática de tipos entre el front-end y la API.
+				\item Implementación de un sistema de caché en el front-end.
+				\item Implementación de un sistema de control de errores en el front-end.
+				\item Implementación de un sistema de gestión de tiempos de espera y respuestas lentas de la API en el front-end.
+			\end{itemize}
+		}
+]

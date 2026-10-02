@@ -1,0 +1,190 @@
+\subsection*{Selección de un proveedor de nube}
+\addcontentsline{toc}{subsection}{Selección de un proveedor de nube}
+
+La elección de un proveedor de nube adecuado es un factor determinante en la arquitectura del sistema \textbf{Muncher}. La plataforma seleccionada debe ofrecer un equilibrio entre flexibilidad, coste y facilidad de gestión, permitiendo adaptar la infraestructura a las necesidades específicas del proyecto sin imponer restricciones excesivas derivadas de servicios demasiado abstractos o cerrados.
+
+El sistema requiere una infraestructura orientada a desarrolladores y equipos técnicos que deseen mantener control total sobre los recursos desplegados. Se descartan soluciones que, aunque cómodas para proyectos pequeños, limitan la personalización o dificultan el acceso a configuraciones internas, como ocurre en plataformas tipo \textit{Netlify} o \textit{AWS Amplify}. El objetivo es disponer de un entorno que permita definir, conectar y ajustar los componentes del sistema de acuerdo con los requisitos del producto.
+
+Los requisitos principales que se han establecido para la selección del proveedor son los siguientes:
+
+\begin{itemize}
+	\item \textbf{Alta capacidad de configuración}, evitando proveedores que limiten la personalización en favor de entornos “todo hecho”.
+	\item \textbf{Compatibilidad con contenedores Docker}, para desplegar el back‑end de forma reproducible y aislada.
+	\item \textbf{Soporte para aplicaciones web estáticas}, destinado al front‑end, con distribución eficiente de contenidos.
+	\item \textbf{Herramientas de monitorización y observabilidad} sencillas, que permitan lectura de logs, obtención de métricas y seguimiento de errores.
+	\item \textbf{Coste reducido}, con gasto mensual de unos pocos dólares, aprovechando capas gratuitas o planes económicos.
+	\item \textbf{Bases de datos SQL gestionadas}, incluyendo replicación automática, copias de seguridad y mantenimiento simplificado.
+\end{itemize}
+
+Con los requisitos previamente establecidos, se ha realizado una evaluación detallada de los principales proveedores de servicios en la nube y de varias alternativas ligeras orientadas al despliegue simplificado. El objetivo es determinar qué plataformas se ajustan mejor a las necesidades de \textbf{Muncher} en términos de flexibilidad, capacidad de configuración, coste y facilidad de mantenimiento.
+
+La comparación abarca tanto los tres grandes proveedores del mercado —\textbf{Amazon Web Services (AWS)}, \textbf{Microsoft Azure} y \textbf{Google Cloud Platform (GCP)}— como opciones más económicas y accesibles —\textbf{Heroku}, \textbf{Render} y \textbf{Vercel}— que pueden resultar especialmente adecuadas para entornos de desarrollo o fases tempranas del proyecto.
+
+En las siguientes páginas se presentan las tablas individuales para cada proveedor, en las que se detallan sus características principales con respecto a los criterios definidos: capacidad de configuración, compatibilidad con contenedores, soporte de aplicaciones web estáticas, herramientas de observabilidad, coste estimado y disponibilidad de bases de datos SQL gestionadas.
+
+% AWS
+\begin{center}
+	\renewcommand{\arraystretch}{1.2}
+	\setlength{\tabcolsep}{6pt}
+	\textbf{Amazon Web Services (AWS)}\\[4pt]
+	\begin{tabularx}{\textwidth}{|l|X|}
+		\hline
+		\textbf{Criterio}               & \textbf{Descripción}                                                                                                                       \\
+		\hline
+		Alta capacidad de configuración & \checkmark\ Permite una configuración detallada y control total sobre recursos e infraestructura, sin restricciones en la personalización. \\
+		\hline
+		Soporte Docker / contenedores   & \checkmark\ Compatible mediante servicios como Amazon ECS y EKS para gestionar y orquestar contenedores Docker.                            \\
+		\hline
+		Web estáticas                   & S3 combinado con CloudFront para distribución global de contenido estático.                                                                \\
+		\hline
+		Monitorización y logs           & CloudWatch ofrece supervisión avanzada, alertas, métricas y visualización de registros en tiempo real.                                     \\
+		\hline
+		Coste mensual estimado mínimo   & \$5--10 (tier gratuito y escalado según consumo).                                                                                          \\
+		\hline
+		Bases de datos SQL gestionadas  & Amazon RDS y Aurora, con soporte para replicación, backup automático y mantenimiento gestionado.                                           \\
+		\hline
+	\end{tabularx}
+\end{center}
+
+\vspace{8pt}
+
+% Azure
+\begin{center}
+	\renewcommand{\arraystretch}{1.2}
+	\setlength{\tabcolsep}{6pt}
+	\textbf{Microsoft Azure}\\[4pt]
+	\begin{tabularx}{\textwidth}{|l|X|}
+		\hline
+		\textbf{Criterio}               & \textbf{Descripción}                                                                                                          \\
+		\hline
+		Alta capacidad de configuración & \checkmark\ Ofrece gran flexibilidad para definir recursos, conectarlos y gestionar infraestructura con scripts declarativos. \\
+		\hline
+		Soporte Docker / contenedores   & \checkmark\ Compatible con Azure Container Instances (ACI) y Azure Kubernetes Service (AKS).                                  \\
+		\hline
+		Web estáticas                   & Servicio de Static Web Apps, integrado con GitHub Actions para despliegue automático.                                         \\
+		\hline
+		Monitorización y logs           & Azure Monitor centraliza métricas, trazas y logs con herramientas complementarias como Application Insights.                  \\
+		\hline
+		Coste mensual estimado mínimo   & \$5--10 (nivel gratuito amplio, facturación por consumo).                                                                     \\
+		\hline
+		Bases de datos SQL gestionadas  & Azure SQL Database con alta disponibilidad, backup automático y escalado elástico.                                            \\
+		\hline
+	\end{tabularx}
+\end{center}
+
+\vspace{8pt}
+
+% GCP
+\begin{center}
+	\renewcommand{\arraystretch}{1.2}
+	\setlength{\tabcolsep}{6pt}
+	\textbf{Google Cloud Platform (GCP)}\\[4pt]
+	\begin{tabularx}{\textwidth}{|l|X|}
+		\hline
+		\textbf{Criterio}               & \textbf{Descripción}                                                                                                      \\
+		\hline
+		Alta capacidad de configuración & \checkmark\ Configuración completa de recursos, redes y permisos a nivel granular mediante la consola o herramientas CLI. \\
+		\hline
+		Soporte Docker / contenedores   & \checkmark\ Soporte nativo mediante Google Kubernetes Engine (GKE) y Cloud Run.                                           \\
+		\hline
+		Web estáticas                   & Alojamiento en Cloud Storage y distribución mediante Cloud CDN.                                                           \\
+		\hline
+		Monitorización y logs           & Cloud Logging y Cloud Monitoring permiten trazabilidad detallada del sistema y alerta automática.                         \\
+		\hline
+		Coste mensual estimado mínimo   & \$5--10 (plan gratuito con recursos limitados y facturación por uso real).                                                \\
+		\hline
+		Bases de datos SQL gestionadas  & Cloud SQL con soporte para PostgreSQL, MySQL y SQL Server gestionados automáticamente.                                    \\
+		\hline
+	\end{tabularx}
+\end{center}
+
+\vspace{8pt}
+
+% Heroku
+\begin{center}
+	\renewcommand{\arraystretch}{1.2}
+	\setlength{\tabcolsep}{6pt}
+	\textbf{Heroku}\\[4pt]
+	\begin{tabularx}{\textwidth}{|l|X|}
+		\hline
+		\textbf{Criterio}               & \textbf{Descripción}                                                                                                          \\
+		\hline
+		Alta capacidad de configuración & \xmark\ Plataforma altamente simplificada, con escasa personalización y control limitado sobre la infraestructura subyacente. \\
+		\hline
+		Soporte Docker / contenedores   & Parcial. Puede usar contenedores personalizados con Heroku Container Registry, aunque con limitaciones.                       \\
+		\hline
+		Web estáticas                   & Sí. Admite despliegues de aplicaciones estáticas a través de buildpacks o servidores ligeros.                                 \\
+		\hline
+		Monitorización y logs           & Monitorización y visualización de logs integradas en el panel, adecuadas para proyectos pequeños.                             \\
+		\hline
+		Coste mensual estimado mínimo   & \$0--7 (planes gratuito y Hobby adecuados para desarrollo o pruebas).                                                         \\
+		\hline
+		Bases de datos SQL gestionadas  & PostgreSQL nativo con copias de seguridad automáticas y mantenimiento gestionado.                                             \\
+		\hline
+	\end{tabularx}
+\end{center}
+
+\vspace{8pt}
+
+% Render
+\begin{center}
+	\renewcommand{\arraystretch}{1.2}
+	\setlength{\tabcolsep}{6pt}
+	\textbf{Render}\\[4pt]
+	\begin{tabularx}{\textwidth}{|l|X|}
+		\hline
+		\textbf{Criterio}               & \textbf{Descripción}                                                                                                                     \\
+		\hline
+		Alta capacidad de configuración & \checkmark\ Configuración flexible mediante archivos YAML, permitiendo definir servicios personalizados y dependencias.                  \\
+		\hline
+		Soporte Docker / contenedores   & \checkmark\ Soporte nativo a imágenes Docker sin necesidad de configuración avanzada.                                                    \\
+		\hline
+		Web estáticas                   & \checkmark\ Hosting de sitios estáticos gratuito, con integración continua desde GitHub o GitLab.                                        \\
+		\hline
+		Monitorización y logs           & Acceso sencillo a logs desde el panel y API; métricas básicas de rendimiento.                                                            \\
+		\hline
+		Coste mensual estimado mínimo   & \$0--7 (planes gratuitos y Starter, apropiados para prototipos o entornos pequeños).                                                     \\
+		\hline
+		Bases de datos SQL gestionadas  & PostgreSQL administrado con copias de seguridad automáticas y restauración rápida, sujeto a limitaciones relevantes en la capa gratuita. \\
+		\hline
+	\end{tabularx}
+\end{center}
+
+\vspace{8pt}
+
+% Vercel
+\begin{center}
+	\renewcommand{\arraystretch}{1.2}
+	\setlength{\tabcolsep}{6pt}
+	\textbf{Vercel}\\[4pt]
+	\begin{tabularx}{\textwidth}{|l|X|}
+		\hline
+		\textbf{Criterio}               & \textbf{Descripción}                                                                                                                 \\
+		\hline
+		Alta capacidad de configuración & \xmark\ Plataforma centrada en el despliegue automatizado de aplicaciones front-end, con opciones limitadas de configuración manual. \\
+		\hline
+		Soporte Docker / contenedores   & \xmark\ No admite ejecución directa de contenedores Docker.                                                                          \\
+		\hline
+		Web estáticas                   & \checkmark\ Altamente optimizado para sitios y aplicaciones front-end en React, Next.js y frameworks similares.                      \\
+		\hline
+		Monitorización y logs           & Sistema integrado de métricas y logs, con disponibilidad en el panel de control.                                                     \\
+		\hline
+		Coste mensual estimado mínimo   & \$0--7 (plan gratuito generoso con despliegues ilimitados para uso personal).                                                        \\
+		\hline
+		Bases de datos SQL gestionadas  & No directamente. Requiere uso de servicios externos como Supabase, Neon o PlanetScale para almacenamiento persistente.               \\
+		\hline
+	\end{tabularx}
+\end{center}
+
+
+Tras el análisis individual de los distintos proveedores, puede concluirse que los tres grandes —\textbf{AWS}, \textbf{Azure} y \textbf{GCP}— cumplen de forma plena los requisitos técnicos definidos para el sistema. Ofrecen una infraestructura madura y altamente configurable, con soporte completo para contenedores Docker, servicios de bases de datos SQL gestionadas y avanzadas herramientas de observabilidad. Sin embargo, su estructura de precios por consumo requiere conocer bien los recursos que se eligen y el coste de cada uno, para no incurrir en gastos innecesarios.
+
+Las plataformas ligeras —\textbf{Heroku}, \textbf{Render} y \textbf{Vercel}— representan alternativas más sencillas y económicas. Su facilidad de uso y disponibilidad de planes gratuitos las hacen atractivas para proyectos en fases tempranas. No obstante, tanto Heroku como Vercel presentan ciertas limitaciones de flexibilidad y control sobre los recursos. En cambio, \textbf{Render} destaca como una solución intermedia: mantiene un modelo operativo simple, pero ofrece soporte nativo para contenedores Docker, alojamiento de aplicaciones estáticas, monitorización integrada y bases de datos SQL gestionadas. Además, su capa gratuita resulta atractiva para entornos de desarrollo o prototipado, si bien impone restricciones importantes en el caso de las bases de datos gestionadas, como se detalla a continuación.
+
+Conviene matizar, no obstante, el alcance de la capa gratuita de \textbf{Render} en lo relativo a las bases de datos gestionadas. A diferencia de los servicios web, cuyo plan gratuito no tiene fecha de caducidad, las bases de datos PostgreSQL gratuitas disponen de 1 GB de almacenamiento fijo, no admiten ningún tipo de copia de seguridad, se limitan a una única instancia activa por espacio de trabajo y, sobre todo, expiran treinta días después de su creación, tras lo cual se conceden catorce días de gracia para migrar a un plan de pago antes de su eliminación definitiva (\url{https://render.com/docs/free}). La persistencia de los datos no puede sostenerse, por tanto, de forma indefinida sin coste alguno.
+
+Alcanzado ese límite es necesario contratar una instancia de pago, en la que el almacenamiento se factura de manera independiente al cómputo. En ese escenario el gasto de la base de datos gestionada pasa a dominar el coste mensual del proyecto y puede igualar o superar el de una infraestructura equivalente desplegada sobre un proveedor generalista como \textbf{AWS} o \textbf{Azure}, donde el mismo servicio se dimensiona con mayor granularidad. Esta circunstancia convierte la eventual migración a otro proveedor en una decisión motivada por el coste, y no únicamente por la madurez técnica del sistema.
+
+En el caso del proyecto \textbf{Muncher}, donde se busca conservar el control técnico total, disponer de soporte para contenedores, contar con bases de datos SQL gestionadas y mantener un coste mensual mínimo, la comparación conduce a seleccionar \textbf{Amazon Web Services}. Ofrece un entorno sólido y flexible, con ejecución de contenedores sobre Amazon ECS, bases de datos gestionadas mediante Amazon RDS y distribución del front-end a través de S3 y CloudFront; su facturación por consumo permite dimensionar cada componente de forma independiente y ajustar el gasto al uso real del sistema.
+
+Frente a las plataformas ligeras, esta decisión evita la migración forzosa que impondría el agotamiento de la capa gratuita descrita anteriormente. Aunque \textbf{Render} resulte más sencillo de operar en las primeras fases del desarrollo, la caducidad de sus bases de datos gratuitas obligaría a trasladar la infraestructura a otro proveedor en un plazo corto, con el coste y el riesgo que conlleva rehacer el despliegue una vez el sistema está en funcionamiento. Construir los entornos de desarrollo y de producción sobre la misma infraestructura desde el inicio elimina ese trabajo y permite que las decisiones tomadas durante el desarrollo sigan siendo válidas en producción.
