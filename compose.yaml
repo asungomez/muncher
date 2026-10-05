@@ -31,9 +31,29 @@ services:
     networks:
       - muncher
 
+  database:
+    # Debian rather than Alpine: glibc collations sort text as RDS does.
+    image: postgres:18-trixie
+    environment:
+      POSTGRES_DB: muncher
+      POSTGRES_USER: muncher
+      POSTGRES_PASSWORD: muncher
+    ports:
+      - "${MUNCHER_DATABASE_PORT:-5432}:5432"
+    volumes:
+      - database-data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready --username muncher --dbname muncher"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - muncher
+
 networks:
   muncher:
     driver: bridge
 
 volumes:
   front-end-node-modules:
+  database-data:

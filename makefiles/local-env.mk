@@ -57,6 +57,15 @@ api-lock: ## Re-resolve api/uv.lock from api/pyproject.toml
 api-build: ## Build the API deployment package for Lambda
 	$(RUN) --image api /workspace/scripts/api-build.sh
 
+.PHONY: database-shell
+database-shell: ## Open psql on the running local database
+	docker compose exec database psql --username muncher --dbname muncher
+
+.PHONY: database-reset
+database-reset: ## Stop the local stack and delete the local database's data
+	docker compose down
+	docker volume rm --force muncher_database-data
+
 .PHONY: down
 down: ## Stop the local stack and remove its containers
 	docker compose down

@@ -12,6 +12,7 @@
 - [Front-end](#front-end)
 - [API](#api)
   - [Dependencias](#dependencias)
+- [Base de datos](#base-de-datos)
 - [Despliegue](#despliegue)
   - [Configurar el despliegue en tu propia cuenta](#configurar-el-despliegue-en-tu-propia-cuenta)
   - [Muro de acceso del entorno de desarrollo](#muro-de-acceso-del-entorno-de-desarrollo)
@@ -57,7 +58,9 @@ make            # lista los objetivos disponibles
 | `make up` | Arranca el entorno local completo en primer plano. |
 | `make front-end-up` | Arranca únicamente el servicio del front-end. |
 | `make api-up` | Arranca únicamente el servicio de la API. |
-| `make down` | Detiene el entorno local y elimina sus contenedores. |
+| `make database-shell` | Abre `psql` sobre la base de datos del entorno en ejecución. |
+| `make database-reset` | Detiene el entorno local y borra los datos de la base de datos. |
+| `make down` | Detiene el entorno local y elimina sus contenedores. Los datos de la base de datos se conservan. |
 | `make logs` | Muestra los logs del entorno en ejecución. |
 | `make checks` | Ejecuta todos los controles sobre el repositorio completo. |
 | `make checks-staged` | Ejecuta todos los controles sobre los archivos añadidos al índice. |
@@ -147,7 +150,7 @@ make front-end-remove-dep DEP=swr
 
 Si se omite la versión, se instala la más reciente y se fija esa; `DEV=1` la añade como dependencia de desarrollo. La imagen instala exactamente lo que fija el archivo de bloqueo, así que un `package.json` editado a mano deja de cuadrar con él y ninguna tarea vuelve a construir la imagen hasta que se arregle. `make front-end-lock` vuelve a resolver el archivo de bloqueo a partir del manifiesto, que es la salida de ese bloqueo.
 
-Los servicios del entorno local se declaran en `compose.yaml` y comparten una misma red, a la que se incorporará la base de datos.
+Los servicios del entorno local —el front-end, la API y la base de datos— se declaran en `compose.yaml` y comparten una misma red.
 
 ## API
 
@@ -191,6 +194,44 @@ make api-remove-dep DEP=httpx
 Si se omite la versión, se instala la más reciente y se fija esa. Después de cambiar las dependencias, el siguiente `make up` reconstruye la imagen con ellas.
 
 `make api-lock` vuelve a resolver el archivo de bloqueo a partir del manifiesto, lo que hace falta si se edita `api/pyproject.toml` a mano.
+
+## Base de datos
+
+El entorno local incluye una base de datos PostgreSQL 18, la misma versión mayor que se desplegará en la nube. Se levanta con el resto del entorno, sin pasos adicionales:
+
+```
+make up
+```
+
+Los datos se guardan en el volumen `muncher_database-data`, de modo que se conservan al detener y volver a arrancar el entorno, incluido `make down`.
+
+Con el entorno en marcha, la forma más directa de consultarla es abrir `psql` dentro del contenedor:
+
+```
+make database-shell
+```
+
+También admite conexiones desde cualquier cliente de la máquina (DBeaver, DataGrip, la extensión de VS Code…) con estos datos:
+
+| Parámetro | Valor |
+| --- | --- |
+| Servidor | `localhost` |
+| Puerto | `5432` |
+| Base de datos | `muncher` |
+| Usuario | `muncher` |
+| Contraseña | `muncher` |
+
+Son credenciales exclusivas del entorno local: ningún entorno desplegado las usa. Para publicar la base de datos en otro puerto —por ejemplo, si ya tienes un PostgreSQL escuchando en el `5432`—, define `MUNCHER_DATABASE_PORT`:
+
+```
+MUNCHER_DATABASE_PORT=5433 make up
+```
+
+Para empezar desde una base de datos vacía, detén el entorno y elimina sus datos; el siguiente `make up` la crea de nuevo:
+
+```
+make database-reset
+```
 
 ## Despliegue
 
