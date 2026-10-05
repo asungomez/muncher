@@ -33,7 +33,7 @@ SQLAlchemy 2, asynchronous, over psycopg 3, in `adapters/persistence/sql/`.
 the application starts serving.
 
 **For now the database group is optional**, because the cloud environments
-have no database until Sprint 7 and `main` deploys to dev on every push. A
+have no database until US-DE-06 and `main` deploys to dev on every push. A
 partial set is still an error. Once every environment has a database, switch it
 to `read_required_settings`, make the field non-optional and remove the
 database-less branch from the lifespan.
