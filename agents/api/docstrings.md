@@ -62,5 +62,6 @@ strings passed to the routers and to `FastAPI(...)`, which land on the same page
 
 The module docstring is the one place where more than a couple of lines is
 normal: it says what the module is for and records the decisions behind it, the
-way `recipes.py` explains why the collection is fixed in code. Keep it to a
-summary line, a blank line, and a short paragraph.
+way `adapters/persistence/memory/recipe_repository.py` explains why the
+collection is fixed in code. Keep it to a summary line, a blank line, and a
+short paragraph.

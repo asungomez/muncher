@@ -13,6 +13,7 @@
 - [API](#api)
   - [Dependencias](#dependencias)
 - [Base de datos](#base-de-datos)
+  - [Conexión de la API](#conexión-de-la-api)
 - [Despliegue](#despliegue)
   - [Configurar el despliegue en tu propia cuenta](#configurar-el-despliegue-en-tu-propia-cuenta)
   - [Muro de acceso del entorno de desarrollo](#muro-de-acceso-del-entorno-de-desarrollo)
@@ -232,6 +233,22 @@ Para empezar desde una base de datos vacía, detén el entorno y elimina sus dat
 ```
 make database-reset
 ```
+
+### Conexión de la API
+
+La API no contiene ningún dato de acceso a la base de datos: los lee al arrancar de estas variables de entorno, de modo que el mismo código se conecta a la base de datos local o a la de cualquier otro entorno.
+
+| Variable | Valor en el entorno local |
+| --- | --- |
+| `DATABASE_HOST` | `database` |
+| `DATABASE_PORT` | `5432` |
+| `DATABASE_NAME` | `muncher` |
+| `DATABASE_USER` | `muncher` |
+| `DATABASE_PASSWORD` | `muncher` |
+
+En el entorno local las define `compose.yaml`, así que no hay que configurar nada: `make up` arranca la API cuando la base de datos está lista, y la API comprueba la conexión antes de atender peticiones. El servidor es `database`, el nombre del servicio en la red de la composición, y el puerto es el del contenedor, por lo que `MUNCHER_DATABASE_PORT` no le afecta.
+
+Si falta alguna de las variables, la API se niega a arrancar e indica cuáles faltan. Si no se define ninguna, arranca sin base de datos y lo avisa en el log; es el caso de los entornos de la nube hasta que dispongan de una.
 
 ## Despliegue
 

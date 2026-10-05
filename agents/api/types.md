@@ -44,7 +44,7 @@ that schema is what the front-end's types are written against. A loose
 annotation here becomes a loose type on the other side of the network.
 
 - **A fixed set of values is a `Literal`, never a `str`.** `PillColor` in
-  `recipes.py` is the example: as a `Literal` it is enumerated in the schema, so
+  `domain/recipe.py` is the example: as a `Literal` it is enumerated in the schema, so
   the generated client is as narrow as a handwritten type. As a `str` it would
   document nothing.
 - **A response model is a Pydantic model**, not a `dict`. `dict[str, Any]`
@@ -56,10 +56,14 @@ annotation here becomes a loose type on the other side of the network.
 
 ## Models
 
-**Every model inherits from `Model` in `recipes.py`**, which carries the
-camelCase alias generator. Fields are `snake_case` in Python and serialise as
-camelCase, so the TypeScript client consumes what it expects. A model that
-inherits from `BaseModel` directly breaks that silently, in one endpoint only.
+**Every model inherits from `Model` in `domain/model.py`**, which carries the
+camelCase alias generator. Fields are `snake_case` in Python and
+serialise as camelCase, so the TypeScript client consumes what it expects. A
+model that inherits from `BaseModel` directly breaks that silently, in one
+endpoint only.
+
+The entities in `domain/` are what the endpoints return, so a change to one is
+a change to the published schema. See [architecture.md](architecture.md).
 
 Prefer Pydantic's own constrained types to a bare primitive plus a validator when
 the constraint is simple — the constraint then reaches the schema too.
