@@ -12,19 +12,17 @@ if ! command -v docker >/dev/null 2>&1; then
 fi
 
 # The node_modules volume would otherwise keep serving the packages it was
-# seeded with, so it is renewed whenever the lockfile hash moves.
+# seeded with, so it is renewed whenever the lockfile hash moves. Only that
+# volume: `down --volumes` would also delete the database.
 STAMP=".git/muncher-front-end-lock"
 LOCK_HASH="$(git hash-object front-end/yarn.lock)"
-RENEW_ARGS=()
 if [ ! -f "$STAMP" ] || [ "$(cat "$STAMP")" != "$LOCK_HASH" ]; then
 	echo "📦 front-end dependencies changed; renewing node_modules..."
-	RENEW_ARGS+=(--renew-anon-volumes)
-	docker compose down --volumes >/dev/null 2>&1 || true
+	docker compose down >/dev/null 2>&1 || true
+	docker volume rm --force muncher_front-end-node-modules >/dev/null
 fi
 
 # Written before starting: the server runs in the foreground until interrupted.
 printf '%s' "$LOCK_HASH" > "$STAMP"
 
-# Expanded defensively: under `set -u`, bash 3.2 (macOS's default) treats an
-# empty array expansion as an unbound variable.
-exec docker compose up --build ${RENEW_ARGS[@]+"${RENEW_ARGS[@]}"} "$@"
+exec docker compose up --build "$@"
