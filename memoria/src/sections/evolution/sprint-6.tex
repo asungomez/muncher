@@ -1,5 +1,5 @@
-\subsection*{Sprint 6: Persistencia en el entorno local}
-\addcontentsline{toc}{subsection}{Sprint 6: Persistencia en el entorno local}
+\subsection*{Sprint 6: Persistencia de datos}
+\addcontentsline{toc}{subsection}{Sprint 6: Persistencia de datos}
 
 El sexto sprint aborda la \textbf{persistencia de datos} de \textbf{Muncher},
 la pieza que separa al sistema actual de uno capaz de conservar la información
@@ -11,15 +11,13 @@ previstas —la creación e importación de recetas, la planificación de menús
 generación de listas de la compra— puede construirse sin un lugar donde
 guardar lo que el usuario introduce y recuperarlo en sesiones posteriores.
 
-El trabajo necesario para incorporar la persistencia supera la capacidad de un
-único sprint, por lo que se reparte entre dos. Siguiendo el criterio aplicado
-al resto del proyecto de construir primero en local y desplegar después, este
-sprint deja resuelta la persistencia en el entorno local y en las pruebas, y el
-siguiente la lleva a la nube. La división no es únicamente una cuestión de
-capacidad: los mecanismos que se establecen aquí —la forma en que la API recibe
-los datos de acceso a la base de datos y la forma en que se aplican los cambios
-de esquema— son los mismos que emplearán después los entornos desplegados, de
-modo que llegan a la nube ya probados.
+Siguiendo el criterio aplicado al resto del proyecto de construir primero en
+local y desplegar después, el sprint resuelve en primer lugar la persistencia
+en el entorno local y la lleva a continuación a la nube. Este orden no es
+únicamente una cuestión de comodidad: los mecanismos que se establecen en local
+—la forma en que la API recibe los datos de acceso a la base de datos y la
+forma en que se aplican los cambios de esquema— son los mismos que emplean
+después los entornos desplegados, de modo que llegan a la nube ya probados.
 
 El primer objetivo es levantar una \textbf{base de datos relacional} en el
 entorno local y conectar la API a ella. La composición de servicios local
@@ -49,14 +47,38 @@ cero aplicando la secuencia completa. El sprint no crea ninguna tabla: su
 alcance se limita a dejar listos los mecanismos, y el esquema se irá definiendo
 en los sprints siguientes conforme lo requieran las funcionalidades.
 
-Por último, las pruebas de extremo a extremo dispondrán de un contenedor de
-base de datos propio, distinto del que se emplea durante el desarrollo, sobre
-el que se ejecutarán las migraciones al comienzo de cada ejecución, de forma
-que las tablas existan y estén vacías antes de la primera prueba. Partir
-siempre de un estado conocido evita que el resultado de una ejecución dependa
-de los datos que dejó la anterior, y permite además comprobar en cada
-ejecución que la secuencia de migraciones es capaz de construir el esquema
-completo.
+Una vez resuelta la persistencia en local, el siguiente objetivo es desplegar
+una \textbf{base de datos relacional} en cada entorno de la nube, declarada en
+la misma plantilla que el resto de la infraestructura para que se cree, se
+actualice y se destruya junto con el entorno al que pertenece. La contraseña
+de la base de datos se generará automáticamente y se almacenará en un
+\textbf{secreto}, de forma que no aparezca ni en el código ni en la plantilla,
+tal como exige \reqref{RNF-SE-03}. Los datos de acceso se inyectarán en las
+variables de entorno de la API, que es exactamente el mecanismo por el que la
+API se conecta en local: la base de datos de la nube no exige, por tanto,
+ningún cambio en el código de la aplicación.
+
+Las migraciones, a su vez, se ejecutarán como parte del \textbf{despliegue
+	continuo}. Si el esquema de un entorno se actualizara de forma manual, nada
+garantizaría que corresponda con la versión de la API que se ejecuta en él, y
+una migración olvidada se manifestaría como un fallo en producción. Al
+incorporarlas al ciclo de despliegue, cada versión del código llega al entorno
+acompañada del esquema que necesita, y un fallo al aplicarlas detiene el
+despliegue antes de que la nueva versión atienda peticiones.
+
+Por último, la monitorización establecida en el quinto sprint se extenderá a
+la base de datos. Igual que entonces, el propósito es que cada componente nuevo
+nazca ya instrumentado: la base de datos es el primer componente del sistema
+que conserva estado, y los problemas que pueden originarse en ella —consultas
+lentas, conexiones agotadas o falta de espacio— no se manifiestan
+necesariamente como errores de la API, sino como respuestas que se degradan.
+Observarla desde el principio permite distinguir el tiempo que la API dedica a
+la base de datos del que dedica a su propio procesamiento.
+
+El proyecto no dispone todavía de pruebas de extremo a extremo, por lo que
+la ejecución de las pruebas contra una base de datos propia queda fuera del
+alcance de este sprint y se abordará en uno posterior, junto con la
+incorporación de dichas pruebas.
 
 \subsubsection*{Objetivos iniciales}
 
@@ -68,10 +90,16 @@ completo.
 	      a partir de variables de entorno.
 	\item Adoptar un gestor de migraciones y proporcionar los comandos para
 	      ejecutar las migraciones en local.
-	\item Dotar a las pruebas de extremo a extremo de un contenedor de base de datos
-	      propio, cuyos datos de acceso se inyecten en la API.
-	\item Ejecutar las migraciones al comienzo de cada ejecución de las pruebas de
-	      extremo a extremo, para que las tablas estén creadas y vacías.
+	\item Seleccionar el servicio de base de datos gestionado de la nube.
+	\item Declarar la base de datos en la plantilla de infraestructura, generando
+	      su contraseña en un secreto e inyectando los datos de acceso en las
+	      variables de entorno de la API.
+	\item Ejecutar las migraciones como parte del ciclo de despliegue continuo.
+	\item Extender la monitorización para que observe también la base de datos.
+	\item Desplegar la base de datos y la API conectada a ella en el entorno de
+	      desarrollo.
+	\item Desplegar la base de datos y la API conectada a ella en el entorno de
+	      producción.
 \end{itemize}
 
 \subsubsection*{Historias de usuario completadas}
@@ -79,17 +107,19 @@ completo.
 \begin{center}
 	\begin{tabularx}{\textwidth}{|l|X|c|}
 		\hline
-		\textbf{Identificador} & \textbf{Nombre}                                   & \textbf{Puntos de historia} \\
+		\textbf{Identificador} & \textbf{Nombre}                               & \textbf{Puntos de historia} \\
 		\hline
-		\usref{US-CI-09}       & Base de datos local                               & 1                           \\
+		\usref{US-CI-09}       & Base de datos local                           & 1                           \\
 		\hline
-		\usref{US-CI-10}       & Conexión local de la API con la base de datos     & 1                           \\
+		\usref{US-CI-10}       & Conexión local de la API con la base de datos & 1                           \\
 		\hline
-		\usref{US-CI-11}       & Base de datos en las pruebas de extremo a extremo & 2                           \\
+		\usref{US-BD-01}       & Gestor de migraciones                         & 2                           \\
 		\hline
-		\usref{US-BD-01}       & Gestor de migraciones                             & 2                           \\
+		\usref{US-DE-06}       & Base de datos en la nube                      & 3                           \\
 		\hline
-		\usref{US-CI-12}       & Migraciones en las pruebas de extremo a extremo   & 1                           \\
+		\usref{US-DE-07}       & Migraciones en el despliegue continuo         & 2                           \\
+		\hline
+		\usref{US-DE-08}       & Monitorización de la base de datos            & 3                           \\
 		\hline
 	\end{tabularx}
 \end{center}
