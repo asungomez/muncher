@@ -9,6 +9,9 @@ requires-python = ">=3.13"
 dependencies = [
     "fastapi>=0.142.2",
     "mangum==0.22.0",
+    "psycopg[binary]==3.3.6",
+    "pydantic-settings==2.15.0",
+    "sqlalchemy[asyncio]==2.1.3",
     "uvicorn[standard]>=0.53.0",
 ]
 
@@ -65,7 +68,10 @@ ignore = [
 [tool.ruff.lint.flake8-type-checking]
 # Pydantic reads annotations at runtime, so moving these imports into a
 # TYPE_CHECKING block — which the TC rules would otherwise do — breaks the models.
-runtime-evaluated-base-classes = ["pydantic.BaseModel"]
+runtime-evaluated-base-classes = [
+    "pydantic.BaseModel",
+    "pydantic_settings.BaseSettings",
+]
 
 [tool.ruff.lint.pydocstyle]
 # Resolves the pydocstyle rules that contradict each other, which would

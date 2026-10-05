@@ -26,6 +26,8 @@ uv export --frozen --no-dev --no-emit-project --no-emit-package opentelemetry-ap
 
 # The function's platform, not this container's: pydantic-core and the rest ship
 # compiled wheels, and the ones built for this image would not load on arm64.
+# glibc 2.28 because python3.13 runs on Amazon Linux 2023, and psycopg-binary
+# publishes no older arm64 wheel.
 # --no-deps because the export is already the complete set; resolving it again
 # would bring back what it leaves out.
 echo "📦 Installing the locked dependencies for arm64..."
@@ -33,7 +35,7 @@ uv pip install \
 	--quiet \
 	--no-deps \
 	--target "$STAGING" \
-	--python-platform aarch64-manylinux2014 \
+	--python-platform aarch64-manylinux_2_28 \
 	--python-version 3.13 \
 	--requirements "$STAGING/requirements.txt"
 

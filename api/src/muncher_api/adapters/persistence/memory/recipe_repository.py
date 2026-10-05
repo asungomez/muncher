@@ -1,66 +1,13 @@
-"""Recipes endpoints.
+"""Recipes kept in the memory of the process.
 
-The collection is fixed in the code for now. It is the same data the front-end
-currently hardcodes in its home page, and the models below describe the shape
-that page already expects, so connecting the two is a matter of fetching this
-endpoint instead of importing a constant.
+The recipes table does not exist yet, so the collection is fixed here: the same
+one the front-end used to hardcode in its home page. This adapter goes once the
+SQL one can serve recipes.
 """
 
-from typing import Literal
+from muncher_api.domain.recipe import Pill, Recipe
 
-from fastapi import APIRouter
-from pydantic import BaseModel, ConfigDict
-from pydantic.alias_generators import to_camel
-
-router = APIRouter(prefix="/recipes", tags=["recipes"])
-
-# The colours a pill can be painted with, mirroring PILL_COLORS in
-# front-end/src/components/Pill/utils.ts. Declared as a literal rather than as
-# a plain string so that the OpenAPI schema enumerates them and the generated
-# client types are as narrow as the handwritten ones.
-PillColor = Literal[
-    "green",
-    "blue",
-    "yellow",
-    "orange",
-    "red",
-    "amber",
-    "pink",
-    "lime",
-    "sky",
-    "rose",
-]
-
-
-class Model(BaseModel):
-    """Base of every model served by the API.
-
-    Fields are named in snake_case here and serialised in camelCase, which is
-    what the TypeScript client consumes. The mapping is declared once, so it
-    applies to anything added later without being restated.
-    """
-
-    model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True)
-
-
-class Pill(Model):
-    """A tag classifying a recipe."""
-
-    name: str
-    color: PillColor
-
-
-class Recipe(Model):
-    """A cooking recipe."""
-
-    id: str
-    name: str
-    description: str
-    image_url: str
-    pills: list[Pill]
-
-
-RECIPES = [
+RECIPES = (
     Recipe(
         id="1",
         name="Bol de verduras frescas",
@@ -126,10 +73,12 @@ RECIPES = [
             Pill(name="Frutas", color="lime"),
         ],
     ),
-]
+)
 
 
-@router.get("", summary="List the recipes")
-def list_recipes() -> list[Recipe]:
-    """Return the full collection of recipes."""
-    return RECIPES
+class InMemoryRecipeRepository:
+    """A fixed collection of recipes."""
+
+    async def list_recipes(self) -> list[Recipe]:
+        """Return the fixed collection."""
+        return list(RECIPES)

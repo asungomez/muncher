@@ -28,6 +28,15 @@ services:
       # Nothing to keep out of this mount: the virtual environment is in
       # /opt/venv, so a dependency change is a rebuild, not a renewed volume.
       - ./api:/workspace/api
+    environment:
+      DATABASE_HOST: database
+      DATABASE_PORT: 5432
+      DATABASE_NAME: muncher
+      DATABASE_USER: muncher
+      DATABASE_PASSWORD: muncher
+    depends_on:
+      database:
+        condition: service_healthy
     networks:
       - muncher
 
