@@ -7,6 +7,7 @@ version = "0.1.0"
 description = "REST API of the muncher application"
 requires-python = ">=3.13"
 dependencies = [
+    "alembic==1.20.0",
     "fastapi>=0.142.2",
     "mangum==0.22.0",
     "psycopg[binary]==3.3.6",
@@ -31,6 +32,13 @@ lint = [
 # copy would be a second, stale one.
 [tool.uv]
 package = false
+
+# Found as a package rather than a path, so the migrations resolve wherever
+# muncher_api is importable, the Lambda package included.
+[tool.alembic]
+script_location = "muncher_api.adapters.persistence.sql:migrations"
+# Dated, so the files sort in the order they were written.
+file_template = "%%(year)d_%%(month).2d_%%(day).2d_%%(hour).2d%%(minute).2d_%%(rev)s_%%(slug)s"
 
 # Stated so an editor or a bare `ty check` targets the version the server runs,
 # not whatever interpreter happens to be newest.

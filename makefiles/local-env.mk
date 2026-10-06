@@ -61,6 +61,17 @@ api-build: ## Build the API deployment package for Lambda
 database-shell: ## Open psql on the running local database
 	docker compose exec database psql --username muncher --dbname muncher
 
+# Through the api service, so the migrations connect with its DATABASE_*
+# variables and the database is started first if it is not running.
+.PHONY: database-migrate
+database-migrate: ## Apply the pending migrations to the local database
+	docker compose run --build --rm api alembic upgrade head
+
+.PHONY: database-new-migration
+database-new-migration: ## Generate a migration from the tables' changes (NAME="description")
+	@test -n "$(NAME)" || { echo "❌ usage: make database-new-migration NAME=\"description\"" >&2; exit 1; }
+	docker compose run --build --rm api alembic revision --autogenerate -m "$(NAME)"
+
 .PHONY: database-reset
 database-reset: ## Stop the local stack and delete the local database's data
 	docker compose down

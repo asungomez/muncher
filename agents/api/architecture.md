@@ -24,6 +24,7 @@ muncher_api/
     └── persistence/
         ├── memory/ driven: data held in the process
         └── sql/    driven: PostgreSQL through SQLAlchemy and psycopg
+            └── migrations/ the schema's history, run by Alembic
 ```
 
 ## The layers
@@ -85,7 +86,8 @@ database connection, goes in the lifespan instead.
 ## Where it stands
 
 The recipes are served by `adapters/persistence/memory/`, a fixed collection,
-because no table exists yet. `adapters/persistence/sql/` holds only the engine.
-Its first repository arrives with the first table, along with the session
-handling and the generic CRUD base it will share. At that point this section
+because no table exists yet. `adapters/persistence/sql/` holds the engine, the
+`metadata` tables are to be registered in, and the migrations, of which there
+are none yet. Its first repository arrives with the first table, along with the
+session handling and the generic CRUD base it will share. At that point this section
 is updated, and the in-memory adapter goes once nothing needs it.
