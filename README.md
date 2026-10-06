@@ -14,6 +14,7 @@
   - [Dependencias](#dependencias)
 - [Base de datos](#base-de-datos)
   - [Conexión de la API](#conexión-de-la-api)
+  - [Migraciones](#migraciones)
 - [Despliegue](#despliegue)
   - [Configurar el despliegue en tu propia cuenta](#configurar-el-despliegue-en-tu-propia-cuenta)
   - [Muro de acceso del entorno de desarrollo](#muro-de-acceso-del-entorno-de-desarrollo)
@@ -60,6 +61,8 @@ make            # lista los objetivos disponibles
 | `make front-end-up` | Arranca únicamente el servicio del front-end. |
 | `make api-up` | Arranca únicamente el servicio de la API. |
 | `make database-shell` | Abre `psql` sobre la base de datos del entorno en ejecución. |
+| `make database-migrate` | Aplica las migraciones pendientes sobre la base de datos local. |
+| `make database-new-migration` | Genera una migración a partir de los cambios en las tablas (`NAME="descripción"`). |
 | `make database-reset` | Detiene el entorno local y borra los datos de la base de datos. |
 | `make down` | Detiene el entorno local y elimina sus contenedores. Los datos de la base de datos se conservan. |
 | `make logs` | Muestra los logs del entorno en ejecución. |
@@ -249,6 +252,26 @@ La API no contiene ningún dato de acceso a la base de datos: los lee al arranca
 En el entorno local las define `compose.yaml`, así que no hay que configurar nada: `make up` arranca la API cuando la base de datos está lista, y la API comprueba la conexión antes de atender peticiones. El servidor es `database`, el nombre del servicio en la red de la composición, y el puerto es el del contenedor, por lo que `MUNCHER_DATABASE_PORT` no le afecta.
 
 Si falta alguna de las variables, la API se niega a arrancar e indica cuáles faltan. Si no se define ninguna, arranca sin base de datos y lo avisa en el log; es el caso de los entornos de la nube hasta que dispongan de una.
+
+### Migraciones
+
+El esquema de la base de datos no se modifica a mano: cada cambio es una migración de [Alembic](https://alembic.sqlalchemy.org/) versionada en el repositorio, en `api/src/muncher_api/adapters/persistence/sql/migrations/versions/`. Aplicarlas todas en orden reconstruye el esquema desde una base de datos vacía, de modo que cualquier entorno puede llegar al mismo estado.
+
+Las migraciones se conectan a la base de datos a través del servicio de la API, con las mismas variables `DATABASE_*`, y arrancan la base de datos si no está en marcha. `make up` no las aplica: tras crear una migración o traer las de otra rama, aplica las pendientes con
+
+```
+make database-migrate
+```
+
+Para cambiar el esquema, declara o modifica las tablas en el código, registradas en el `metadata` de `adapters/persistence/sql/metadata.py`, y genera la migración con una descripción breve:
+
+```
+make database-new-migration NAME="crear las recetas"
+```
+
+Alembic compara las tablas declaradas con la base de datos local y escribe la migración en un archivo nuevo, cuyo nombre empieza por la fecha. La base de datos debe estar al día antes de generarla, así que aplica primero las pendientes. La migración generada es un punto de partida: revísala antes de hacer commit, porque Alembic no detecta todos los cambios —por ejemplo, interpreta el cambio de nombre de una columna como su borrado y la creación de otra—. Al hacer commit, Ruff le da el formato del resto del código.
+
+Para deshacer migraciones mientras se desarrolla, lo más directo es empezar de cero con `make database-reset` y volver a aplicarlas.
 
 ## Despliegue
 

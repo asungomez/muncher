@@ -28,4 +28,4 @@ Read the file that matches the task before starting work.
 | [architecture.md](architecture.md) | Adding or moving any module: an endpoint, an entity, a use case, a storage. |
 | [types.md](types.md) | Writing annotations, or declaring a model an endpoint returns. |
 | [docstrings.md](docstrings.md) | Writing a docstring, on anything. |
-| [configuration.md](configuration.md) | Adding a setting read from the environment, or touching the database connection. |
+| [configuration.md](configuration.md) | Adding a setting read from the environment, touching the database connection, or changing the schema through a migration. |
